@@ -25,6 +25,9 @@
     'Source': 'source',
     'Domain': 'domain',
     'CVSS': 'cvss_score',
+    'EPSS': 'epss_score',
+    'KEV': 'in_kev_catalog',
+    'Composite': 'composite_score',
     'Severity': 'severity',
     'Asset': 'asset',
     'Owner': 'owner_team',
@@ -283,7 +286,7 @@
     if (!data.items || data.items.length === 0) {
       var emptyRow = document.createElement('tr');
       var emptyCell = document.createElement('td');
-      emptyCell.setAttribute('colspan', '12');
+      emptyCell.setAttribute('colspan', '15');
       emptyCell.style.textContent = '';
 
       var emptyState = document.createElement('div');
@@ -362,57 +365,84 @@
         tdDomain.textContent = capitalizeFirst(risk.domain || '');
         tr.appendChild(tdDomain);
 
-        // CVSS + Composite Score + Exploit Badges
+        // CVSS column
         var tdCvss = document.createElement('td');
-        var cvssWrapper = document.createElement('div');
-        cvssWrapper.style.cssText = 'display:flex;flex-direction:column;gap:3px;align-items:flex-start';
-
-        var cvssRow = document.createElement('div');
-        cvssRow.style.cssText = 'display:flex;align-items:center;gap:6px';
         var cvssSpan = document.createElement('span');
         cvssSpan.className = 'cvss-score ' + getCvssClass(risk.cvss_score);
         cvssSpan.textContent = (risk.cvss_score || 0).toFixed(1);
-        if (risk.composite_score != null) {
-          cvssSpan.title = 'Composite: ' + risk.composite_score.toFixed(1);
-        }
-        cvssRow.appendChild(cvssSpan);
+        tdCvss.appendChild(cvssSpan);
+        tr.appendChild(tdCvss);
 
-        // Exploit status badges
+        // EPSS column
+        var tdEpss = document.createElement('td');
+        if (risk.epss_score != null) {
+          var epssWrapper = document.createElement('div');
+          epssWrapper.style.cssText = 'display:flex;flex-direction:column;gap:2px';
+          var epssScore = document.createElement('span');
+          epssScore.style.cssText = 'font-weight:600;font-size:0.8125rem;color:#1E293B';
+          epssScore.textContent = (risk.epss_score * 100).toFixed(1) + '%';
+          epssWrapper.appendChild(epssScore);
+          if (risk.epss_percentile != null) {
+            var epssPct = document.createElement('span');
+            epssPct.style.cssText = 'font-size:0.6875rem;color:#94A3B8';
+            epssPct.textContent = Math.round(risk.epss_percentile) + 'th pctl';
+            epssWrapper.appendChild(epssPct);
+          }
+          tdEpss.appendChild(epssWrapper);
+        } else {
+          tdEpss.style.cssText = 'color:#CBD5E1;font-size:0.8125rem';
+          tdEpss.textContent = '-';
+        }
+        tr.appendChild(tdEpss);
+
+        // KEV column
+        var tdKev = document.createElement('td');
         if (risk.in_kev_catalog) {
           var kevBadge = document.createElement('span');
-          kevBadge.style.cssText = 'display:inline-block;padding:1px 5px;border-radius:3px;font-size:0.625rem;font-weight:700;background:#DC2626;color:#fff;letter-spacing:0.03em';
-          kevBadge.textContent = 'KEV';
-          cvssRow.appendChild(kevBadge);
-        } else if (risk.exploit_status === 'weaponized') {
-          var weapBadge = document.createElement('span');
-          weapBadge.style.cssText = 'display:inline-block;padding:1px 5px;border-radius:3px;font-size:0.625rem;font-weight:700;background:#EA580C;color:#fff;letter-spacing:0.03em';
-          weapBadge.textContent = 'WEAPONIZED';
-          cvssRow.appendChild(weapBadge);
-        } else if (risk.exploit_status === 'active') {
-          var activeBadge = document.createElement('span');
-          activeBadge.style.cssText = 'display:inline-block;padding:1px 5px;border-radius:3px;font-size:0.625rem;font-weight:700;background:#D97706;color:#fff;letter-spacing:0.03em';
-          activeBadge.textContent = 'ACTIVE';
-          cvssRow.appendChild(activeBadge);
+          kevBadge.style.cssText = 'display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.6875rem;font-weight:700;background:#DC2626;color:#fff';
+          kevBadge.textContent = 'YES';
+          tdKev.appendChild(kevBadge);
+        } else {
+          var kevNo = document.createElement('span');
+          kevNo.style.cssText = 'color:#CBD5E1;font-size:0.8125rem';
+          kevNo.textContent = 'No';
+          tdKev.appendChild(kevNo);
         }
+        tr.appendChild(tdKev);
 
-        cvssWrapper.appendChild(cvssRow);
-
-        // Composite score line
+        // Composite column
+        var tdComposite = document.createElement('td');
         if (risk.composite_score != null) {
-          var compositeDiv = document.createElement('div');
-          compositeDiv.style.cssText = 'font-size:0.6875rem;color:#64748B';
-          compositeDiv.textContent = 'Composite: ' + risk.composite_score.toFixed(1);
-          if (risk.epss_percentile != null && risk.epss_percentile >= 90) {
-            var epssText = document.createElement('span');
-            epssText.style.cssText = 'margin-left:4px;color:#94A3B8;font-size:0.625rem';
-            epssText.textContent = 'EPSS ' + Math.round(risk.epss_percentile) + 'th';
-            compositeDiv.appendChild(epssText);
+          var compWrapper = document.createElement('div');
+          compWrapper.style.cssText = 'display:flex;align-items:center;gap:6px';
+          var compScore = document.createElement('span');
+          compScore.className = 'cvss-score ' + getCvssClass(risk.composite_score);
+          compScore.style.fontWeight = '700';
+          compScore.textContent = risk.composite_score.toFixed(1);
+          compWrapper.appendChild(compScore);
+          // Exploit status badge
+          if (risk.exploit_status === 'weaponized') {
+            var weapBadge = document.createElement('span');
+            weapBadge.style.cssText = 'display:inline-block;padding:1px 5px;border-radius:3px;font-size:0.5625rem;font-weight:700;background:#DC2626;color:#fff';
+            weapBadge.textContent = 'WEAPONIZED';
+            compWrapper.appendChild(weapBadge);
+          } else if (risk.exploit_status === 'active') {
+            var actBadge = document.createElement('span');
+            actBadge.style.cssText = 'display:inline-block;padding:1px 5px;border-radius:3px;font-size:0.5625rem;font-weight:700;background:#EA580C;color:#fff';
+            actBadge.textContent = 'ACTIVE';
+            compWrapper.appendChild(actBadge);
+          } else if (risk.exploit_status === 'poc') {
+            var pocBadge = document.createElement('span');
+            pocBadge.style.cssText = 'display:inline-block;padding:1px 5px;border-radius:3px;font-size:0.5625rem;font-weight:700;background:#D97706;color:#fff';
+            pocBadge.textContent = 'POC';
+            compWrapper.appendChild(pocBadge);
           }
-          cvssWrapper.appendChild(compositeDiv);
+          tdComposite.appendChild(compWrapper);
+        } else {
+          tdComposite.style.cssText = 'color:#CBD5E1;font-size:0.8125rem';
+          tdComposite.textContent = '-';
         }
-
-        tdCvss.appendChild(cvssWrapper);
-        tr.appendChild(tdCvss);
+        tr.appendChild(tdComposite);
 
         // Severity
         var tdSev = document.createElement('td');
