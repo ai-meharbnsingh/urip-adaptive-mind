@@ -10,6 +10,7 @@ class DashboardKPIs(BaseModel):
     medium: int
     low: int
     accepted: int
+    actively_exploited: int = 0
     sla_breaching: list[dict]
 
 

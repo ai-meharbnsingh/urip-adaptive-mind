@@ -12,8 +12,8 @@
 
   // ─── SORT STATE ─────────────────────────────────────────────
 
-  var currentSortBy = 'risk_id';
-  var currentSortOrder = 'asc';
+  var currentSortBy = 'composite_score';
+  var currentSortOrder = 'desc';
 
   /**
    * Map of column header display text to API sort_by field name.
@@ -362,12 +362,56 @@
         tdDomain.textContent = capitalizeFirst(risk.domain || '');
         tr.appendChild(tdDomain);
 
-        // CVSS
+        // CVSS + Composite Score + Exploit Badges
         var tdCvss = document.createElement('td');
+        var cvssWrapper = document.createElement('div');
+        cvssWrapper.style.cssText = 'display:flex;flex-direction:column;gap:3px;align-items:flex-start';
+
+        var cvssRow = document.createElement('div');
+        cvssRow.style.cssText = 'display:flex;align-items:center;gap:6px';
         var cvssSpan = document.createElement('span');
         cvssSpan.className = 'cvss-score ' + getCvssClass(risk.cvss_score);
         cvssSpan.textContent = (risk.cvss_score || 0).toFixed(1);
-        tdCvss.appendChild(cvssSpan);
+        if (risk.composite_score != null) {
+          cvssSpan.title = 'Composite: ' + risk.composite_score.toFixed(1);
+        }
+        cvssRow.appendChild(cvssSpan);
+
+        // Exploit status badges
+        if (risk.in_kev_catalog) {
+          var kevBadge = document.createElement('span');
+          kevBadge.style.cssText = 'display:inline-block;padding:1px 5px;border-radius:3px;font-size:0.625rem;font-weight:700;background:#DC2626;color:#fff;letter-spacing:0.03em';
+          kevBadge.textContent = 'KEV';
+          cvssRow.appendChild(kevBadge);
+        } else if (risk.exploit_status === 'weaponized') {
+          var weapBadge = document.createElement('span');
+          weapBadge.style.cssText = 'display:inline-block;padding:1px 5px;border-radius:3px;font-size:0.625rem;font-weight:700;background:#EA580C;color:#fff;letter-spacing:0.03em';
+          weapBadge.textContent = 'WEAPONIZED';
+          cvssRow.appendChild(weapBadge);
+        } else if (risk.exploit_status === 'active') {
+          var activeBadge = document.createElement('span');
+          activeBadge.style.cssText = 'display:inline-block;padding:1px 5px;border-radius:3px;font-size:0.625rem;font-weight:700;background:#D97706;color:#fff;letter-spacing:0.03em';
+          activeBadge.textContent = 'ACTIVE';
+          cvssRow.appendChild(activeBadge);
+        }
+
+        cvssWrapper.appendChild(cvssRow);
+
+        // Composite score line
+        if (risk.composite_score != null) {
+          var compositeDiv = document.createElement('div');
+          compositeDiv.style.cssText = 'font-size:0.6875rem;color:#64748B';
+          compositeDiv.textContent = 'Composite: ' + risk.composite_score.toFixed(1);
+          if (risk.epss_percentile != null && risk.epss_percentile >= 90) {
+            var epssText = document.createElement('span');
+            epssText.style.cssText = 'margin-left:4px;color:#94A3B8;font-size:0.625rem';
+            epssText.textContent = 'EPSS ' + Math.round(risk.epss_percentile) + 'th';
+            compositeDiv.appendChild(epssText);
+          }
+          cvssWrapper.appendChild(compositeDiv);
+        }
+
+        tdCvss.appendChild(cvssWrapper);
         tr.appendChild(tdCvss);
 
         // Severity
@@ -609,6 +653,12 @@
     body.style.cssText = 'padding:24px';
 
     // Main detail fields
+    var compositeText = risk.composite_score != null ? String(risk.composite_score) : '-';
+    var epssText = risk.epss_score != null ? String(risk.epss_score) : '-';
+    var epssPercentileText = risk.epss_percentile != null ? (Math.round(risk.epss_percentile) + 'th percentile') : '-';
+    var kevText = risk.in_kev_catalog ? 'Yes (CISA KEV)' : 'No';
+    var exploitText = risk.exploit_status ? capitalizeFirst(risk.exploit_status) : '-';
+
     var fields = [
       { label: 'Risk ID', value: risk.risk_id },
       { label: 'Finding', value: risk.finding },
@@ -616,7 +666,12 @@
       { label: 'Source', value: formatSourceName(risk.source) },
       { label: 'Domain', value: capitalizeFirst(risk.domain) },
       { label: 'CVSS Score', value: risk.cvss_score != null ? String(risk.cvss_score) : '-' },
+      { label: 'Composite Score', value: compositeText },
       { label: 'Severity', value: capitalizeFirst(risk.severity) },
+      { label: 'EPSS Score', value: epssText },
+      { label: 'EPSS Percentile', value: epssPercentileText },
+      { label: 'In KEV Catalog', value: kevText },
+      { label: 'Exploit Status', value: exploitText },
       { label: 'Asset', value: risk.asset || '-' },
       { label: 'Owner Team', value: risk.owner_team || '-' },
       { label: 'Status', value: formatStatus(risk.status) },

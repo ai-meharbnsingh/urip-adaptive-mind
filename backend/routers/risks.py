@@ -1,3 +1,4 @@
+import asyncio
 import math
 import uuid
 
@@ -12,6 +13,7 @@ from backend.models.audit_log import AuditLog
 from backend.models.risk import Risk, RiskHistory
 from backend.models.user import User
 from backend.schemas.risk import AssignRequest, RiskCreate, RiskListResponse, RiskRead, RiskUpdate
+from backend.services.exploitability_service import enrich_risk
 from backend.services.sla_service import compute_sla_deadline
 
 router = APIRouter()
@@ -34,6 +36,11 @@ def risk_to_read(r: Risk) -> RiskRead:
         sla_deadline=r.sla_deadline,
         jira_ticket=r.jira_ticket,
         cve_id=r.cve_id,
+        epss_score=float(r.epss_score) if r.epss_score is not None else None,
+        epss_percentile=float(r.epss_percentile) if r.epss_percentile is not None else None,
+        in_kev_catalog=r.in_kev_catalog,
+        exploit_status=r.exploit_status,
+        composite_score=float(r.composite_score) if r.composite_score is not None else None,
         created_at=r.created_at,
         updated_at=r.updated_at,
     )
@@ -49,7 +56,7 @@ async def list_risks(
     search: str | None = Query(default=None),
     page: int = Query(default=1, ge=1),
     per_page: int = Query(default=20, ge=1, le=100),
-    sort_by: str = Query(default="cvss_score"),
+    sort_by: str = Query(default="composite_score"),
     order: str = Query(default="desc"),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -168,6 +175,15 @@ async def create_risk(
         sla_deadline=sla_deadline,
         cve_id=data.cve_id,
     )
+
+    # Apply exploitability fields if provided (e.g. from simulator)
+    has_exploitability = data.composite_score is not None
+    if has_exploitability:
+        risk.epss_score = data.epss_score
+        risk.in_kev_catalog = data.in_kev_catalog
+        risk.exploit_status = data.exploit_status
+        risk.composite_score = data.composite_score
+
     db.add(risk)
 
     # Audit log
@@ -181,6 +197,11 @@ async def create_risk(
 
     await db.commit()
     await db.refresh(risk)
+
+    # If exploitability fields were not provided, fire async enrichment
+    if not has_exploitability:
+        asyncio.create_task(enrich_risk(risk.id, data.cve_id, data.cvss_score, data.severity.lower()))
+
     return risk_to_read(risk)
 
 

@@ -15,11 +15,15 @@ Usage:
 """
 import argparse
 import json
+import logging
 import random
+import re
 import time
 from datetime import datetime, timezone
 
 import httpx
+
+logger = logging.getLogger(__name__)
 
 # ─── CONFIG (reads from env vars for GitHub Actions, falls back to defaults) ───
 import os
@@ -225,6 +229,65 @@ DOMAIN_TEAM = {
     "application": "App Team", "identity": "IAM Team", "ot": "OT Team",
 }
 
+# ─── EXPLOITABILITY HELPERS ─────────────────────────────────
+
+_CVE_PATTERN = re.compile(r"^CVE-\d{4}-\d{4,}$")
+
+_SEVERITY_EPSS_DEFAULTS = {
+    "critical": 0.30,
+    "high": 0.20,
+    "medium": 0.10,
+    "low": 0.05,
+}
+
+
+def _compute_composite(cvss: float, epss: float | None, in_kev: bool, severity: str) -> float:
+    effective_epss = epss if epss is not None else _SEVERITY_EPSS_DEFAULTS.get(severity, 0.05)
+    kev_bonus = 2.0 if in_kev else 0.0
+    return round(min(10.0, max(0.0, 0.55 * cvss + 2.5 * effective_epss + kev_bonus)), 1)
+
+
+def _derive_exploit_status(epss: float | None, in_kev: bool) -> str:
+    if in_kev:
+        return "weaponized"
+    if epss is not None and epss >= 0.5:
+        return "active"
+    if epss is not None and epss >= 0.1:
+        return "poc"
+    return "none"
+
+
+def fetch_epss_batch_sync(cve_ids: list[str], client: httpx.Client) -> dict[str, float]:
+    """Synchronous EPSS batch fetch. Returns {cve_id: epss_score}."""
+    valid_cves = [c for c in cve_ids if _CVE_PATTERN.match(c)]
+    if not valid_cves:
+        return {}
+    result = {}
+    for i in range(0, len(valid_cves), 100):
+        batch = valid_cves[i:i + 100]
+        try:
+            resp = client.get("https://api.first.org/data/v1/epss", params={"cve": ",".join(batch)})
+            resp.raise_for_status()
+            for entry in resp.json().get("data", []):
+                cve = entry.get("cve")
+                epss = entry.get("epss")
+                if cve and epss is not None:
+                    result[cve] = float(epss)
+        except Exception:
+            logger.warning("EPSS batch fetch failed for batch starting at %d", i)
+    return result
+
+
+def fetch_kev_catalog_sync(client: httpx.Client) -> set[str]:
+    """Synchronous KEV catalog fetch."""
+    try:
+        resp = client.get("https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json")
+        resp.raise_for_status()
+        return {v.get("cveID") for v in resp.json().get("vulnerabilities", []) if v.get("cveID")}
+    except Exception:
+        logger.warning("KEV catalog fetch failed")
+        return set()
+
 
 def get_token(client: httpx.Client) -> str:
     resp = client.post(f"{API_BASE}/api/auth/login", json={
@@ -255,13 +318,42 @@ def generate_vulnerability() -> dict:
 
 def push_vulnerabilities(count: int, token: str, client: httpx.Client) -> int:
     headers = {"Authorization": f"Bearer {token}"}
+
+    # Pre-generate all vulns so we can batch-fetch EPSS
+    vulns = [generate_vulnerability() for _ in range(count)]
+
+    # Collect all real CVE IDs for EPSS batch fetch
+    cve_ids = [v["cve_id"] for v in vulns if v.get("cve_id") and _CVE_PATTERN.match(v["cve_id"])]
+    epss_data = fetch_epss_batch_sync(cve_ids, client) if cve_ids else {}
+
+    # Fetch KEV catalog
+    kev_set = fetch_kev_catalog_sync(client)
+
+    # Enrich each vuln with exploitability fields
+    for vuln in vulns:
+        cve_id = vuln.get("cve_id")
+        epss_score = None
+        in_kev = False
+
+        if cve_id and _CVE_PATTERN.match(cve_id):
+            epss_score = epss_data.get(cve_id)
+            in_kev = cve_id in kev_set
+
+        vuln["epss_score"] = epss_score
+        vuln["in_kev_catalog"] = in_kev
+        vuln["exploit_status"] = _derive_exploit_status(epss_score, in_kev)
+        vuln["composite_score"] = _compute_composite(
+            vuln["cvss_score"], epss_score, in_kev, vuln["severity"]
+        )
+
     success = 0
-    for i in range(count):
-        vuln = generate_vulnerability()
+    for i, vuln in enumerate(vulns):
         resp = client.post(f"{API_BASE}/api/risks", json=vuln, headers=headers)
         if resp.status_code in (200, 201):
             risk_id = resp.json().get("risk_id", "?")
-            print(f"  [{i+1}/{count}] {risk_id} | {vuln['severity'].upper():8s} | {vuln['source']:12s} | {vuln['finding'][:60]}")
+            exploit = vuln.get("exploit_status", "none")
+            composite = vuln.get("composite_score", 0)
+            print(f"  [{i+1}/{count}] {risk_id} | {vuln['severity'].upper():8s} | {vuln['source']:12s} | {exploit:11s} | C={composite:4.1f} | {vuln['finding'][:50]}")
             success += 1
         else:
             print(f"  [{i+1}/{count}] FAILED: {resp.status_code} — {resp.text[:100]}")

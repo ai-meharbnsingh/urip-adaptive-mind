@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, ForeignKey, Index, Numeric, String, Text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -14,6 +14,7 @@ class Risk(Base):
         Index("idx_risks_severity_status", "severity", "status"),
         Index("idx_risks_source", "source"),
         Index("idx_risks_domain", "domain"),
+        Index("idx_risks_composite_score", "composite_score"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -33,6 +34,12 @@ class Risk(Base):
     sla_deadline: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     jira_ticket: Mapped[str | None] = mapped_column(String(50), nullable=True)
     cve_id: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    # Exploitability Intelligence fields
+    epss_score: Mapped[float | None] = mapped_column(Numeric(6, 5), nullable=True)
+    epss_percentile: Mapped[float | None] = mapped_column(Numeric(5, 2), nullable=True)
+    in_kev_catalog: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="false")
+    exploit_status: Mapped[str | None] = mapped_column(String(15), nullable=True)  # none, poc, active, weaponized
+    composite_score: Mapped[float | None] = mapped_column(Numeric(4, 1), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

@@ -13,6 +13,10 @@ class RiskCreate(BaseModel):
     asset: str
     owner_team: str
     cve_id: str | None = None
+    epss_score: float | None = None
+    in_kev_catalog: bool = False
+    exploit_status: str | None = None
+    composite_score: float | None = None
 
 
 class RiskUpdate(BaseModel):
@@ -38,6 +42,11 @@ class RiskRead(BaseModel):
     sla_deadline: datetime
     jira_ticket: str | None = None
     cve_id: str | None = None
+    epss_score: float | None = None
+    epss_percentile: float | None = None
+    in_kev_catalog: bool = False
+    exploit_status: str | None = None
+    composite_score: float | None = None
     created_at: datetime
     updated_at: datetime
 

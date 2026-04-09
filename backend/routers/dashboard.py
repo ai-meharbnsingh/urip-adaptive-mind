@@ -56,6 +56,12 @@ async def get_kpis(
         for r in breaching
     ]
 
+    # Actively exploited count (in KEV catalog)
+    exploited_q = await db.execute(
+        select(func.count()).where(Risk.in_kev_catalog == True, Risk.status.in_(["open", "in_progress"]))
+    )
+    actively_exploited = exploited_q.scalar() or 0
+
     return DashboardKPIs(
         total_open=total_open,
         critical=severity_counts["critical"],
@@ -63,6 +69,7 @@ async def get_kpis(
         medium=severity_counts["medium"],
         low=severity_counts["low"],
         accepted=accepted,
+        actively_exploited=actively_exploited,
         sla_breaching=sla_list,
     )
 
@@ -178,7 +185,7 @@ async def get_alerts(
     result = await db.execute(
         select(Risk)
         .where(Risk.status.in_(["open", "in_progress"]), Risk.severity.in_(["critical", "high"]))
-        .order_by(Risk.cvss_score.desc())
+        .order_by(Risk.composite_score.desc().nullslast(), Risk.cvss_score.desc())
         .limit(limit)
     )
     risks = result.scalars().all()
