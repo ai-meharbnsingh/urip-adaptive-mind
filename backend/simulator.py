@@ -21,10 +21,11 @@ from datetime import datetime, timezone
 
 import httpx
 
-# ─── CONFIG ──────────────────────────────────────────────────
-API_BASE = "https://urip-backend-production.up.railway.app"
-LOGIN_EMAIL = "ciso@royalenfield.com"
-LOGIN_PASSWORD = "Urip@2026"
+# ─── CONFIG (reads from env vars for GitHub Actions, falls back to defaults) ───
+import os
+API_BASE = os.environ.get("URIP_API_BASE", "https://urip-backend-production.up.railway.app")
+LOGIN_EMAIL = os.environ.get("URIP_LOGIN_EMAIL", "ciso@royalenfield.com")
+LOGIN_PASSWORD = os.environ.get("URIP_LOGIN_PASSWORD", "Urip@2026")
 INTERVAL_SECONDS = 900  # 15 minutes
 
 # ─── REAL CVE DATABASE (100+ entries) ────────────────────────
