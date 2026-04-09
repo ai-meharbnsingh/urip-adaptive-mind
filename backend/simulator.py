@@ -308,7 +308,7 @@ def generate_vulnerability() -> dict:
         "description": f"[{cve_id}] {finding}. Detected by {source} connector. Asset: {asset}. Requires immediate triage.",
         "source": source,
         "domain": domain,
-        "cvss_score": round(cvss + random.uniform(-0.3, 0.3), 1),
+        "cvss_score": round(min(10.0, max(0.1, cvss + random.uniform(-0.3, 0.3))), 1),
         "severity": severity,
         "asset": asset,
         "owner_team": owner,
