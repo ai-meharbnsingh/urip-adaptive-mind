@@ -247,7 +247,7 @@
             document.getElementById('slaBannerTitle').textContent =
               data.sla_breaching.length + ' Critical risks breaching SLA in 24 hours';
             document.getElementById('slaBannerText').textContent =
-              'Immediate attention required for ' + data.sla_breaching.map(function(r) { return r.title; }).join(', ');
+              'Immediate attention required for ' + data.sla_breaching.map(function(r) { return r.finding; }).join(', ');
           }
         }
       } catch (e) {
@@ -275,7 +275,7 @@
             divFinding.className = 'alert-finding';
             var spanName = document.createElement('span');
             spanName.className = 'alert-finding-name';
-            spanName.textContent = r.title;
+            spanName.textContent = r.finding;
             divFinding.appendChild(spanName);
             var spanMeta = document.createElement('span');
             spanMeta.className = 'alert-finding-meta';
