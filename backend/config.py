@@ -4,7 +4,6 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+asyncpg://urip:urip_dev@localhost:5432/urip"
     DATABASE_URL_SYNC: str = "postgresql://urip:urip_dev@localhost:5432/urip"
-    REDIS_URL: str = "redis://localhost:6379/0"
     JWT_SECRET_KEY: str = "urip-dev-secret-change-in-production"
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_HOURS: int = 8

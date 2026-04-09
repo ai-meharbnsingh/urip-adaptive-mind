@@ -42,11 +42,15 @@ async def list_audit_logs(
     result = await db.execute(query)
     logs = result.scalars().all()
 
+    # Batch-fetch related users to avoid N+1 queries
+    user_ids = list(set(log.user_id for log in logs))
+    user_result = await db.execute(select(User).where(User.id.in_(user_ids)))
+    users_map = {u.id: u for u in user_result.scalars().all()}
+
     # Enrich with user name
     enriched = []
     for log in logs:
-        user_result = await db.execute(select(User).where(User.id == log.user_id))
-        user = user_result.scalar_one_or_none()
+        user = users_map.get(log.user_id)
 
         enriched.append({
             "id": str(log.id),

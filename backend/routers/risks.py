@@ -1,6 +1,8 @@
 import asyncio
 import math
+import secrets
 import uuid
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func, select
@@ -16,6 +18,7 @@ from backend.schemas.risk import AssignRequest, RiskCreate, RiskListResponse, Ri
 from backend.services.exploitability_service import enrich_risk
 from backend.services.sla_service import compute_sla_deadline
 from backend.services.threat_intel_service import get_apt_for_cve
+from backend.utils import parse_uuid
 
 router = APIRouter()
 
@@ -158,10 +161,10 @@ async def create_risk(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(role_required("it_team")),
 ):
-    # Generate next risk_id
-    result = await db.execute(select(func.count()).select_from(Risk))
-    count = result.scalar() or 0
-    risk_id = f"RISK-2026-{count + 1:03d}"
+    # Generate unique risk_id using timestamp + random suffix (no race condition)
+    now = datetime.now(timezone.utc)
+    suffix = secrets.token_hex(2).upper()  # 4 hex chars
+    risk_id = f"RE-{now.strftime('%y%m')}-{suffix}"
 
     sla_deadline = compute_sla_deadline(data.severity)
 
@@ -242,7 +245,7 @@ async def update_risk(
 
     if data.assigned_to is not None:
         old_assigned = str(risk.assigned_to) if risk.assigned_to else None
-        risk.assigned_to = uuid.UUID(data.assigned_to) if data.assigned_to else None
+        risk.assigned_to = parse_uuid(data.assigned_to, "assigned_to") if data.assigned_to else None
         db.add(RiskHistory(
             risk_id=risk.id,
             field_changed="assigned_to",
@@ -277,7 +280,7 @@ async def assign_risk(
         raise HTTPException(status_code=404, detail="Risk not found")
 
     old_assigned = str(risk.assigned_to) if risk.assigned_to else None
-    risk.assigned_to = uuid.UUID(data.user_id)
+    risk.assigned_to = parse_uuid(data.user_id, "user_id")
 
     db.add(RiskHistory(
         risk_id=risk.id,

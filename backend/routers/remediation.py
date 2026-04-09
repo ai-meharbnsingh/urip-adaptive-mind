@@ -1,5 +1,4 @@
 import math
-import uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -14,6 +13,7 @@ from backend.models.remediation import RemediationTask
 from backend.models.risk import Risk
 from backend.models.user import User
 from backend.schemas.remediation import RemediationCreate, RemediationRead, RemediationUpdate
+from backend.utils import parse_uuid
 
 router = APIRouter()
 
@@ -59,11 +59,15 @@ async def list_remediation_tasks(
     result = await db.execute(query)
     tasks = result.scalars().all()
 
+    # Batch-fetch related risks to avoid N+1 queries
+    risk_ids = [t.risk_id for t in tasks]
+    risk_result = await db.execute(select(Risk).where(Risk.id.in_(risk_ids)))
+    risks_map = {r.id: r for r in risk_result.scalars().all()}
+
     # Enrich with risk details
     enriched = []
     for t in tasks:
-        risk_result = await db.execute(select(Risk).where(Risk.id == t.risk_id))
-        risk = risk_result.scalar_one_or_none()
+        risk = risks_map.get(t.risk_id)
 
         enriched.append({
             **task_to_read(t).model_dump(),
@@ -94,7 +98,7 @@ async def create_remediation_task(
         risk_id=risk.id,
         title=data.title,
         description=data.description,
-        assigned_to=uuid.UUID(data.assigned_to) if data.assigned_to else None,
+        assigned_to=parse_uuid(data.assigned_to, "assigned_to") if data.assigned_to else None,
         priority=data.priority,
         due_date=data.due_date,
         jira_key=data.jira_key,
@@ -122,7 +126,7 @@ async def update_remediation_task(
     current_user: User = Depends(role_required("it_team")),
 ):
     result = await db.execute(
-        select(RemediationTask).where(RemediationTask.id == uuid.UUID(task_id))
+        select(RemediationTask).where(RemediationTask.id == parse_uuid(task_id, "task_id"))
     )
     task = result.scalar_one_or_none()
     if not task:
@@ -133,7 +137,7 @@ async def update_remediation_task(
         if data.status in ("completed", "verified"):
             task.completed_at = datetime.now(timezone.utc)
     if data.assigned_to is not None:
-        task.assigned_to = uuid.UUID(data.assigned_to) if data.assigned_to else None
+        task.assigned_to = parse_uuid(data.assigned_to, "assigned_to") if data.assigned_to else None
     if data.jira_key is not None:
         task.jira_key = data.jira_key
     if data.due_date is not None:

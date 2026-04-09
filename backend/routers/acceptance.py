@@ -1,4 +1,3 @@
-import uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -14,6 +13,7 @@ from backend.models.risk import Risk, RiskHistory
 from backend.models.user import User
 from backend.schemas.acceptance import AcceptanceAction, AcceptanceCreate, AcceptanceRead
 from backend.services.threat_intel_service import get_apt_for_cve
+from backend.utils import parse_uuid
 
 router = APIRouter()
 
@@ -49,14 +49,21 @@ async def list_acceptance_requests(
     result = await db.execute(query)
     requests = result.scalars().all()
 
+    # Batch-fetch related risks and users to avoid N+1 queries
+    risk_ids = [a.risk_id for a in requests]
+    user_ids = [a.requested_by for a in requests]
+
+    risk_result = await db.execute(select(Risk).where(Risk.id.in_(risk_ids)))
+    risks_map = {r.id: r for r in risk_result.scalars().all()}
+
+    user_result = await db.execute(select(User).where(User.id.in_(user_ids)))
+    users_map = {u.id: u for u in user_result.scalars().all()}
+
     # Enrich with risk details
     enriched = []
     for a in requests:
-        risk_result = await db.execute(select(Risk).where(Risk.id == a.risk_id))
-        risk = risk_result.scalar_one_or_none()
-
-        requester_result = await db.execute(select(User).where(User.id == a.requested_by))
-        requester = requester_result.scalar_one_or_none()
+        risk = risks_map.get(a.risk_id)
+        requester = users_map.get(a.requested_by)
 
         enriched.append({
             **acceptance_to_read(a).model_dump(),
@@ -143,7 +150,7 @@ async def approve_acceptance(
     current_user: User = Depends(role_required("ciso")),
 ):
     result = await db.execute(
-        select(AcceptanceRequest).where(AcceptanceRequest.id == uuid.UUID(acceptance_id))
+        select(AcceptanceRequest).where(AcceptanceRequest.id == parse_uuid(acceptance_id, "acceptance_id"))
     )
     ar = result.scalar_one_or_none()
     if not ar:
@@ -186,7 +193,7 @@ async def reject_acceptance(
     current_user: User = Depends(role_required("ciso")),
 ):
     result = await db.execute(
-        select(AcceptanceRequest).where(AcceptanceRequest.id == uuid.UUID(acceptance_id))
+        select(AcceptanceRequest).where(AcceptanceRequest.id == parse_uuid(acceptance_id, "acceptance_id"))
     )
     ar = result.scalar_one_or_none()
     if not ar:

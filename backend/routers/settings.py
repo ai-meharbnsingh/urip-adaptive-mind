@@ -1,5 +1,3 @@
-import uuid
-
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -11,6 +9,7 @@ from backend.middleware.rbac import role_required
 from backend.models.connector import ConnectorConfig
 from backend.models.user import User
 from backend.services.crypto_service import encrypt_credentials
+from backend.utils import parse_uuid
 
 router = APIRouter()
 
@@ -91,7 +90,7 @@ async def update_user(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(role_required("ciso")),
 ):
-    result = await db.execute(select(User).where(User.id == uuid.UUID(user_id)))
+    result = await db.execute(select(User).where(User.id == parse_uuid(user_id, "user_id")))
     user = result.scalar_one_or_none()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -194,7 +193,7 @@ async def test_connector(
     current_user: User = Depends(role_required("ciso")),
 ):
     result = await db.execute(
-        select(ConnectorConfig).where(ConnectorConfig.id == uuid.UUID(connector_id))
+        select(ConnectorConfig).where(ConnectorConfig.id == parse_uuid(connector_id, "connector_id"))
     )
     conn = result.scalar_one_or_none()
     if not conn:
