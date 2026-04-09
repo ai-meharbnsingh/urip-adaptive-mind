@@ -7,13 +7,17 @@ Tier 2 (High):      +0.5 bonus — customer-facing, perimeter, OT
 Tier 3 (Medium):    +0.0 bonus — internal tools, workstations
 Tier 4 (Low):       -0.5 bonus — test/dev, isolated, replaceable
 """
+import json
+import logging
 import re
+from pathlib import Path
 
 from backend.services.scoring_config import TIER_BONUS
 
-# Keyword patterns per tier (case-insensitive)
-# Order matters: Tier 1 checked first, Tier 4 last
-TIER_KEYWORDS: dict[int, list[str]] = {
+logger = logging.getLogger(__name__)
+
+# ─── Hardcoded fallback keywords ──────────────────────────────
+_FALLBACK_KEYWORDS: dict[int, list[str]] = {
     1: [
         r"\bsap\b", r"\berp\b", r"\bprd\b", r"\bprod\b",
         r"payment", r"domain.?admin", r"root.?aws", r"\bpam\b", r"\bvault\b",
@@ -38,6 +42,28 @@ TIER_KEYWORDS: dict[int, list[str]] = {
     ],
     # Tier 3 is the default — no keywords needed
 }
+
+# ─── Load keywords from JSON config (fallback to hardcoded) ───
+_TIER_KEYWORDS_JSON = Path(__file__).resolve().parent.parent / "config" / "tier_keywords.json"
+
+
+def _load_tier_keywords() -> dict[int, list[str]]:
+    """Load tier keywords from JSON config file, falling back to hardcoded defaults."""
+    try:
+        with open(_TIER_KEYWORDS_JSON) as f:
+            raw = json.load(f)
+        # JSON keys are strings — convert to int
+        loaded = {int(k): v for k, v in raw.items()}
+        logger.info("Loaded tier keywords from %s", _TIER_KEYWORDS_JSON)
+        return loaded
+    except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
+        logger.warning("Could not load tier keywords from %s (%s), using hardcoded fallback", _TIER_KEYWORDS_JSON, exc)
+        return _FALLBACK_KEYWORDS
+
+
+# Keyword patterns per tier (case-insensitive)
+# Order matters: Tier 1 checked first, Tier 4 last
+TIER_KEYWORDS: dict[int, list[str]] = _load_tier_keywords()
 
 # Compiled patterns for performance
 _compiled: dict[int, list[re.Pattern]] = {

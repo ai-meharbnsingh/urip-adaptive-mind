@@ -1,0 +1,5 @@
+{
+  "1": ["\\bsap\\b", "\\berp\\b", "\\bprd\\b", "\\bprod\\b", "payment", "domain.?admin", "root.?aws", "\\bpam\\b", "\\bvault\\b", "\\bsso\\b", "\\bokta\\b", "\\bldap\\b", "\\bhmi\\b", "\\bscada\\b", "\\bplc\\b", "\\bics\\b", "\\bot\\b", "armis", "finance", "core.?switch", "domain.?controller"],
+  "2": ["dealer", "\\bvpn\\b", "firewall", "\\bwaf\\b", "load.?balancer", "e-?commerce", "mobile.?app", "\\bcrm\\b", "salesforce", "\\bapi\\b", "portal", "\\brtu\\b", "conveyor", "compressor", "welding", "assembly", "paint.?shop", "engine.?test", "\\bcdn\\b", "\\bids\\b", "\\bips\\b", "proxy", "email", "\\bsmtp\\b", "\\bdns\\b"],
+  "4": ["\\btest\\b", "\\bdev\\b", "\\blab\\b", "\\bstaging\\b", "sandbox", "\\bkiosk\\b", "showroom", "\\bpoc\\b", "demo", "temp", "backup"]
+}

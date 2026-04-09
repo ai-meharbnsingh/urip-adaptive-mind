@@ -5,6 +5,10 @@ In production, these would come from a database table or admin panel.
 """
 from backend.config import settings
 
+# Formula version — tracks which weight set computed a score.
+# Increment when weights/bonuses/thresholds change.
+FORMULA_VERSION = "1.0"
+
 # Composite formula weights
 CVSS_WEIGHT = float(getattr(settings, 'COMPOSITE_CVSS_WEIGHT', 0.55))
 EPSS_WEIGHT = float(getattr(settings, 'COMPOSITE_EPSS_WEIGHT', 2.5))

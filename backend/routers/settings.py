@@ -174,9 +174,10 @@ async def get_scoring_config(
     from backend.services.scoring_config import (
         CVSS_WEIGHT, EPSS_WEIGHT, KEV_BONUS, TIER_BONUS,
         EPSS_DEFAULTS, EXPLOIT_ACTIVE_THRESHOLD, EXPLOIT_POC_THRESHOLD,
-        SLA_HOURS,
+        SLA_HOURS, FORMULA_VERSION,
     )
     return {
+        "formula_version": FORMULA_VERSION,
         "formula": "max(0, min(10, CVSS_WEIGHT*CVSS + EPSS_WEIGHT*EPSS + KEV_bonus + asset_bonus))",
         "weights": {"cvss": CVSS_WEIGHT, "epss": EPSS_WEIGHT, "kev_bonus": KEV_BONUS},
         "tier_bonuses": TIER_BONUS,
