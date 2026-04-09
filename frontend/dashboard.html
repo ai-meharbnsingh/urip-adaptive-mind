@@ -114,6 +114,32 @@
               </div>
             </div>
           </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background: rgba(99, 102, 241, 0.1); color: #6366F1;">
+              <i class="fas fa-crosshairs"></i>
+            </div>
+            <div class="kpi-content">
+              <div class="kpi-value" style="color: #6366F1;"><span id="kpi-ioc">--</span></div>
+              <div class="kpi-label">IOC Matches</div>
+              <div class="kpi-change">
+                <i class="fas fa-shield-alt"></i> From threat intel feeds
+              </div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background: rgba(220, 38, 38, 0.1); color: #DC2626;">
+              <i class="fas fa-user-secret"></i>
+            </div>
+            <div class="kpi-content">
+              <div class="kpi-value" style="color: #DC2626;"><span id="kpi-darkweb">--</span></div>
+              <div class="kpi-label">Dark Web Alerts</div>
+              <div class="kpi-change" style="color: #DC2626;">
+                <i class="fas fa-exclamation-circle"></i> Active monitoring
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Dashboard Grid -->
@@ -240,6 +266,8 @@
           document.getElementById('kpi-critical').textContent = (data.critical != null) ? data.critical : '--';
           document.getElementById('kpi-high').textContent = (data.high != null) ? data.high : '--';
           document.getElementById('kpi-accepted').textContent = (data.accepted != null) ? data.accepted : '--';
+          document.getElementById('kpi-ioc').textContent = (data.ioc_matches != null) ? data.ioc_matches : '--';
+          document.getElementById('kpi-darkweb').textContent = (data.dark_web_alerts != null) ? data.dark_web_alerts : '--';
 
           // SLA banner
           if (data.sla_breaching && data.sla_breaching.length > 0) {

@@ -15,11 +15,13 @@ from backend.models.user import User
 from backend.schemas.risk import AssignRequest, RiskCreate, RiskListResponse, RiskRead, RiskUpdate
 from backend.services.exploitability_service import enrich_risk
 from backend.services.sla_service import compute_sla_deadline
+from backend.services.threat_intel_service import get_apt_for_cve
 
 router = APIRouter()
 
 
 def risk_to_read(r: Risk) -> RiskRead:
+    apt_groups = get_apt_for_cve(r.cve_id) if r.cve_id else None
     return RiskRead(
         id=str(r.id),
         risk_id=r.risk_id,
@@ -42,6 +44,7 @@ def risk_to_read(r: Risk) -> RiskRead:
         exploit_status=r.exploit_status,
         asset_tier=r.asset_tier,
         composite_score=float(r.composite_score) if r.composite_score is not None else None,
+        apt_groups=apt_groups if apt_groups else None,
         created_at=r.created_at,
         updated_at=r.updated_at,
     )

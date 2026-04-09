@@ -11,6 +11,8 @@ class DashboardKPIs(BaseModel):
     low: int
     accepted: int
     actively_exploited: int = 0
+    ioc_matches: int = 0
+    dark_web_alerts: int = 0
     sla_breaching: list[dict]
 
 

@@ -13,6 +13,7 @@ from backend.models.audit_log import AuditLog
 from backend.models.risk import Risk, RiskHistory
 from backend.models.user import User
 from backend.schemas.acceptance import AcceptanceAction, AcceptanceCreate, AcceptanceRead
+from backend.services.threat_intel_service import get_apt_for_cve
 
 router = APIRouter()
 
@@ -93,14 +94,31 @@ async def create_acceptance_request(
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=409, detail="Acceptance request already exists for this risk")
 
+    recommendation = (
+        f"Auto-generated: Review compensating controls for {risk.finding}. "
+        f"CVSS {risk.cvss_score} ({risk.severity}). Re-review in 90 days."
+    )
+
+    # Add APT warning if CVE has known threat actor associations
+    apt_groups = get_apt_for_cve(risk.cve_id) if risk.cve_id else []
+    if apt_groups:
+        group_names = ", ".join(g["name"] for g in apt_groups)
+        all_sectors: list[str] = []
+        for g in apt_groups:
+            all_sectors.extend(g.get("sectors", []))
+        unique_sectors = ", ".join(sorted(set(all_sectors)))
+        recommendation += (
+            f" WARNING: This CVE is known to be used by {group_names}"
+            f" which target {unique_sectors}. Consider this before accepting."
+        )
+
     ar = AcceptanceRequest(
         risk_id=risk.id,
         requested_by=current_user.id,
         justification=data.justification,
         compensating_controls=data.compensating_controls,
         residual_risk=data.residual_risk,
-        recommendation=f"Auto-generated: Review compensating controls for {risk.finding}. "
-                       f"CVSS {risk.cvss_score} ({risk.severity}). Re-review in 90 days.",
+        recommendation=recommendation,
         status="pending",
     )
     db.add(ar)

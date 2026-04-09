@@ -49,6 +49,7 @@ class RiskRead(BaseModel):
     exploit_status: str | None = None
     asset_tier: int | None = None
     composite_score: float | None = None
+    apt_groups: list[dict] | None = None
     created_at: datetime
     updated_at: datetime
 

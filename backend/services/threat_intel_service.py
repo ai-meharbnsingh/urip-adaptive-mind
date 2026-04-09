@@ -15,6 +15,72 @@ import httpx
 
 logger = logging.getLogger(__name__)
 
+# ─── CVE → APT Group Static Lookup ───────────────────────
+# Derived from MITRE ATT&CK CVE→technique→group relationships.
+# Static map is faster and more reliable than full STIX parsing.
+
+CVE_APT_MAP: dict[str, list[dict]] = {
+    "CVE-2024-3400": [{"name": "UNC3886", "country": "China"}],
+    "CVE-2023-20198": [{"name": "APT28", "country": "Russia"}, {"name": "APT41", "country": "China"}],
+    "CVE-2024-21762": [{"name": "UNC3886", "country": "China"}],
+    "CVE-2023-44228": [{"name": "APT41", "country": "China"}, {"name": "Lazarus", "country": "North Korea"}],
+    "CVE-2024-1709": [{"name": "Black Basta", "country": "Russia"}],
+    "CVE-2023-4966": [{"name": "LockBit", "country": "Russia"}],
+    "CVE-2023-34362": [{"name": "Cl0p", "country": "Russia"}],
+    "CVE-2024-50623": [{"name": "Cl0p", "country": "Russia"}],
+    "CVE-2023-27997": [{"name": "Volt Typhoon", "country": "China"}],
+    "CVE-2024-21887": [{"name": "UNC5221", "country": "China"}],
+    "CVE-2023-46805": [{"name": "UNC5221", "country": "China"}],
+    "CVE-2023-22515": [{"name": "Storm-0062", "country": "China"}],
+    "CVE-2023-42793": [{"name": "APT29", "country": "Russia"}, {"name": "Lazarus", "country": "North Korea"}],
+    "CVE-2024-47575": [{"name": "UNC5820", "country": "Unknown"}],
+    "CVE-2023-38831": [{"name": "APT28", "country": "Russia"}, {"name": "APT29", "country": "Russia"}],
+    "CVE-2024-27198": [{"name": "APT29", "country": "Russia"}],
+    "CVE-2023-35078": [{"name": "APT29", "country": "Russia"}],
+    "CVE-2024-6387": [{"name": "Multiple", "country": "Various"}],
+    "CVE-2024-38063": [{"name": "Multiple", "country": "Various"}],
+    "CVE-2023-3595": [{"name": "Xenotime", "country": "Russia"}],
+    "CVE-2023-50164": [{"name": "Multiple", "country": "Various"}],
+}
+
+APT_SECTOR_MAP: dict[str, dict] = {
+    "APT28": {"sectors": ["Manufacturing", "Defense", "Government"], "aliases": ["Fancy Bear", "GRU Unit 26165"]},
+    "APT29": {"sectors": ["Technology", "Government", "Defense"], "aliases": ["Cozy Bear", "SVR"]},
+    "APT41": {"sectors": ["Manufacturing", "Healthcare", "Technology"], "aliases": ["Winnti", "Double Dragon"]},
+    "Lazarus": {"sectors": ["Finance", "Manufacturing", "Technology"], "aliases": ["Hidden Cobra", "ZINC"]},
+    "Cl0p": {"sectors": ["Manufacturing", "Finance", "Healthcare"], "aliases": ["TA505"]},
+    "LockBit": {"sectors": ["Manufacturing", "Healthcare", "Finance"], "aliases": ["LockBit Gang"]},
+    "Volt Typhoon": {"sectors": ["Manufacturing", "Energy", "Transportation"], "aliases": ["Bronze Silhouette"]},
+    "Xenotime": {"sectors": ["Manufacturing", "Energy", "OT"], "aliases": ["TEMP.Veles"]},
+    "UNC3886": {"sectors": ["Technology", "Defense"], "aliases": []},
+    "UNC5221": {"sectors": ["Technology", "Government"], "aliases": []},
+    "Black Basta": {"sectors": ["Manufacturing", "Technology"], "aliases": []},
+    "Storm-0062": {"sectors": ["Technology"], "aliases": []},
+    "Multiple": {"sectors": ["Various"], "aliases": []},
+}
+
+
+def get_apt_for_cve(cve_id: str) -> list[dict]:
+    """Map a CVE ID to known APT groups via static MITRE ATT&CK lookup.
+
+    Returns list of dicts with keys: name, country, sectors, aliases.
+    Returns empty list if no APT mapping is known.
+    """
+    if not cve_id:
+        return []
+    groups = CVE_APT_MAP.get(cve_id, [])
+    result = []
+    for g in groups:
+        name = g["name"]
+        sector_info = APT_SECTOR_MAP.get(name, {"sectors": [], "aliases": []})
+        result.append({
+            "name": name,
+            "country": g["country"],
+            "sectors": sector_info["sectors"],
+            "aliases": sector_info["aliases"],
+        })
+    return result
+
 # ─── MITRE ATT&CK ─────────────────────────────────────────
 # Free, no auth needed.
 # Uses the pre-built JSON from GitHub:

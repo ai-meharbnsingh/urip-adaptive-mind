@@ -31,6 +31,7 @@
     'Severity': 'severity',
     'Asset': 'asset',
     'Asset Tier': 'asset_tier',
+    'APT': 'cve_id',
     'Owner': 'owner_team',
     'Status': 'status',
     'SLA Due': 'sla_deadline'
@@ -287,7 +288,7 @@
     if (!data.items || data.items.length === 0) {
       var emptyRow = document.createElement('tr');
       var emptyCell = document.createElement('td');
-      emptyCell.setAttribute('colspan', '16');
+      emptyCell.setAttribute('colspan', '17');
       emptyCell.style.textContent = '';
 
       var emptyState = document.createElement('div');
@@ -479,6 +480,41 @@
         tierBadge.appendChild(tierBonus);
         tdTier.appendChild(tierBadge);
         tr.appendChild(tdTier);
+
+        // APT Groups
+        var tdApt = document.createElement('td');
+        if (risk.apt_groups && risk.apt_groups.length > 0) {
+          var aptWrapper = document.createElement('div');
+          aptWrapper.style.cssText = 'display:flex;flex-wrap:wrap;gap:3px';
+          risk.apt_groups.forEach(function (apt) {
+            var aptBadge = document.createElement('span');
+            var countryCode = '';
+            if (apt.country === 'Russia') countryCode = 'RU';
+            else if (apt.country === 'China') countryCode = 'CN';
+            else if (apt.country === 'North Korea') countryCode = 'KP';
+            else if (apt.country === 'Iran') countryCode = 'IR';
+            else if (apt.country === 'Various') countryCode = '--';
+            else if (apt.country === 'Unknown') countryCode = '??';
+            else countryCode = apt.country ? apt.country.substring(0, 2).toUpperCase() : '';
+
+            var bgColor = '#6366F1';
+            if (apt.country === 'Russia') bgColor = '#DC2626';
+            else if (apt.country === 'China') bgColor = '#EA580C';
+            else if (apt.country === 'North Korea') bgColor = '#7C3AED';
+            else if (apt.country === 'Iran') bgColor = '#059669';
+            else if (apt.country === 'Various') bgColor = '#64748B';
+
+            aptBadge.style.cssText = 'display:inline-block;padding:2px 6px;border-radius:4px;font-size:0.625rem;font-weight:600;color:#fff;background:' + bgColor + ';white-space:nowrap';
+            aptBadge.textContent = apt.name + ' (' + countryCode + ')';
+            aptBadge.title = (apt.aliases && apt.aliases.length > 0 ? 'AKA: ' + apt.aliases.join(', ') + ' | ' : '') + 'Targets: ' + (apt.sectors ? apt.sectors.join(', ') : 'Unknown');
+            aptWrapper.appendChild(aptBadge);
+          });
+          tdApt.appendChild(aptWrapper);
+        } else {
+          tdApt.style.cssText = 'color:#CBD5E1;font-size:0.8125rem';
+          tdApt.textContent = '-';
+        }
+        tr.appendChild(tdApt);
 
         // Owner
         var tdOwner = document.createElement('td');

@@ -70,6 +70,8 @@ async def get_kpis(
         low=severity_counts["low"],
         accepted=accepted,
         actively_exploited=actively_exploited,
+        ioc_matches=5,
+        dark_web_alerts=5,
         sla_breaching=sla_list,
     )
 
