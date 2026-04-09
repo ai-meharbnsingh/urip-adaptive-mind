@@ -30,6 +30,7 @@
     'Composite': 'composite_score',
     'Severity': 'severity',
     'Asset': 'asset',
+    'Asset Tier': 'asset_tier',
     'Owner': 'owner_team',
     'Status': 'status',
     'SLA Due': 'sla_deadline'
@@ -286,7 +287,7 @@
     if (!data.items || data.items.length === 0) {
       var emptyRow = document.createElement('tr');
       var emptyCell = document.createElement('td');
-      emptyCell.setAttribute('colspan', '15');
+      emptyCell.setAttribute('colspan', '16');
       emptyCell.style.textContent = '';
 
       var emptyState = document.createElement('div');
@@ -459,6 +460,25 @@
         assetSpan.textContent = risk.asset || '-';
         tdAsset.appendChild(assetSpan);
         tr.appendChild(tdAsset);
+
+        // Asset Tier
+        var tdTier = document.createElement('td');
+        var tierLabels = { 1: 'Critical', 2: 'High', 3: 'Medium', 4: 'Low' };
+        var tierColors = { 1: '#DC2626', 2: '#EA580C', 3: '#64748B', 4: '#94A3B8' };
+        var tierBonuses = { 1: '+1.0', 2: '+0.5', 3: '0.0', 4: '-0.5' };
+        var tier = risk.asset_tier || 3;
+        var tierBadge = document.createElement('div');
+        tierBadge.style.cssText = 'display:flex;flex-direction:column;gap:2px';
+        var tierLabel = document.createElement('span');
+        tierLabel.style.cssText = 'display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.6875rem;font-weight:600;color:#fff;background:' + (tierColors[tier] || tierColors[3]);
+        tierLabel.textContent = 'T' + tier + ' ' + (tierLabels[tier] || 'Medium');
+        tierBadge.appendChild(tierLabel);
+        var tierBonus = document.createElement('span');
+        tierBonus.style.cssText = 'font-size:0.625rem;color:#94A3B8;text-align:center';
+        tierBonus.textContent = tierBonuses[tier] || '0.0';
+        tierBadge.appendChild(tierBonus);
+        tdTier.appendChild(tierBadge);
+        tr.appendChild(tdTier);
 
         // Owner
         var tdOwner = document.createElement('td');

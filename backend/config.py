@@ -11,6 +11,19 @@ class Settings(BaseSettings):
     URIP_FERNET_KEY: str = ""
     CORS_ORIGINS: str = "http://localhost:8000,http://localhost:3000"
 
+    # Connector API Keys (populated when RE provides access)
+    CROWDSTRIKE_CLIENT_ID: str = ""
+    CROWDSTRIKE_CLIENT_SECRET: str = ""
+    ARMIS_API_KEY: str = ""
+    ZSCALER_API_KEY: str = ""
+    CYBERARK_API_KEY: str = ""
+    OTX_API_KEY: str = ""
+    VIRUSTOTAL_API_KEY: str = ""
+    JIRA_URL: str = ""
+    JIRA_API_TOKEN: str = ""
+    SERVICENOW_URL: str = ""
+    SERVICENOW_API_TOKEN: str = ""
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
