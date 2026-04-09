@@ -168,6 +168,25 @@ async def create_connector(
     }
 
 
+@router.get("/scoring")
+async def get_scoring_config(
+    current_user: User = Depends(get_current_user),
+):
+    from backend.services.scoring_config import (
+        CVSS_WEIGHT, EPSS_WEIGHT, KEV_BONUS, TIER_BONUS,
+        EPSS_DEFAULTS, EXPLOIT_ACTIVE_THRESHOLD, EXPLOIT_POC_THRESHOLD,
+        SLA_HOURS,
+    )
+    return {
+        "formula": "max(0, min(10, CVSS_WEIGHT*CVSS + EPSS_WEIGHT*EPSS + KEV_bonus + asset_bonus))",
+        "weights": {"cvss": CVSS_WEIGHT, "epss": EPSS_WEIGHT, "kev_bonus": KEV_BONUS},
+        "tier_bonuses": TIER_BONUS,
+        "epss_defaults": EPSS_DEFAULTS,
+        "exploit_thresholds": {"active": EXPLOIT_ACTIVE_THRESHOLD, "poc": EXPLOIT_POC_THRESHOLD},
+        "sla_hours": SLA_HOURS,
+    }
+
+
 @router.post("/connectors/{connector_id}/test")
 async def test_connector(
     connector_id: str,

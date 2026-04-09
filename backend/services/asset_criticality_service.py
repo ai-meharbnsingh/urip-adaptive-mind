@@ -9,6 +9,8 @@ Tier 4 (Low):       -0.5 bonus — test/dev, isolated, replaceable
 """
 import re
 
+from backend.services.scoring_config import TIER_BONUS
+
 # Keyword patterns per tier (case-insensitive)
 # Order matters: Tier 1 checked first, Tier 4 last
 TIER_KEYWORDS: dict[int, list[str]] = {
@@ -35,13 +37,6 @@ TIER_KEYWORDS: dict[int, list[str]] = {
         r"demo", r"temp", r"backup",
     ],
     # Tier 3 is the default — no keywords needed
-}
-
-TIER_BONUS: dict[int, float] = {
-    1: 1.0,
-    2: 0.5,
-    3: 0.0,
-    4: -0.5,
 }
 
 # Compiled patterns for performance

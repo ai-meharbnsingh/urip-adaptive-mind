@@ -1,11 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-SLA_HOURS = {
-    "critical": 72,
-    "high": 168,      # 7 days
-    "medium": 720,    # 30 days
-    "low": 2160,      # 90 days
-}
+from backend.services.scoring_config import SLA_HOURS
 
 
 def compute_sla_deadline(severity: str, created_at: datetime | None = None) -> datetime:

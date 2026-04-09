@@ -260,17 +260,73 @@
         var certin = await URIP.apiFetch('/reports/certin');
         var tbody = document.getElementById('certinTableBody');
         if (certin && certin.items) {
-          tbody.innerHTML = certin.items.map(function(a) {
+          // Clear existing rows
+          while (tbody.firstChild) { tbody.removeChild(tbody.firstChild); }
+          certin.items.forEach(function(a) {
+            var tr = document.createElement('tr');
+
+            // Advisory ID cell
+            var tdId = document.createElement('td');
+            var spanId = document.createElement('span');
+            spanId.className = 'certin-id';
+            spanId.textContent = a.advisory_id || '';
+            tdId.appendChild(spanId);
+            tr.appendChild(tdId);
+
+            // Title cell
+            var tdTitle = document.createElement('td');
+            var spanTitle = document.createElement('span');
+            spanTitle.className = 'certin-title';
+            spanTitle.textContent = a.title || '';
+            tdTitle.appendChild(spanTitle);
+            tr.appendChild(tdTitle);
+
+            // Published date cell
+            var tdDate = document.createElement('td');
+            tdDate.className = 'certin-date';
+            tdDate.textContent = a.published_date || '';
+            tr.appendChild(tdDate);
+
+            // Severity cell
+            var tdSev = document.createElement('td');
+            var spanSev = document.createElement('span');
+            spanSev.className = 'badge badge-' + (a.severity || '').toLowerCase();
+            spanSev.textContent = a.severity || '';
+            tdSev.appendChild(spanSev);
+            tr.appendChild(tdSev);
+
+            // Status cell
+            var tdStatus = document.createElement('td');
             var statusClass = a.status === 'Completed' ? 'response-completed' : a.status === 'In Progress' ? 'response-progress' : 'response-pending';
-            return '<tr>' +
-              '<td><span class="certin-id">' + a.advisory_id + '</span></td>' +
-              '<td><span class="certin-title">' + a.title + '</span></td>' +
-              '<td class="certin-date">' + a.published_date + '</td>' +
-              '<td><span class="badge badge-' + (a.severity || '').toLowerCase() + '">' + a.severity + '</span></td>' +
-              '<td><span class="response-status ' + statusClass + '">' + a.status + '</span></td>' +
-              '<td><div class="action-btns"><button class="action-btn view" title="View Details"><i class="fas fa-eye"></i></button><button class="action-btn assign" title="Update Status"><i class="fas fa-edit"></i></button></div></td>' +
-              '</tr>';
-          }).join('');
+            var spanStatus = document.createElement('span');
+            spanStatus.className = 'response-status ' + statusClass;
+            spanStatus.textContent = a.status || '';
+            tdStatus.appendChild(spanStatus);
+            tr.appendChild(tdStatus);
+
+            // Actions cell
+            var tdActions = document.createElement('td');
+            var divActions = document.createElement('div');
+            divActions.className = 'action-btns';
+            var btnView = document.createElement('button');
+            btnView.className = 'action-btn view';
+            btnView.title = 'View Details';
+            var iView = document.createElement('i');
+            iView.className = 'fas fa-eye';
+            btnView.appendChild(iView);
+            var btnEdit = document.createElement('button');
+            btnEdit.className = 'action-btn assign';
+            btnEdit.title = 'Update Status';
+            var iEdit = document.createElement('i');
+            iEdit.className = 'fas fa-edit';
+            btnEdit.appendChild(iEdit);
+            divActions.appendChild(btnView);
+            divActions.appendChild(btnEdit);
+            tdActions.appendChild(divActions);
+            tr.appendChild(tdActions);
+
+            tbody.appendChild(tr);
+          });
           document.getElementById('certinTableInfo').textContent = 'Showing ' + certin.items.length + ' of ' + (certin.total || certin.items.length) + ' CERT-In advisories';
         }
       } catch (e) {
@@ -282,16 +338,70 @@
         var scheduled = await URIP.apiFetch('/reports/scheduled');
         var stbody = document.getElementById('scheduledTableBody');
         if (scheduled && scheduled.items) {
-          stbody.innerHTML = scheduled.items.map(function(s) {
-            return '<tr>' +
-              '<td><strong>' + s.name + '</strong></td>' +
-              '<td><i class="fas fa-redo text-gray-400 mr-1"></i> ' + s.frequency + '</td>' +
-              '<td><span class="text-sm text-gray-500">' + (s.recipients || '') + '</span></td>' +
-              '<td>' + (s.next_run || '') + '</td>' +
-              '<td><span class="status-tag status-open">Active</span></td>' +
-              '<td><div class="action-btns"><button class="action-btn view" title="Edit"><i class="fas fa-edit"></i></button><button class="action-btn" title="Pause"><i class="fas fa-pause"></i></button></div></td>' +
-              '</tr>';
-          }).join('');
+          // Clear existing rows
+          while (stbody.firstChild) { stbody.removeChild(stbody.firstChild); }
+          scheduled.items.forEach(function(s) {
+            var tr = document.createElement('tr');
+
+            // Name cell
+            var tdName = document.createElement('td');
+            var strong = document.createElement('strong');
+            strong.textContent = s.name || '';
+            tdName.appendChild(strong);
+            tr.appendChild(tdName);
+
+            // Frequency cell
+            var tdFreq = document.createElement('td');
+            var iRedo = document.createElement('i');
+            iRedo.className = 'fas fa-redo text-gray-400 mr-1';
+            tdFreq.appendChild(iRedo);
+            tdFreq.appendChild(document.createTextNode(' ' + (s.frequency || '')));
+            tr.appendChild(tdFreq);
+
+            // Recipients cell
+            var tdRecip = document.createElement('td');
+            var spanRecip = document.createElement('span');
+            spanRecip.className = 'text-sm text-gray-500';
+            spanRecip.textContent = s.recipients || '';
+            tdRecip.appendChild(spanRecip);
+            tr.appendChild(tdRecip);
+
+            // Next run cell
+            var tdNext = document.createElement('td');
+            tdNext.textContent = s.next_run || '';
+            tr.appendChild(tdNext);
+
+            // Status cell
+            var tdStat = document.createElement('td');
+            var spanStat = document.createElement('span');
+            spanStat.className = 'status-tag status-open';
+            spanStat.textContent = 'Active';
+            tdStat.appendChild(spanStat);
+            tr.appendChild(tdStat);
+
+            // Actions cell
+            var tdAct = document.createElement('td');
+            var divAct = document.createElement('div');
+            divAct.className = 'action-btns';
+            var btnEd = document.createElement('button');
+            btnEd.className = 'action-btn view';
+            btnEd.title = 'Edit';
+            var iEd = document.createElement('i');
+            iEd.className = 'fas fa-edit';
+            btnEd.appendChild(iEd);
+            var btnPause = document.createElement('button');
+            btnPause.className = 'action-btn';
+            btnPause.title = 'Pause';
+            var iPause = document.createElement('i');
+            iPause.className = 'fas fa-pause';
+            btnPause.appendChild(iPause);
+            divAct.appendChild(btnEd);
+            divAct.appendChild(btnPause);
+            tdAct.appendChild(divAct);
+            tr.appendChild(tdAct);
+
+            stbody.appendChild(tr);
+          });
         }
       } catch (e) {
         console.error('Failed to load scheduled reports:', e);

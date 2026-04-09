@@ -1,4 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+import time
+from collections import defaultdict
+
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,13 +12,39 @@ from backend.schemas.auth import LoginRequest, TokenResponse, UserProfile
 
 router = APIRouter()
 
+# ─── Rate Limiting ────────────────────────────────────────────
+_login_attempts: dict[str, list[float]] = defaultdict(list)
+RATE_LIMIT_WINDOW = 900  # 15 minutes
+RATE_LIMIT_MAX = 5
+
+
+def check_rate_limit(ip: str) -> bool:
+    now = time.time()
+    attempts = _login_attempts[ip]
+    # Clean old attempts
+    _login_attempts[ip] = [t for t in attempts if now - t < RATE_LIMIT_WINDOW]
+    return len(_login_attempts[ip]) < RATE_LIMIT_MAX
+
+
+def record_failed_attempt(ip: str):
+    _login_attempts[ip].append(time.time())
+
 
 @router.post("/login", response_model=TokenResponse)
-async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
+async def login(request: LoginRequest, req: Request, db: AsyncSession = Depends(get_db)):
+    client_ip = req.client.host if req.client else "unknown"
+
+    if not check_rate_limit(client_ip):
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Too many failed login attempts. Please try again in 15 minutes.",
+        )
+
     result = await db.execute(select(User).where(User.email == request.email))
     user = result.scalar_one_or_none()
 
     if not user or not verify_password(request.password, user.hashed_password):
+        record_failed_attempt(client_ip)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",

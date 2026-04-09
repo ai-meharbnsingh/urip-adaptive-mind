@@ -24,6 +24,57 @@ class Settings(BaseSettings):
     SERVICENOW_URL: str = ""
     SERVICENOW_API_TOKEN: str = ""
 
+    # ─── Scoring Configuration (overridable via env vars) ─────
+    # Composite formula weights
+    COMPOSITE_CVSS_WEIGHT: float = 0.55
+    COMPOSITE_EPSS_WEIGHT: float = 2.5
+    COMPOSITE_KEV_BONUS: float = 2.0
+
+    # Asset tier bonuses
+    TIER_1_BONUS: float = 1.0
+    TIER_2_BONUS: float = 0.5
+    TIER_3_BONUS: float = 0.0
+    TIER_4_BONUS: float = -0.5
+
+    # EPSS defaults when no CVE data
+    EPSS_DEFAULT_CRITICAL: float = 0.30
+    EPSS_DEFAULT_HIGH: float = 0.20
+    EPSS_DEFAULT_MEDIUM: float = 0.10
+    EPSS_DEFAULT_LOW: float = 0.05
+
+    # Exploit status thresholds
+    EXPLOIT_ACTIVE_THRESHOLD: float = 0.5
+    EXPLOIT_POC_THRESHOLD: float = 0.1
+
+    # CVSS severity breakpoints
+    CVSS_CRITICAL_THRESHOLD: float = 9.0
+    CVSS_HIGH_THRESHOLD: float = 7.0
+    CVSS_MEDIUM_THRESHOLD: float = 4.0
+
+    # SLA hours per severity
+    SLA_HOURS_CRITICAL: int = 72
+    SLA_HOURS_HIGH: int = 168
+    SLA_HOURS_MEDIUM: int = 720
+    SLA_HOURS_LOW: int = 2160
+
+    # External API URLs
+    EPSS_API_URL: str = "https://api.first.org/data/v1/epss"
+    KEV_CATALOG_URL: str = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
+    MITRE_ATTACK_URL: str = "https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack/enterprise-attack.json"
+
+    # Cache TTLs (seconds)
+    KEV_CACHE_TTL_SECONDS: int = 86400
+    MITRE_CACHE_TTL_SECONDS: int = 86400
+
+    # Relevance scoring weights (threat intel)
+    RELEVANCE_BRAND_SCORE: float = 40.0
+    RELEVANCE_COUNTRY_SCORE: float = 25.0
+    RELEVANCE_SECTOR_SCORE: float = 20.0
+    RELEVANCE_RANSOMWARE_SCORE: float = 10.0
+
+    # Acceptance review period
+    ACCEPTANCE_REVIEW_PERIOD_DAYS: int = 90
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

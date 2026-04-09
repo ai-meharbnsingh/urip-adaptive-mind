@@ -5,7 +5,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.database import get_db
-from backend.middleware.auth import get_current_user
+from backend.middleware.rbac import role_required
 from backend.models.audit_log import AuditLog
 from backend.models.user import User
 
@@ -20,7 +20,7 @@ async def list_audit_logs(
     page: int = Query(default=1, ge=1),
     per_page: int = Query(default=20, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(role_required("it_team")),
 ):
     query = select(AuditLog)
     count_query = select(func.count()).select_from(AuditLog)

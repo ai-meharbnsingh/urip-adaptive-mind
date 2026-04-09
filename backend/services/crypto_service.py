@@ -1,14 +1,20 @@
 import json
+import logging
 
 from cryptography.fernet import Fernet
 
 from backend.config import settings
 
+logger = logging.getLogger(__name__)
+
 
 def get_fernet() -> Fernet:
     key = settings.URIP_FERNET_KEY
-    if not key:
-        key = Fernet.generate_key().decode()
+    if not key or key == "your-fernet-key-here":
+        raise ValueError(
+            "URIP_FERNET_KEY is not set. Generate one with: "
+            "python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'"
+        )
     return Fernet(key.encode() if isinstance(key, str) else key)
 
 

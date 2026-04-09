@@ -25,10 +25,6 @@ from backend.models import (
 from backend.services.sla_service import SLA_HOURS
 
 # Use sync engine for seeding
-SYNC_URL = settings.DATABASE_URL.replace("+asyncpg", "").replace("postgresql://", "postgresql://")
-if "asyncpg" in SYNC_URL:
-    SYNC_URL = SYNC_URL.replace("asyncpg", "")
-
 sync_engine = create_engine(settings.DATABASE_URL_SYNC)
 
 # ─── CONSTANTS ───────────────────────────────────────────────────────
@@ -36,13 +32,6 @@ sync_engine = create_engine(settings.DATABASE_URL_SYNC)
 SOURCES = [
     "crowdstrike", "easm", "cnapp", "armis", "vapt",
     "threat_intel", "cert_in", "bug_bounty", "soc",
-]
-
-DOMAINS = ["endpoint", "cloud", "network", "application", "identity", "ot"]
-
-TEAMS = [
-    "Infra Team", "App Team", "Cloud Team", "OT Team",
-    "IAM Team", "Network Team",
 ]
 
 SOURCE_DOMAIN_MAP = {

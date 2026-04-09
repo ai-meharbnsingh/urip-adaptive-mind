@@ -229,43 +229,30 @@ DOMAIN_TEAM = {
     "application": "App Team", "identity": "IAM Team", "ot": "OT Team",
 }
 
-# ─── EXPLOITABILITY HELPERS ─────────────────────────────────
+# ─── EXPLOITABILITY HELPERS (imported from canonical services) ──
 
 _CVE_PATTERN = re.compile(r"^CVE-\d{4}-\d{4,}$")
 
-_SEVERITY_EPSS_DEFAULTS = {
-    "critical": 0.30,
-    "high": 0.20,
-    "medium": 0.10,
-    "low": 0.05,
-}
+from backend.services.asset_criticality_service import classify_asset as _classify_asset_tier_fn
+from backend.services.exploitability_service import compute_composite, derive_exploit_status
 
 
 def _compute_composite(cvss: float, epss: float | None, in_kev: bool, severity: str, asset_name: str = "") -> float:
-    from backend.services.asset_criticality_service import classify_asset, get_asset_bonus
-    effective_epss = epss if epss is not None else _SEVERITY_EPSS_DEFAULTS.get(severity, 0.05)
-    kev_bonus = 2.0 if in_kev else 0.0
-    asset_bonus = get_asset_bonus(classify_asset(asset_name))
-    return round(max(0.0, min(10.0, 0.55 * cvss + 2.5 * effective_epss + kev_bonus + asset_bonus)), 1)
+    """Delegate to the canonical compute_composite in exploitability_service."""
+    return compute_composite(cvss, epss, in_kev, severity, asset_name=asset_name)
 
 
 def _classify_asset_tier(asset_name: str) -> int:
-    from backend.services.asset_criticality_service import classify_asset
-    return classify_asset(asset_name)
+    return _classify_asset_tier_fn(asset_name)
 
 
 def _derive_exploit_status(epss: float | None, in_kev: bool) -> str:
-    if in_kev:
-        return "weaponized"
-    if epss is not None and epss >= 0.5:
-        return "active"
-    if epss is not None and epss >= 0.1:
-        return "poc"
-    return "none"
+    return derive_exploit_status(epss, in_kev)
 
 
 def fetch_epss_batch_sync(cve_ids: list[str], client: httpx.Client) -> dict[str, float]:
     """Synchronous EPSS batch fetch. Returns {cve_id: epss_score}."""
+    from backend.services.scoring_config import EPSS_API_URL
     valid_cves = [c for c in cve_ids if _CVE_PATTERN.match(c)]
     if not valid_cves:
         return {}
@@ -273,7 +260,7 @@ def fetch_epss_batch_sync(cve_ids: list[str], client: httpx.Client) -> dict[str,
     for i in range(0, len(valid_cves), 100):
         batch = valid_cves[i:i + 100]
         try:
-            resp = client.get("https://api.first.org/data/v1/epss", params={"cve": ",".join(batch)})
+            resp = client.get(EPSS_API_URL, params={"cve": ",".join(batch)})
             resp.raise_for_status()
             for entry in resp.json().get("data", []):
                 cve = entry.get("cve")
@@ -287,8 +274,9 @@ def fetch_epss_batch_sync(cve_ids: list[str], client: httpx.Client) -> dict[str,
 
 def fetch_kev_catalog_sync(client: httpx.Client) -> set[str]:
     """Synchronous KEV catalog fetch."""
+    from backend.services.scoring_config import KEV_CATALOG_URL
     try:
-        resp = client.get("https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json")
+        resp = client.get(KEV_CATALOG_URL)
         resp.raise_for_status()
         return {v.get("cveID") for v in resp.json().get("vulnerabilities", []) if v.get("cveID")}
     except Exception:
