@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports | URIP - Unified Risk Intelligence Platform</title>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar Mount Point -->
+    <div id="sidebar-mount"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar (populated by sidebar.js) -->
+      <header class="topbar"></header>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Reports</h1>
+            <p class="page-subtitle">Generate and download comprehensive security reports</p>
+          </div>
+        </div>
+
+        <!-- Report Cards -->
+        <div class="reports-grid">
+          <!-- Executive Summary -->
+          <div class="report-card">
+            <div class="report-icon executive">
+              <i class="fas fa-file-alt"></i>
+            </div>
+            <h3 class="report-title">Executive Summary</h3>
+            <p class="report-description">High-level overview of security posture with key metrics and trends for leadership review.</p>
+            <ul class="report-feature-list">
+              <li><i class="fas fa-check"></i> Risk trend analysis</li>
+              <li><i class="fas fa-check"></i> Domain-wise breakdown</li>
+              <li><i class="fas fa-check"></i> SLA compliance metrics</li>
+              <li><i class="fas fa-check"></i> Remediation progress</li>
+            </ul>
+            <div class="report-meta">
+              <span><i class="fas fa-clock"></i> Last generated: <span class="report-last-gen" data-type="executive">--</span></span>
+            </div>
+            <div class="report-actions">
+              <button class="btn btn-primary" onclick="generateReport('executive')">
+                <i class="fas fa-play"></i> Generate
+              </button>
+              <button class="btn btn-outline" onclick="downloadReport('executive')">
+                <i class="fas fa-download"></i> PDF
+              </button>
+            </div>
+          </div>
+
+          <!-- CISO Report -->
+          <div class="report-card">
+            <div class="report-icon ciso">
+              <i class="fas fa-user-shield"></i>
+            </div>
+            <h3 class="report-title">CISO Report</h3>
+            <p class="report-description">Detailed technical analysis with comprehensive risk data for security leadership.</p>
+            <ul class="report-feature-list">
+              <li><i class="fas fa-check"></i> Complete risk inventory</li>
+              <li><i class="fas fa-check"></i> Source-wise analysis</li>
+              <li><i class="fas fa-check"></i> Threat intelligence summary</li>
+              <li><i class="fas fa-check"></i> Compliance status</li>
+            </ul>
+            <div class="report-meta">
+              <span><i class="fas fa-clock"></i> Last generated: <span class="report-last-gen" data-type="ciso">--</span></span>
+            </div>
+            <div class="report-actions">
+              <button class="btn btn-primary" onclick="generateReport('ciso')">
+                <i class="fas fa-play"></i> Generate
+              </button>
+              <button class="btn btn-outline" onclick="downloadReport('ciso')">
+                <i class="fas fa-download"></i> PDF
+              </button>
+            </div>
+          </div>
+
+          <!-- Board Report -->
+          <div class="report-card">
+            <div class="report-icon board">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3 class="report-title">Board Report</h3>
+            <p class="report-description">Strategic security briefing for board members with business impact focus.</p>
+            <ul class="report-feature-list">
+              <li><i class="fas fa-check"></i> Business risk alignment</li>
+              <li><i class="fas fa-check"></i> Financial impact analysis</li>
+              <li><i class="fas fa-check"></i> Industry benchmarking</li>
+              <li><i class="fas fa-check"></i> Strategic recommendations</li>
+            </ul>
+            <div class="alert alert-info mt-3" style="padding: 0.75rem; font-size: 0.8125rem;">
+              <i class="fas fa-info-circle"></i>
+              Accepted risks are automatically excluded from this report
+            </div>
+            <div class="report-meta">
+              <span><i class="fas fa-clock"></i> Last generated: <span class="report-last-gen" data-type="board">--</span></span>
+            </div>
+            <div class="report-actions">
+              <button class="btn btn-primary" onclick="generateReport('board')">
+                <i class="fas fa-play"></i> Generate
+              </button>
+              <button class="btn btn-outline" onclick="downloadReport('board')">
+                <i class="fas fa-download"></i> PDF
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CERT-In Compliance Section -->
+        <div class="certin-section">
+          <div class="certin-header">
+            <div>
+              <h3 class="certin-title">
+                <i class="fas fa-certificate text-teal mr-2"></i>
+                CERT-In Compliance
+              </h3>
+              <p class="text-sm text-gray-500 mt-1">Track and respond to CERT-In security advisories</p>
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-outline btn-sm" id="btnSyncCertin">
+                <i class="fas fa-sync-alt"></i>
+                Sync
+              </button>
+              <button class="btn btn-primary btn-sm" id="btnAddAdvisory">
+                <i class="fas fa-plus"></i>
+                Add Advisory
+              </button>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="certin-table">
+              <thead>
+                <tr>
+                  <th>Advisory ID</th>
+                  <th>Title</th>
+                  <th>Published Date</th>
+                  <th>Severity</th>
+                  <th>Response Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="certinTableBody">
+                <!-- Populated from API -->
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <div class="table-info" id="certinTableInfo">
+              Showing 0 of 0 CERT-In advisories
+            </div>
+            <div id="certinPagination" class="pagination"></div>
+          </div>
+        </div>
+
+        <!-- Scheduled Reports -->
+        <div class="dashboard-card mt-6">
+          <div class="dashboard-card-header">
+            <h3 class="dashboard-card-title">
+              <i class="fas fa-calendar-alt text-teal mr-2"></i>
+              Scheduled Reports
+            </h3>
+            <button class="btn btn-primary btn-sm" id="btnScheduleNew">
+              <i class="fas fa-plus"></i>
+              Schedule New
+            </button>
+          </div>
+          <div class="dashboard-card-body" style="padding: 0;">
+            <table class="alerts-table">
+              <thead>
+                <tr>
+                  <th>Report Name</th>
+                  <th>Frequency</th>
+                  <th>Recipients</th>
+                  <th>Next Run</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="scheduledTableBody">
+                <!-- Populated from API -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/charts.js"></script>
+  <script>
+    checkAuth();
+
+    // Generate report function
+    async function generateReport(type) {
+      var btn = event.target.closest('button');
+      var originalText = btn.innerHTML;
+
+      btn.textContent = '';
+      var spinner = document.createElement('i');
+      spinner.className = 'fas fa-spinner fa-spin';
+      btn.appendChild(spinner);
+      btn.appendChild(document.createTextNode(' Generating...'));
+      btn.disabled = true;
+
+      try {
+        await URIP.apiFetch('/reports/generate', { method: 'POST', body: JSON.stringify({ report_type: type }) });
+        URIP.showNotification(
+          'Report Generated',
+          type.charAt(0).toUpperCase() + type.slice(1) + ' report has been generated successfully.',
+          'success'
+        );
+      } catch (e) {
+        URIP.showNotification('Generation Failed', 'Could not generate report. Please try again.', 'error');
+      } finally {
+        btn.textContent = '';
+        var playIcon = document.createElement('i');
+        playIcon.className = 'fas fa-play';
+        btn.appendChild(playIcon);
+        btn.appendChild(document.createTextNode(' Generate'));
+        btn.disabled = false;
+      }
+    }
+
+    // Download report function
+    async function downloadReport(type) {
+      URIP.showNotification('Download Started', type.charAt(0).toUpperCase() + type.slice(1) + ' report PDF download has started.', 'success');
+      // In production, this would trigger a real download via the API
+    }
+
+    document.addEventListener('DOMContentLoaded', async function() {
+      renderSidebar('reports');
+
+      // Fetch CERT-In advisories
+      try {
+        var certin = await URIP.apiFetch('/reports/certin');
+        var tbody = document.getElementById('certinTableBody');
+        if (certin && certin.items) {
+          tbody.innerHTML = certin.items.map(function(a) {
+            var statusClass = a.status === 'Completed' ? 'response-completed' : a.status === 'In Progress' ? 'response-progress' : 'response-pending';
+            return '<tr>' +
+              '<td><span class="certin-id">' + a.advisory_id + '</span></td>' +
+              '<td><span class="certin-title">' + a.title + '</span></td>' +
+              '<td class="certin-date">' + a.published_date + '</td>' +
+              '<td><span class="badge badge-' + (a.severity || '').toLowerCase() + '">' + a.severity + '</span></td>' +
+              '<td><span class="response-status ' + statusClass + '">' + a.status + '</span></td>' +
+              '<td><div class="action-btns"><button class="action-btn view" title="View Details"><i class="fas fa-eye"></i></button><button class="action-btn assign" title="Update Status"><i class="fas fa-edit"></i></button></div></td>' +
+              '</tr>';
+          }).join('');
+          document.getElementById('certinTableInfo').textContent = 'Showing ' + certin.items.length + ' of ' + (certin.total || certin.items.length) + ' CERT-In advisories';
+        }
+      } catch (e) {
+        console.error('Failed to load CERT-In data:', e);
+      }
+
+      // Fetch scheduled reports
+      try {
+        var scheduled = await URIP.apiFetch('/reports/scheduled');
+        var stbody = document.getElementById('scheduledTableBody');
+        if (scheduled && scheduled.items) {
+          stbody.innerHTML = scheduled.items.map(function(s) {
+            return '<tr>' +
+              '<td><strong>' + s.name + '</strong></td>' +
+              '<td><i class="fas fa-redo text-gray-400 mr-1"></i> ' + s.frequency + '</td>' +
+              '<td><span class="text-sm text-gray-500">' + (s.recipients || '') + '</span></td>' +
+              '<td>' + (s.next_run || '') + '</td>' +
+              '<td><span class="status-tag status-open">Active</span></td>' +
+              '<td><div class="action-btns"><button class="action-btn view" title="Edit"><i class="fas fa-edit"></i></button><button class="action-btn" title="Pause"><i class="fas fa-pause"></i></button></div></td>' +
+              '</tr>';
+          }).join('');
+        }
+      } catch (e) {
+        console.error('Failed to load scheduled reports:', e);
+      }
+    });
+  </script>
+</body>
+</html>

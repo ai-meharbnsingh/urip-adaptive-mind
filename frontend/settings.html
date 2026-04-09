@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings | URIP - Unified Risk Intelligence Platform</title>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+
+  <style>
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--gray-200);
+    }
+
+    .tab-btn {
+      padding: 0.875rem 1.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--gray-500);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tab-btn:hover {
+      color: var(--gray-700);
+    }
+
+    .tab-btn.active {
+      color: var(--teal-accent);
+      border-bottom-color: var(--teal-accent);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .connector-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.25rem 0.625rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      border-radius: var(--radius-full);
+    }
+
+    .connector-active {
+      background-color: rgba(39, 174, 96, 0.1);
+      color: var(--green-low);
+    }
+
+    .connector-inactive {
+      background-color: rgba(100, 116, 139, 0.1);
+      color: var(--gray-500);
+    }
+
+    .connector-active::before,
+    .connector-inactive::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .connector-active::before {
+      background-color: var(--green-low);
+    }
+
+    .connector-inactive::before {
+      background-color: var(--gray-400);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar Mount Point -->
+    <div id="sidebar-mount"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar (populated by sidebar.js) -->
+      <header class="topbar"></header>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Settings</h1>
+            <p class="page-subtitle">Manage users and source connectors</p>
+          </div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab('users')" id="tabUsers">
+            <i class="fas fa-users"></i>
+            Users
+          </button>
+          <button class="tab-btn" onclick="switchTab('connectors')" id="tabConnectors">
+            <i class="fas fa-plug"></i>
+            Connectors
+          </button>
+        </div>
+
+        <!-- Users Tab Content -->
+        <div class="tab-content active" id="usersContent">
+          <div class="flex justify-between items-center mb-4">
+            <div class="search-box" style="max-width: 320px;">
+              <i class="fas fa-search"></i>
+              <input type="text" id="userSearch" placeholder="Search users...">
+            </div>
+            <button class="btn btn-primary" id="btnAddUser">
+              <i class="fas fa-user-plus"></i>
+              Add User
+            </button>
+          </div>
+
+          <div class="risk-table-container">
+            <div class="table-container">
+              <table class="risk-table">
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Team</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <!-- Populated by settings.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connectors Tab Content -->
+        <div class="tab-content" id="connectorsContent">
+          <div class="flex justify-between items-center mb-4">
+            <div class="search-box" style="max-width: 320px;">
+              <i class="fas fa-search"></i>
+              <input type="text" id="connectorSearch" placeholder="Search connectors...">
+            </div>
+            <button class="btn btn-primary" id="btnAddConnector">
+              <i class="fas fa-plus"></i>
+              Add Connector
+            </button>
+          </div>
+
+          <div class="risk-table-container">
+            <div class="table-container">
+              <table class="risk-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Source Type</th>
+                    <th>URL</th>
+                    <th>Status</th>
+                    <th>Last Sync</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="connectorsTableBody">
+                  <!-- Populated by settings.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/settings.js"></script>
+  <script>
+    checkAuth();
+
+    document.addEventListener('DOMContentLoaded', function() {
+      renderSidebar('settings');
+    });
+
+    function switchTab(tab) {
+      // Toggle tab buttons
+      document.getElementById('tabUsers').classList.toggle('active', tab === 'users');
+      document.getElementById('tabConnectors').classList.toggle('active', tab === 'connectors');
+
+      // Toggle content
+      document.getElementById('usersContent').classList.toggle('active', tab === 'users');
+      document.getElementById('connectorsContent').classList.toggle('active', tab === 'connectors');
+    }
+  </script>
+</body>
+</html>

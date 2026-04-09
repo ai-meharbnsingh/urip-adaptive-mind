@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risk Acceptance | URIP - Unified Risk Intelligence Platform</title>
+  
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-toggle">
+        <i class="fas fa-chevron-left"></i>
+      </div>
+      
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="sidebar-logo">
+          <div class="sidebar-logo-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <div class="sidebar-logo-text">
+            <div class="sidebar-logo-title">Semantic <span>Gravity</span></div>
+            <div class="sidebar-logo-subtitle">Unified Risk Intelligence</div>
+          </div>
+        </a>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Main</div>
+          <ul class="sidebar-nav-list">
+            <li class="sidebar-nav-item">
+              <a href="dashboard.html" class="sidebar-nav-link">
+                <span class="sidebar-nav-icon"><i class="fas fa-th-large"></i></span>
+                <span class="sidebar-nav-text">Dashboard</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="risk-register.html" class="sidebar-nav-link">
+                <span class="sidebar-nav-icon"><i class="fas fa-list-alt"></i></span>
+                <span class="sidebar-nav-text">Risk Register</span>
+                <span class="sidebar-nav-badge">162</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="acceptance-workflow.html" class="sidebar-nav-link active">
+                <span class="sidebar-nav-icon"><i class="fas fa-clipboard-check"></i></span>
+                <span class="sidebar-nav-text">Acceptance Workflow</span>
+                <span class="sidebar-nav-badge">3</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="#" class="sidebar-nav-link">
+                <span class="sidebar-nav-icon"><i class="fas fa-globe"></i></span>
+                <span class="sidebar-nav-text">Threat Map</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Analytics</div>
+          <ul class="sidebar-nav-list">
+            <li class="sidebar-nav-item">
+              <a href="reports.html" class="sidebar-nav-link">
+                <span class="sidebar-nav-icon"><i class="fas fa-chart-bar"></i></span>
+                <span class="sidebar-nav-text">Reports</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="#" class="sidebar-nav-link">
+                <span class="sidebar-nav-icon"><i class="fas fa-history"></i></span>
+                <span class="sidebar-nav-text">Audit Log</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Settings</div>
+          <ul class="sidebar-nav-list">
+            <li class="sidebar-nav-item">
+              <a href="#" class="sidebar-nav-link">
+                <span class="sidebar-nav-icon"><i class="fas fa-cog"></i></span>
+                <span class="sidebar-nav-text">Settings</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="#" class="sidebar-nav-link">
+                <span class="sidebar-nav-icon"><i class="fas fa-users"></i></span>
+                <span class="sidebar-nav-text">Team</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="index.html" class="sidebar-nav-link">
+                <span class="sidebar-nav-icon"><i class="fas fa-sign-out-alt"></i></span>
+                <span class="sidebar-nav-text">Logout</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="sidebar-version">URIP v2.4.1 | Build 2024.01</div>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <span class="org-name">
+            <i class="fas fa-building"></i>
+            Acme Corporation
+          </span>
+        </div>
+        <div class="topbar-right">
+          <button class="notification-btn">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge"></span>
+          </button>
+          <div class="user-menu">
+            <div class="user-avatar">SA</div>
+            <div class="user-info">
+              <span class="user-name">Security Admin</span>
+              <span class="user-role">CISO</span>
+            </div>
+            <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Risk Acceptance Workflow</h1>
+            <p class="page-subtitle">Review and approve risk acceptance requests from your team</p>
+          </div>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="acceptance-stats mb-6">
+          <div class="stat-item">
+            <div class="stat-value">3</div>
+            <div class="stat-label">Pending Requests</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">12</div>
+            <div class="stat-label">Approved This Month</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">24</div>
+            <div class="stat-label">Total Accepted Risks</div>
+          </div>
+        </div>
+        
+        <!-- Split Layout -->
+        <div class="split-layout">
+          <!-- Request List -->
+          <div class="request-list">
+            <div class="card-header">
+              <h3 class="dashboard-card-title">Pending Acceptance Requests</h3>
+              <span class="badge badge-info">3 Pending</span>
+            </div>
+            <div id="requestList">
+              <!-- Request items will be populated by JavaScript -->
+            </div>
+          </div>
+          
+          <!-- Detail Panel -->
+          <div class="detail-panel" id="detailPanel">
+            <!-- Detail content will be populated by JavaScript -->
+          </div>
+        </div>
+        
+        <!-- Recently Accepted Section -->
+        <div class="dashboard-card mt-6">
+          <div class="dashboard-card-header">
+            <h3 class="dashboard-card-title">Recently Accepted Risks</h3>
+            <a href="risk-register.html?status=accepted" class="btn btn-sm btn-outline">View All</a>
+          </div>
+          <div class="dashboard-card-body" style="padding: 0;">
+            <table class="alerts-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Finding</th>
+                  <th>Accepted By</th>
+                  <th>Date</th>
+                  <th>Review Period</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="risk-id">RISK-2024-019</span></td>
+                  <td>
+                    <div class="alert-finding">
+                      <span class="alert-finding-name">Legacy SFTP Server</span>
+                      <span class="alert-finding-meta">File Transfer Service</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="risk-owner">
+                      <span class="owner-avatar">CISO</span>
+                      Chief Information Security Officer
+                    </div>
+                  </td>
+                  <td>2024-01-08</td>
+                  <td>90 days</td>
+                  <td><span class="excluded-tag"><i class="fas fa-ban"></i> Excluded from Reports</span></td>
+                </tr>
+                <tr>
+                  <td><span class="risk-id">RISK-2024-017</span></td>
+                  <td>
+                    <div class="alert-finding">
+                      <span class="alert-finding-name">Third-party API Integration</span>
+                      <span class="alert-finding-meta">Payment Processor</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="risk-owner">
+                      <span class="owner-avatar">CISO</span>
+                      Chief Information Security Officer
+                    </div>
+                  </td>
+                  <td>2024-01-05</td>
+                  <td>60 days</td>
+                  <td><span class="excluded-tag"><i class="fas fa-ban"></i> Excluded from Reports</span></td>
+                </tr>
+                <tr>
+                  <td><span class="risk-id">RISK-2024-012</span></td>
+                  <td>
+                    <div class="alert-finding">
+                      <span class="alert-finding-name">Outdated VPN Client</span>
+                      <span class="alert-finding-meta">Remote Access</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="risk-owner">
+                      <span class="owner-avatar">CISO</span>
+                      Chief Information Security Officer
+                    </div>
+                  </td>
+                  <td>2024-01-03</td>
+                  <td>30 days</td>
+                  <td><span class="excluded-tag"><i class="fas fa-ban"></i> Excluded from Reports</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Scripts -->
+  <script src="js/sidebar.js"></script>
+  <script src="js/filters.js"></script>
+  <script>
+    // Initialize acceptance workflow
+    document.addEventListener('DOMContentLoaded', function() {
+      // The filters.js will handle the initialization
+      // This is just for any additional page-specific initialization
+      
+      // Animate stats on load
+      const statValues = document.querySelectorAll('.stat-value');
+      statValues.forEach((stat, index) => {
+        const finalValue = stat.textContent;
+        stat.textContent = '0';
+        
+        setTimeout(() => {
+          let current = 0;
+          const increment = parseInt(finalValue) / 20;
+          const timer = setInterval(() => {
+            current += increment;
+            if (current >= parseInt(finalValue)) {
+              stat.textContent = finalValue;
+              clearInterval(timer);
+            } else {
+              stat.textContent = Math.floor(current);
+            }
+          }, 30);
+        }, index * 200);
+      });
+    });
+  </script>
+</body>
+</html>

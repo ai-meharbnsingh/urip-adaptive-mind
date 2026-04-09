@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remediation Tracker | URIP - Unified Risk Intelligence Platform</title>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar Mount Point -->
+    <div id="sidebar-mount"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar (populated by sidebar.js) -->
+      <header class="topbar"></header>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Remediation Tracker</h1>
+            <p class="page-subtitle">Track and manage risk remediation tasks</p>
+          </div>
+          <div class="flex gap-3">
+            <button class="btn btn-primary" id="btnCreateTask">
+              <i class="fas fa-plus"></i>
+              Create Task
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon critical">
+              <i class="fas fa-tasks"></i>
+            </div>
+            <div class="kpi-content">
+              <div class="kpi-value"><span id="stat-total-tasks">--</span></div>
+              <div class="kpi-label">Total Tasks</div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon high">
+              <i class="fas fa-spinner"></i>
+            </div>
+            <div class="kpi-content">
+              <div class="kpi-value" style="color: #3498DB;"><span id="stat-in-progress">--</span></div>
+              <div class="kpi-label">In Progress</div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon critical">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="kpi-content">
+              <div class="kpi-value" style="color: #E74C3C;"><span id="stat-overdue">--</span></div>
+              <div class="kpi-label">Overdue</div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon low">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="kpi-content">
+              <div class="kpi-value" style="color: #27AE60;"><span id="stat-completed">--</span></div>
+              <div class="kpi-label">Completed</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search tasks...">
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Status:</label>
+            <select class="filter-select" id="statusFilter">
+              <option value="all">All Status</option>
+              <option value="open">Open</option>
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="overdue">Overdue</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Priority:</label>
+            <select class="filter-select" id="priorityFilter">
+              <option value="all">All Priorities</option>
+              <option value="critical">Critical</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Remediation Table -->
+        <div class="risk-table-container">
+          <div class="table-container">
+            <table class="risk-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Linked Risk</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Assigned To</th>
+                  <th>Due Date</th>
+                  <th>Jira Key</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="remediationTableBody">
+                <!-- Populated by remediation.js -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Table Footer -->
+          <div class="table-footer">
+            <div class="table-info">
+              Showing <span id="showingStart">0</span>-<span id="showingEnd">0</span> of <span id="totalItems">0</span> tasks
+            </div>
+            <div id="pagination" class="pagination"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/remediation.js"></script>
+  <script>
+    checkAuth();
+
+    document.addEventListener('DOMContentLoaded', function() {
+      renderSidebar('remediation-tracker');
+    });
+  </script>
+</body>
+</html>

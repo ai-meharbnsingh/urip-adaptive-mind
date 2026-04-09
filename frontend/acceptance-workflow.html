@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risk Acceptance | URIP - Unified Risk Intelligence Platform</title>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar Mount Point -->
+    <div id="sidebar-mount"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar (populated by sidebar.js) -->
+      <header class="topbar"></header>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Risk Acceptance Workflow</h1>
+            <p class="page-subtitle">Review and approve risk acceptance requests from your team</p>
+          </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="acceptance-stats mb-6">
+          <div class="stat-item">
+            <div class="stat-value"><span id="stat-pending">--</span></div>
+            <div class="stat-label">Pending Requests</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value"><span id="stat-approved">--</span></div>
+            <div class="stat-label">Approved This Month</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value"><span id="stat-total">--</span></div>
+            <div class="stat-label">Total Accepted Risks</div>
+          </div>
+        </div>
+
+        <!-- Split Layout -->
+        <div class="split-layout">
+          <!-- Request List -->
+          <div class="request-list">
+            <div class="card-header">
+              <h3 class="dashboard-card-title">Pending Acceptance Requests</h3>
+              <span class="badge badge-info" id="pendingBadge">-- Pending</span>
+            </div>
+            <div id="requestList">
+              <!-- Request items populated by JS -->
+            </div>
+          </div>
+
+          <!-- Detail Panel -->
+          <div class="detail-panel" id="detailPanel">
+            <div class="empty-state">
+              <div class="empty-state-icon">
+                <i class="fas fa-clipboard-check"></i>
+              </div>
+              <div class="empty-state-title">Select a Request</div>
+              <div class="empty-state-text">Click on a pending request to view its details and take action</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recently Accepted Section -->
+        <div class="dashboard-card mt-6">
+          <div class="dashboard-card-header">
+            <h3 class="dashboard-card-title">Recently Accepted Risks</h3>
+            <a href="risk-register.html?status=accepted" class="btn btn-sm btn-outline">View All</a>
+          </div>
+          <div class="dashboard-card-body" style="padding: 0;">
+            <table class="alerts-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Finding</th>
+                  <th>Accepted By</th>
+                  <th>Date</th>
+                  <th>Review Period</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="recentlyAcceptedBody">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/filters.js"></script>
+  <script>
+    checkAuth();
+
+    document.addEventListener('DOMContentLoaded', async function() {
+      renderSidebar('acceptance-workflow');
+
+      // Fetch acceptance stats
+      try {
+        var stats = await URIP.apiFetch('/acceptance/stats');
+        if (stats) {
+          document.getElementById('stat-pending').textContent = (stats.pending != null) ? stats.pending : '--';
+          document.getElementById('stat-approved').textContent = (stats.approved_this_month != null) ? stats.approved_this_month : '--';
+          document.getElementById('stat-total').textContent = (stats.total_accepted != null) ? stats.total_accepted : '--';
+          document.getElementById('pendingBadge').textContent = ((stats.pending != null) ? stats.pending : '--') + ' Pending';
+        }
+      } catch (e) {
+        console.error('Failed to load acceptance stats:', e);
+      }
+
+      // Fetch pending requests
+      try {
+        var pending = await URIP.apiFetch('/acceptance/pending');
+        var requestList = document.getElementById('requestList');
+        if (pending && pending.items && pending.items.length > 0) {
+          requestList.textContent = '';
+          pending.items.forEach(function(req, idx) {
+            var item = document.createElement('div');
+            item.className = 'request-item' + (idx === 0 ? ' active' : '');
+            item.setAttribute('data-id', req.id);
+            item.addEventListener('click', function() { selectRequest(item, req.id); });
+
+            var header = document.createElement('div');
+            header.className = 'request-header';
+            var idSpan = document.createElement('span');
+            idSpan.className = 'request-id';
+            idSpan.textContent = req.risk_id;
+            header.appendChild(idSpan);
+            var sevBadge = document.createElement('span');
+            sevBadge.className = 'badge badge-' + (req.severity || '').toLowerCase();
+            sevBadge.textContent = req.severity || '';
+            header.appendChild(sevBadge);
+            item.appendChild(header);
+
+            var title = document.createElement('div');
+            title.className = 'request-title';
+            title.textContent = req.title;
+            item.appendChild(title);
+
+            var meta = document.createElement('div');
+            meta.className = 'request-meta';
+            var userSpan = document.createElement('span');
+            var userIcon = document.createElement('i');
+            userIcon.className = 'fas fa-user';
+            userSpan.appendChild(userIcon);
+            userSpan.appendChild(document.createTextNode(' ' + (req.requested_by || '')));
+            meta.appendChild(userSpan);
+            var timeSpan = document.createElement('span');
+            var timeIcon = document.createElement('i');
+            timeIcon.className = 'fas fa-clock';
+            timeSpan.appendChild(timeIcon);
+            timeSpan.appendChild(document.createTextNode(' ' + (req.requested_date || '')));
+            meta.appendChild(timeSpan);
+            item.appendChild(meta);
+
+            requestList.appendChild(item);
+          });
+
+          // Auto-select first
+          if (pending.items.length > 0) {
+            loadRequestDetail(pending.items[0].id);
+          }
+        } else {
+          requestList.textContent = '';
+          var emptyState = document.createElement('div');
+          emptyState.className = 'empty-state';
+          var emptyIcon = document.createElement('div');
+          emptyIcon.className = 'empty-state-icon';
+          var ico = document.createElement('i');
+          ico.className = 'fas fa-check-circle';
+          emptyIcon.appendChild(ico);
+          emptyState.appendChild(emptyIcon);
+          var emptyTitle = document.createElement('div');
+          emptyTitle.className = 'empty-state-title';
+          emptyTitle.textContent = 'All Clear';
+          emptyState.appendChild(emptyTitle);
+          var emptyText = document.createElement('div');
+          emptyText.className = 'empty-state-text';
+          emptyText.textContent = 'No pending acceptance requests';
+          emptyState.appendChild(emptyText);
+          requestList.appendChild(emptyState);
+        }
+      } catch (e) {
+        console.error('Failed to load pending requests:', e);
+      }
+
+      // Fetch recently accepted
+      try {
+        var recent = await URIP.apiFetch('/acceptance/recent');
+        var tbody = document.getElementById('recentlyAcceptedBody');
+        if (recent && recent.items) {
+          tbody.textContent = '';
+          recent.items.forEach(function(r) {
+            var tr = document.createElement('tr');
+
+            var tdId = document.createElement('td');
+            var spanId = document.createElement('span');
+            spanId.className = 'risk-id';
+            spanId.textContent = r.risk_id;
+            tdId.appendChild(spanId);
+            tr.appendChild(tdId);
+
+            var tdFinding = document.createElement('td');
+            var divFinding = document.createElement('div');
+            divFinding.className = 'alert-finding';
+            var nameSpan = document.createElement('span');
+            nameSpan.className = 'alert-finding-name';
+            nameSpan.textContent = r.title;
+            divFinding.appendChild(nameSpan);
+            var metaSpan = document.createElement('span');
+            metaSpan.className = 'alert-finding-meta';
+            metaSpan.textContent = r.asset || '';
+            divFinding.appendChild(metaSpan);
+            tdFinding.appendChild(divFinding);
+            tr.appendChild(tdFinding);
+
+            var tdAccepted = document.createElement('td');
+            var ownerDiv = document.createElement('div');
+            ownerDiv.className = 'risk-owner';
+            var avatarSpan = document.createElement('span');
+            avatarSpan.className = 'owner-avatar';
+            avatarSpan.textContent = 'CISO';
+            ownerDiv.appendChild(avatarSpan);
+            ownerDiv.appendChild(document.createTextNode(r.accepted_by || 'CISO'));
+            tdAccepted.appendChild(ownerDiv);
+            tr.appendChild(tdAccepted);
+
+            var tdDate = document.createElement('td');
+            tdDate.textContent = r.accepted_date || '';
+            tr.appendChild(tdDate);
+
+            var tdPeriod = document.createElement('td');
+            tdPeriod.textContent = (r.review_period || '90') + ' days';
+            tr.appendChild(tdPeriod);
+
+            var tdStatus = document.createElement('td');
+            var exTag = document.createElement('span');
+            exTag.className = 'excluded-tag';
+            var banIcon = document.createElement('i');
+            banIcon.className = 'fas fa-ban';
+            exTag.appendChild(banIcon);
+            exTag.appendChild(document.createTextNode(' Excluded from Reports'));
+            tdStatus.appendChild(exTag);
+            tr.appendChild(tdStatus);
+
+            tbody.appendChild(tr);
+          });
+        }
+      } catch (e) {
+        console.error('Failed to load recently accepted:', e);
+      }
+    });
+
+    function selectRequest(el, id) {
+      document.querySelectorAll('.request-item').forEach(function(i) { i.classList.remove('active'); });
+      el.classList.add('active');
+      loadRequestDetail(id);
+    }
+
+    async function loadRequestDetail(id) {
+      var panel = document.getElementById('detailPanel');
+      try {
+        var detail = await URIP.apiFetch('/acceptance/' + id);
+        if (detail) {
+          panel.textContent = '';
+
+          var panelHeader = document.createElement('div');
+          panelHeader.className = 'detail-panel-header';
+          var headerRow = document.createElement('div');
+          headerRow.className = 'flex items-center justify-between';
+          var riskIdSpan = document.createElement('span');
+          riskIdSpan.className = 'risk-id';
+          riskIdSpan.textContent = detail.risk_id;
+          headerRow.appendChild(riskIdSpan);
+          var sevBadge = document.createElement('span');
+          sevBadge.className = 'badge badge-' + (detail.severity || '').toLowerCase();
+          sevBadge.textContent = detail.severity || '';
+          headerRow.appendChild(sevBadge);
+          panelHeader.appendChild(headerRow);
+          var titleEl = document.createElement('h3');
+          titleEl.style.cssText = 'margin-top:0.5rem;font-size:1rem;font-weight:600';
+          titleEl.textContent = detail.title;
+          panelHeader.appendChild(titleEl);
+          panel.appendChild(panelHeader);
+
+          var panelBody = document.createElement('div');
+          panelBody.className = 'detail-panel-body';
+
+          var detailSec = document.createElement('div');
+          detailSec.className = 'detail-section';
+          var detailTitle = document.createElement('div');
+          detailTitle.className = 'detail-section-title';
+          detailTitle.textContent = 'Risk Details';
+          detailSec.appendChild(detailTitle);
+          var descP = document.createElement('p');
+          descP.className = 'text-sm';
+          descP.style.cssText = 'color:var(--gray-600);line-height:1.6';
+          descP.textContent = detail.description || 'No description available.';
+          detailSec.appendChild(descP);
+          panelBody.appendChild(detailSec);
+
+          var justSec = document.createElement('div');
+          justSec.className = 'detail-section';
+          var justTitle = document.createElement('div');
+          justTitle.className = 'detail-section-title';
+          justTitle.textContent = 'Justification';
+          justSec.appendChild(justTitle);
+          var recBox = document.createElement('div');
+          recBox.className = 'recommendation-box';
+          var justP = document.createElement('p');
+          justP.textContent = detail.justification || 'No justification provided.';
+          recBox.appendChild(justP);
+          justSec.appendChild(recBox);
+          panelBody.appendChild(justSec);
+
+          var actions = document.createElement('div');
+          actions.className = 'acceptance-actions';
+          var approveBtn = document.createElement('button');
+          approveBtn.className = 'btn btn-primary';
+          var checkIcon = document.createElement('i');
+          checkIcon.className = 'fas fa-check';
+          approveBtn.appendChild(checkIcon);
+          approveBtn.appendChild(document.createTextNode(' Approve'));
+          approveBtn.addEventListener('click', function() { approveRequest(detail.id); });
+          actions.appendChild(approveBtn);
+          var rejectBtn = document.createElement('button');
+          rejectBtn.className = 'btn btn-danger';
+          var timesIcon = document.createElement('i');
+          timesIcon.className = 'fas fa-times';
+          rejectBtn.appendChild(timesIcon);
+          rejectBtn.appendChild(document.createTextNode(' Reject'));
+          rejectBtn.addEventListener('click', function() { rejectRequest(detail.id); });
+          actions.appendChild(rejectBtn);
+          panelBody.appendChild(actions);
+
+          panel.appendChild(panelBody);
+        }
+      } catch (e) {
+        console.error('Failed to load request detail:', e);
+      }
+    }
+
+    async function approveRequest(id) {
+      try {
+        await URIP.apiFetch('/acceptance/' + id + '/approve', { method: 'POST' });
+        window.location.reload();
+      } catch (e) {
+        console.error('Failed to approve:', e);
+      }
+    }
+
+    async function rejectRequest(id) {
+      try {
+        await URIP.apiFetch('/acceptance/' + id + '/reject', { method: 'POST' });
+        window.location.reload();
+      } catch (e) {
+        console.error('Failed to reject:', e);
+      }
+    }
+  </script>
+</body>
+</html>

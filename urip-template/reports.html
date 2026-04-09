@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports | URIP - Unified Risk Intelligence Platform</title>
+  
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-toggle">
+        <i class="fas fa-chevron-left"></i>
+      </div>
+      
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="sidebar-logo">
+          <div class="sidebar-logo-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <div class="sidebar-logo-text">
+            <div class="sidebar-logo-title">Semantic <span>Gravity</span></div>
+            <div class="sidebar-logo-subtitle">Unified Risk Intelligence</div>
+          </div>
+        </a>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Main</div>
+          <ul class="sidebar-nav-list">
+            <li class="sidebar-nav-item">
+              <a href="dashboard.html" class="sidebar-nav-link">
+                <span class="sidebar-nav-icon"><i class="fas fa-th-large"></i></span>
+                <span class="sidebar-nav-text">Dashboard</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="risk-register.html" class="sidebar-nav-link">
+                <span class="sidebar-nav-icon"><i class="fas fa-list-alt"></i></span>
+                <span class="sidebar-nav-text">Risk Register</span>
+                <span class="sidebar-nav-badge">162</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="acceptance-workflow.html" class="sidebar-nav-link">
+                <span class="sidebar-nav-icon"><i class="fas fa-clipboard-check"></i></span>
+                <span class="sidebar-nav-text">Acceptance Workflow</span>
+                <span class="sidebar-nav-badge">3</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="#" class="sidebar-nav-link">
+                <span class="sidebar-nav-icon"><i class="fas fa-globe"></i></span>
+                <span class="sidebar-nav-text">Threat Map</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Analytics</div>
+          <ul class="sidebar-nav-list">
+            <li class="sidebar-nav-item">
+              <a href="reports.html" class="sidebar-nav-link active">
+                <span class="sidebar-nav-icon"><i class="fas fa-chart-bar"></i></span>
+                <span class="sidebar-nav-text">Reports</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="#" class="sidebar-nav-link">
+                <span class="sidebar-nav-icon"><i class="fas fa-history"></i></span>
+                <span class="sidebar-nav-text">Audit Log</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Settings</div>
+          <ul class="sidebar-nav-list">
+            <li class="sidebar-nav-item">
+              <a href="#" class="sidebar-nav-link">
+                <span class="sidebar-nav-icon"><i class="fas fa-cog"></i></span>
+                <span class="sidebar-nav-text">Settings</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="#" class="sidebar-nav-link">
+                <span class="sidebar-nav-icon"><i class="fas fa-users"></i></span>
+                <span class="sidebar-nav-text">Team</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="index.html" class="sidebar-nav-link">
+                <span class="sidebar-nav-icon"><i class="fas fa-sign-out-alt"></i></span>
+                <span class="sidebar-nav-text">Logout</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="sidebar-version">URIP v2.4.1 | Build 2024.01</div>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <span class="org-name">
+            <i class="fas fa-building"></i>
+            Acme Corporation
+          </span>
+        </div>
+        <div class="topbar-right">
+          <button class="notification-btn">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge"></span>
+          </button>
+          <div class="user-menu">
+            <div class="user-avatar">SA</div>
+            <div class="user-info">
+              <span class="user-name">Security Admin</span>
+              <span class="user-role">CISO</span>
+            </div>
+            <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Reports</h1>
+            <p class="page-subtitle">Generate and download comprehensive security reports</p>
+          </div>
+        </div>
+        
+        <!-- Report Cards -->
+        <div class="reports-grid">
+          <!-- Executive Summary -->
+          <div class="report-card">
+            <div class="report-icon executive">
+              <i class="fas fa-file-alt"></i>
+            </div>
+            <h3 class="report-title">Executive Summary</h3>
+            <p class="report-description">High-level overview of security posture with key metrics and trends for leadership review.</p>
+            <ul class="report-feature-list">
+              <li><i class="fas fa-check"></i> Risk trend analysis</li>
+              <li><i class="fas fa-check"></i> Domain-wise breakdown</li>
+              <li><i class="fas fa-check"></i> SLA compliance metrics</li>
+              <li><i class="fas fa-check"></i> Remediation progress</li>
+            </ul>
+            <div class="report-meta">
+              <span><i class="fas fa-clock"></i> Last generated: Jan 10, 2024</span>
+            </div>
+            <div class="report-actions">
+              <button class="btn btn-primary" onclick="generateReport('executive')">
+                <i class="fas fa-play"></i> Generate
+              </button>
+              <button class="btn btn-outline" onclick="downloadReport('executive')">
+                <i class="fas fa-download"></i> PDF
+              </button>
+            </div>
+          </div>
+          
+          <!-- CISO Report -->
+          <div class="report-card">
+            <div class="report-icon ciso">
+              <i class="fas fa-user-shield"></i>
+            </div>
+            <h3 class="report-title">CISO Report</h3>
+            <p class="report-description">Detailed technical analysis with comprehensive risk data for security leadership.</p>
+            <ul class="report-feature-list">
+              <li><i class="fas fa-check"></i> Complete risk inventory</li>
+              <li><i class="fas fa-check"></i> Source-wise analysis</li>
+              <li><i class="fas fa-check"></i> Threat intelligence summary</li>
+              <li><i class="fas fa-check"></i> Compliance status</li>
+            </ul>
+            <div class="report-meta">
+              <span><i class="fas fa-clock"></i> Last generated: Jan 11, 2024</span>
+            </div>
+            <div class="report-actions">
+              <button class="btn btn-primary" onclick="generateReport('ciso')">
+                <i class="fas fa-play"></i> Generate
+              </button>
+              <button class="btn btn-outline" onclick="downloadReport('ciso')">
+                <i class="fas fa-download"></i> PDF
+              </button>
+            </div>
+          </div>
+          
+          <!-- Board Report -->
+          <div class="report-card">
+            <div class="report-icon board">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3 class="report-title">Board Report</h3>
+            <p class="report-description">Strategic security briefing for board members with business impact focus.</p>
+            <ul class="report-feature-list">
+              <li><i class="fas fa-check"></i> Business risk alignment</li>
+              <li><i class="fas fa-check"></i> Financial impact analysis</li>
+              <li><i class="fas fa-check"></i> Industry benchmarking</li>
+              <li><i class="fas fa-check"></i> Strategic recommendations</li>
+            </ul>
+            <div class="alert alert-info mt-3" style="padding: 0.75rem; font-size: 0.8125rem;">
+              <i class="fas fa-info-circle"></i>
+              Accepted risks are automatically excluded from this report
+            </div>
+            <div class="report-meta">
+              <span><i class="fas fa-clock"></i> Last generated: Jan 05, 2024</span>
+            </div>
+            <div class="report-actions">
+              <button class="btn btn-primary" onclick="generateReport('board')">
+                <i class="fas fa-play"></i> Generate
+              </button>
+              <button class="btn btn-outline" onclick="downloadReport('board')">
+                <i class="fas fa-download"></i> PDF
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- CERT-In Compliance Section -->
+        <div class="certin-section">
+          <div class="certin-header">
+            <div>
+              <h3 class="certin-title">
+                <i class="fas fa-certificate text-teal mr-2"></i>
+                CERT-In Compliance
+              </h3>
+              <p class="text-sm text-gray-500 mt-1">Track and respond to CERT-In security advisories</p>
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-outline btn-sm">
+                <i class="fas fa-sync-alt"></i>
+                Sync
+              </button>
+              <button class="btn btn-primary btn-sm">
+                <i class="fas fa-plus"></i>
+                Add Advisory
+              </button>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="certin-table">
+              <thead>
+                <tr>
+                  <th>Advisory ID</th>
+                  <th>Title</th>
+                  <th>Published Date</th>
+                  <th>Severity</th>
+                  <th>Response Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="certin-id">CIVN-2024-001</span></td>
+                  <td><span class="certin-title">Multiple Vulnerabilities in Google Chrome</span></td>
+                  <td class="certin-date">Jan 10, 2024</td>
+                  <td><span class="badge badge-high">High</span></td>
+                  <td><span class="response-status response-progress">In Progress</span></td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="action-btn view" title="View Details"><i class="fas fa-eye"></i></button>
+                      <button class="action-btn assign" title="Update Status"><i class="fas fa-edit"></i></button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="certin-id">CIVN-2024-002</span></td>
+                  <td><span class="certin-title">Apache Struts Remote Code Execution (CVE-2024-1234)</span></td>
+                  <td class="certin-date">Jan 08, 2024</td>
+                  <td><span class="badge badge-critical">Critical</span></td>
+                  <td><span class="response-status response-progress">In Progress</span></td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="action-btn view" title="View Details"><i class="fas fa-eye"></i></button>
+                      <button class="action-btn assign" title="Update Status"><i class="fas fa-edit"></i></button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="certin-id">CIVN-2024-003</span></td>
+                  <td><span class="certin-title">Microsoft Patch Tuesday - January 2024</span></td>
+                  <td class="certin-date">Jan 09, 2024</td>
+                  <td><span class="badge badge-high">High</span></td>
+                  <td><span class="response-status response-pending">Pending Review</span></td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="action-btn view" title="View Details"><i class="fas fa-eye"></i></button>
+                      <button class="action-btn assign" title="Update Status"><i class="fas fa-edit"></i></button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="certin-id">CIVN-2023-089</span></td>
+                  <td><span class="certin-title">OpenSSL Security Advisory - Buffer Overflow</span></td>
+                  <td class="certin-date">Dec 15, 2023</td>
+                  <td><span class="badge badge-medium">Medium</span></td>
+                  <td><span class="response-status response-completed">Completed</span></td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="action-btn view" title="View Details"><i class="fas fa-eye"></i></button>
+                      <button class="action-btn assign" title="Update Status"><i class="fas fa-edit"></i></button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="certin-id">CIVN-2023-076</span></td>
+                  <td><span class="certin-title">VMware vCenter Server Vulnerabilities</span></td>
+                  <td class="certin-date">Dec 01, 2023</td>
+                  <td><span class="badge badge-critical">Critical</span></td>
+                  <td><span class="response-status response-completed">Completed</span></td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="action-btn view" title="View Details"><i class="fas fa-eye"></i></button>
+                      <button class="action-btn assign" title="Update Status"><i class="fas fa-edit"></i></button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <div class="table-info">
+              Showing 5 of 23 CERT-In advisories
+            </div>
+            <div class="pagination">
+              <button class="pagination-btn" disabled>
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <button class="pagination-btn active">1</button>
+              <button class="pagination-btn">2</button>
+              <button class="pagination-btn">3</button>
+              <button class="pagination-btn">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Scheduled Reports -->
+        <div class="dashboard-card mt-6">
+          <div class="dashboard-card-header">
+            <h3 class="dashboard-card-title">
+              <i class="fas fa-calendar-alt text-teal mr-2"></i>
+              Scheduled Reports
+            </h3>
+            <button class="btn btn-primary btn-sm">
+              <i class="fas fa-plus"></i>
+              Schedule New
+            </button>
+          </div>
+          <div class="dashboard-card-body" style="padding: 0;">
+            <table class="alerts-table">
+              <thead>
+                <tr>
+                  <th>Report Name</th>
+                  <th>Frequency</th>
+                  <th>Recipients</th>
+                  <th>Next Run</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Weekly Security Summary</strong></td>
+                  <td><i class="fas fa-redo text-gray-400 mr-1"></i> Every Monday</td>
+                  <td>
+                    <div class="flex items-center gap-1">
+                      <span class="owner-avatar" style="width: 24px; height: 24px; font-size: 10px;">C</span>
+                      <span class="owner-avatar" style="width: 24px; height: 24px; font-size: 10px;">S</span>
+                      <span class="text-sm text-gray-500">+3 more</span>
+                    </div>
+                  </td>
+                  <td>Jan 15, 2024 09:00 AM</td>
+                  <td><span class="status-tag status-open">Active</span></td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="action-btn view" title="Edit"><i class="fas fa-edit"></i></button>
+                      <button class="action-btn" title="Pause"><i class="fas fa-pause"></i></button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Monthly Board Report</strong></td>
+                  <td><i class="fas fa-redo text-gray-400 mr-1"></i> 1st of Month</td>
+                  <td>
+                    <div class="flex items-center gap-1">
+                      <span class="owner-avatar" style="width: 24px; height: 24px; font-size: 10px;">B</span>
+                      <span class="text-sm text-gray-500">Board Members</span>
+                    </div>
+                  </td>
+                  <td>Feb 01, 2024 08:00 AM</td>
+                  <td><span class="status-tag status-open">Active</span></td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="action-btn view" title="Edit"><i class="fas fa-edit"></i></button>
+                      <button class="action-btn" title="Pause"><i class="fas fa-pause"></i></button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>CERT-In Response Report</strong></td>
+                  <td><i class="fas fa-redo text-gray-400 mr-1"></i> Every Friday</td>
+                  <td>
+                    <div class="flex items-center gap-1">
+                      <span class="owner-avatar" style="width: 24px; height: 24px; font-size: 10px;">S</span>
+                      <span class="owner-avatar" style="width: 24px; height: 24px; font-size: 10px;">C</span>
+                    </div>
+                  </td>
+                  <td>Jan 12, 2024 05:00 PM</td>
+                  <td><span class="status-tag status-open">Active</span></td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="action-btn view" title="Edit"><i class="fas fa-edit"></i></button>
+                      <button class="action-btn" title="Pause"><i class="fas fa-pause"></i></button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Scripts -->
+  <script src="js/sidebar.js"></script>
+  <script>
+    // Generate report function
+    function generateReport(type) {
+      const btn = event.target.closest('button');
+      const originalText = btn.innerHTML;
+      
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+      btn.disabled = true;
+      
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        
+        showNotification(
+          'Report Generated',
+          `${type.charAt(0).toUpperCase() + type.slice(1)} report has been generated successfully.`,
+          'success'
+        );
+      }, 2000);
+    }
+    
+    // Download report function
+    function downloadReport(type) {
+      showNotification(
+        'Download Started',
+        `${type.charAt(0).toUpperCase() + type.slice(1)} report PDF download has started.`,
+        'success'
+      );
+    }
+    
+    // Show notification function
+    function showNotification(title, message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        border-radius: 8px;
+        padding: 16px 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        z-index: 1000;
+        min-width: 300px;
+        animation: slideIn 0.3s ease;
+      `;
+      
+      const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'info-circle';
+      const color = type === 'success' ? '#27AE60' : type === 'error' ? '#E74C3C' : '#1ABC9C';
+      
+      toast.innerHTML = `
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+          <i class="fas fa-${icon}" style="color: ${color}; font-size: 20px; margin-top: 2px;"></i>
+          <div>
+            <div style="font-weight: 600; color: #1E293B; margin-bottom: 4px;">${title}</div>
+            <div style="font-size: 14px; color: #64748B;">${message}</div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+    
+    // Add CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audit Log | URIP - Unified Risk Intelligence Platform</title>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar Mount Point -->
+    <div id="sidebar-mount"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar (populated by sidebar.js) -->
+      <header class="topbar"></header>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Audit Log</h1>
+            <p class="page-subtitle">Immutable record of all platform actions</p>
+          </div>
+          <div class="flex gap-3">
+            <button class="btn btn-outline" id="btnExportAudit">
+              <i class="fas fa-download"></i>
+              Export CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search by user, action, or details...">
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Resource Type:</label>
+            <select class="filter-select" id="resourceTypeFilter">
+              <option value="all">All Types</option>
+              <option value="risk">Risk</option>
+              <option value="acceptance">Acceptance</option>
+              <option value="report">Report</option>
+              <option value="remediation">Remediation</option>
+              <option value="user">User</option>
+              <option value="connector">Connector</option>
+              <option value="settings">Settings</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Action:</label>
+            <select class="filter-select" id="actionFilter">
+              <option value="all">All Actions</option>
+              <option value="create">Create</option>
+              <option value="update">Update</option>
+              <option value="delete">Delete</option>
+              <option value="approve">Approve</option>
+              <option value="reject">Reject</option>
+              <option value="login">Login</option>
+              <option value="export">Export</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Audit Log Table -->
+        <div class="risk-table-container">
+          <div class="table-container">
+            <table class="risk-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>User</th>
+                  <th>Action</th>
+                  <th>Resource Type</th>
+                  <th>Details</th>
+                  <th>IP Address</th>
+                </tr>
+              </thead>
+              <tbody id="auditLogTableBody">
+                <!-- Populated by audit-log.js -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Table Footer -->
+          <div class="table-footer">
+            <div class="table-info">
+              Showing <span id="showingStart">0</span>-<span id="showingEnd">0</span> of <span id="totalItems">0</span> entries
+            </div>
+            <div id="pagination" class="pagination"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/audit-log.js"></script>
+  <script>
+    checkAuth();
+
+    document.addEventListener('DOMContentLoaded', function() {
+      renderSidebar('audit-log');
+    });
+  </script>
+</body>
+</html>

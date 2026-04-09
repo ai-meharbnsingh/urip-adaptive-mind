@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | URIP - Unified Risk Intelligence Platform</title>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar Mount Point -->
+    <div id="sidebar-mount"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar (populated by sidebar.js) -->
+      <header class="topbar"></header>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Risk Dashboard</h1>
+            <p class="page-subtitle">Real-time overview of Royal Enfield's security posture</p>
+          </div>
+          <div class="flex gap-3">
+            <button class="btn btn-outline" id="btnExport">
+              <i class="fas fa-download"></i>
+              Export
+            </button>
+            <button class="btn btn-primary" id="btnRefresh">
+              <i class="fas fa-sync-alt"></i>
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- SLA Breach Warning Banner -->
+        <div id="sla-banner" class="sla-banner" style="display:none">
+          <div class="sla-banner-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="sla-banner-content">
+            <div class="sla-banner-title" id="slaBannerTitle"></div>
+            <div class="sla-banner-text" id="slaBannerText"></div>
+          </div>
+          <button class="btn btn-danger sla-banner-action" onclick="window.location.href='risk-register.html?severity=critical'">
+            <i class="fas fa-arrow-right"></i>
+            View Now
+          </button>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon critical">
+              <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="kpi-content">
+              <div class="kpi-value"><span id="kpi-total">--</span></div>
+              <div class="kpi-label">Total Open Risks</div>
+              <div class="kpi-change" id="kpi-total-change"></div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon critical">
+              <i class="fas fa-fire"></i>
+            </div>
+            <div class="kpi-content">
+              <div class="kpi-value" style="color: #E74C3C;"><span id="kpi-critical">--</span></div>
+              <div class="kpi-label">Critical</div>
+              <div class="kpi-change" id="kpi-critical-change"></div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon high">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="kpi-content">
+              <div class="kpi-value" style="color: #E67E22;"><span id="kpi-high">--</span></div>
+              <div class="kpi-label">High</div>
+              <div class="kpi-change" id="kpi-high-change"></div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon low">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="kpi-content">
+              <div class="kpi-value" style="color: #64748B;"><span id="kpi-accepted">--</span></div>
+              <div class="kpi-label">Accepted Risks</div>
+              <div class="kpi-change">
+                <i class="fas fa-ban"></i> Excluded from reports
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+          <!-- Risk by Domain Chart -->
+          <div class="dashboard-card col-4">
+            <div class="dashboard-card-header">
+              <h3 class="dashboard-card-title">Risk by Domain</h3>
+              <button class="btn btn-ghost btn-icon">
+                <i class="fas fa-ellipsis-v"></i>
+              </button>
+            </div>
+            <div class="dashboard-card-body">
+              <div class="chart-container-sm">
+                <canvas id="riskByDomainChart"></canvas>
+              </div>
+              <div class="chart-legend" id="domainLegend"></div>
+            </div>
+          </div>
+
+          <!-- Risk Trend Chart -->
+          <div class="dashboard-card col-8">
+            <div class="dashboard-card-header">
+              <h3 class="dashboard-card-title">Risk Trend (6 Months)</h3>
+              <div class="flex gap-2">
+                <button class="btn btn-sm btn-outline">1M</button>
+                <button class="btn btn-sm btn-primary">6M</button>
+                <button class="btn btn-sm btn-outline">1Y</button>
+              </div>
+            </div>
+            <div class="dashboard-card-body">
+              <div class="chart-container">
+                <canvas id="riskTrendChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Risk by Source Chart -->
+          <div class="dashboard-card col-6">
+            <div class="dashboard-card-header">
+              <h3 class="dashboard-card-title">Risk by Source</h3>
+              <button class="btn btn-ghost btn-icon">
+                <i class="fas fa-download"></i>
+              </button>
+            </div>
+            <div class="dashboard-card-body">
+              <div class="chart-container">
+                <canvas id="riskBySourceChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Critical Alerts -->
+          <div class="dashboard-card col-6">
+            <div class="dashboard-card-header">
+              <h3 class="dashboard-card-title">Recent Critical Alerts</h3>
+              <a href="risk-register.html" class="btn btn-sm btn-outline">
+                View All
+              </a>
+            </div>
+            <div class="dashboard-card-body" style="padding: 0;">
+              <table class="alerts-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Finding</th>
+                    <th>Source</th>
+                    <th>CVSS</th>
+                    <th>Severity</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="alertsTableBody">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/charts.js"></script>
+  <script>
+    checkAuth();
+
+    document.addEventListener('DOMContentLoaded', async function() {
+      renderSidebar('dashboard');
+
+      // Animate KPI cards on load
+      var kpiCards = document.querySelectorAll('.kpi-card');
+      kpiCards.forEach(function(card, index) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(function() {
+          card.style.transition = 'all 0.5s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, index * 100);
+      });
+
+      // Animate dashboard cards
+      var dashboardCards = document.querySelectorAll('.dashboard-card');
+      dashboardCards.forEach(function(card, index) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(function() {
+          card.style.transition = 'all 0.5s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 400 + index * 100);
+      });
+
+      // Fetch dashboard KPIs
+      try {
+        var data = await URIP.apiFetch('/dashboard/kpis');
+        if (data) {
+          document.getElementById('kpi-total').textContent = (data.total_open != null) ? data.total_open : '--';
+          document.getElementById('kpi-critical').textContent = (data.critical != null) ? data.critical : '--';
+          document.getElementById('kpi-high').textContent = (data.high != null) ? data.high : '--';
+          document.getElementById('kpi-accepted').textContent = (data.accepted != null) ? data.accepted : '--';
+
+          // SLA banner
+          if (data.sla_breaching && data.sla_breaching.length > 0) {
+            var banner = document.getElementById('sla-banner');
+            banner.style.display = 'flex';
+            document.getElementById('slaBannerTitle').textContent =
+              data.sla_breaching.length + ' Critical risks breaching SLA in 24 hours';
+            document.getElementById('slaBannerText').textContent =
+              'Immediate attention required for ' + data.sla_breaching.map(function(r) { return r.title; }).join(', ');
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load KPIs:', e);
+      }
+
+      // Fetch recent alerts
+      try {
+        var alertData = await URIP.apiFetch('/risks?severity=critical&per_page=5&sort=created_at:desc');
+        var tbody = document.getElementById('alertsTableBody');
+        if (alertData && alertData.items) {
+          tbody.textContent = '';
+          alertData.items.forEach(function(r) {
+            var tr = document.createElement('tr');
+
+            var tdId = document.createElement('td');
+            var spanId = document.createElement('span');
+            spanId.className = 'risk-id';
+            spanId.textContent = r.risk_id;
+            tdId.appendChild(spanId);
+            tr.appendChild(tdId);
+
+            var tdFinding = document.createElement('td');
+            var divFinding = document.createElement('div');
+            divFinding.className = 'alert-finding';
+            var spanName = document.createElement('span');
+            spanName.className = 'alert-finding-name';
+            spanName.textContent = r.title;
+            divFinding.appendChild(spanName);
+            var spanMeta = document.createElement('span');
+            spanMeta.className = 'alert-finding-meta';
+            spanMeta.textContent = r.asset || '';
+            divFinding.appendChild(spanMeta);
+            tdFinding.appendChild(divFinding);
+            tr.appendChild(tdFinding);
+
+            var tdSource = document.createElement('td');
+            tdSource.textContent = r.source || '';
+            tr.appendChild(tdSource);
+
+            var tdCvss = document.createElement('td');
+            var spanCvss = document.createElement('span');
+            spanCvss.className = 'cvss-score cvss-' + (r.severity || '').toLowerCase();
+            spanCvss.textContent = (r.cvss_score != null) ? r.cvss_score : '';
+            tdCvss.appendChild(spanCvss);
+            tr.appendChild(tdCvss);
+
+            var tdSeverity = document.createElement('td');
+            var spanSev = document.createElement('span');
+            spanSev.className = 'badge badge-' + (r.severity || '').toLowerCase();
+            spanSev.textContent = r.severity || '';
+            tdSeverity.appendChild(spanSev);
+            tr.appendChild(tdSeverity);
+
+            var tdStatus = document.createElement('td');
+            var spanStatus = document.createElement('span');
+            spanStatus.className = 'status-tag status-' + (r.status || '').toLowerCase().replace(/ /g, '-');
+            spanStatus.textContent = r.status || '';
+            tdStatus.appendChild(spanStatus);
+            tr.appendChild(tdStatus);
+
+            tbody.appendChild(tr);
+          });
+        }
+      } catch (e) {
+        console.error('Failed to load alerts:', e);
+      }
+
+      // Initialize charts
+      if (typeof initRiskByDomainChart === 'function') initRiskByDomainChart();
+      if (typeof initRiskTrendChart === 'function') initRiskTrendChart();
+      if (typeof initRiskBySourceChart === 'function') initRiskBySourceChart();
+
+      // Refresh button
+      document.getElementById('btnRefresh').addEventListener('click', function() {
+        window.location.reload();
+      });
+    });
+  </script>
+</body>
+</html>

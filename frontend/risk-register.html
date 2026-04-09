@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risk Register | URIP - Unified Risk Intelligence Platform</title>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar Mount Point -->
+    <div id="sidebar-mount"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar (populated by sidebar.js) -->
+      <header class="topbar"></header>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Risk Register</h1>
+            <p class="page-subtitle">Comprehensive view of all identified risks across Royal Enfield</p>
+          </div>
+          <div class="flex gap-3">
+            <button class="btn btn-outline" id="btnExportExcel">
+              <i class="fas fa-file-excel"></i>
+              Export Excel
+            </button>
+            <button class="btn btn-outline" id="btnExportPdf">
+              <i class="fas fa-file-pdf"></i>
+              Export PDF
+            </button>
+            <button class="btn btn-primary" id="btnAddRisk">
+              <i class="fas fa-plus"></i>
+              Add Risk
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search by ID, finding, or asset...">
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Severity:</label>
+            <select class="filter-select" id="severityFilter">
+              <option value="all">All Severities</option>
+              <option value="critical">Critical</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Source:</label>
+            <select class="filter-select" id="sourceFilter">
+              <option value="all">All Sources</option>
+              <option value="spotlight">Spotlight</option>
+              <option value="easm">EASM</option>
+              <option value="cnapp">CNAPP</option>
+              <option value="armis">Armis</option>
+              <option value="vapt">VAPT</option>
+              <option value="threat-intel">Threat Intel</option>
+              <option value="cert-in">CERT-In</option>
+              <option value="bug-bounty">Bug Bounty</option>
+              <option value="soc">SoC</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Domain:</label>
+            <select class="filter-select" id="domainFilter">
+              <option value="all">All Domains</option>
+              <option value="endpoint">Endpoint</option>
+              <option value="cloud">Cloud</option>
+              <option value="network">Network</option>
+              <option value="application">Application</option>
+              <option value="identity">Identity</option>
+              <option value="ot">OT</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Status:</label>
+            <select class="filter-select" id="statusFilter">
+              <option value="all">All Status</option>
+              <option value="open">Open</option>
+              <option value="in-progress">In Progress</option>
+              <option value="accepted">Accepted</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Owner:</label>
+            <select class="filter-select" id="ownerFilter">
+              <option value="all">All Owners</option>
+              <option value="infra-team">Infra Team</option>
+              <option value="app-team">App Team</option>
+              <option value="cloud-team">Cloud Team</option>
+              <option value="ot-team">OT Team</option>
+              <option value="iam-team">IAM Team</option>
+              <option value="network-team">Network Team</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Risk Table -->
+        <div class="risk-table-container">
+          <div class="table-container">
+            <table class="risk-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Finding</th>
+                  <th>Source</th>
+                  <th>Domain</th>
+                  <th>CVSS</th>
+                  <th>Severity</th>
+                  <th>Asset</th>
+                  <th>Owner</th>
+                  <th>Status</th>
+                  <th>SLA Due</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="riskTableBody">
+                <!-- Populated by filters.js via API -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Table Footer -->
+          <div class="table-footer">
+            <div class="table-info">
+              Showing <span id="showingStart">0</span>-<span id="showingEnd">0</span> of <span id="totalItems">0</span> risks
+            </div>
+            <div id="pagination" class="pagination">
+              <!-- Fully dynamic pagination -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/filters.js"></script>
+  <script>
+    checkAuth();
+
+    document.addEventListener('DOMContentLoaded', function() {
+      renderSidebar('risk-register');
+    });
+
+    // Add CSS animations for notifications
+    var style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
