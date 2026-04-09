@@ -25,4 +25,4 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r requirements.txt
-      - run: PYTHONPATH=. pytest tests/ -v --tb=short -x 2>&1 || true
+      - run: PYTHONPATH=. pytest tests/ -v --tb=short -x
