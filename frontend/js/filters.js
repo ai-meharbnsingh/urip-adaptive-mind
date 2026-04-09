@@ -1,5 +1,5 @@
 /**
- * URIP - Risk Register Filters & Acceptance Workflow
+ * URIP - Risk Register Filters, Sorting, Cascading Filters & Action Handlers
  * All data loaded from API. NO hardcoded riskData or acceptanceData.
  * All DOM via createElement + textContent (NO innerHTML with user data).
  * Depends on: api.js (window.URIP.apiFetch, window.URIP.showNotification)
@@ -10,10 +10,32 @@
   var currentPage = 1;
   var perPage = 20;
 
+  // ─── SORT STATE ─────────────────────────────────────────────
+
+  var currentSortBy = 'risk_id';
+  var currentSortOrder = 'asc';
+
+  /**
+   * Map of column header display text to API sort_by field name.
+   * Only columns listed here are sortable.
+   */
+  var SORTABLE_COLUMNS = {
+    'ID': 'risk_id',
+    'Finding': 'finding',
+    'Source': 'source',
+    'Domain': 'domain',
+    'CVSS': 'cvss_score',
+    'Severity': 'severity',
+    'Asset': 'asset',
+    'Owner': 'owner_team',
+    'Status': 'status',
+    'SLA Due': 'sla_deadline'
+  };
+
   // ─── RISK REGISTER ──────────────────────────────────────────
 
   /**
-   * Load risks from API with filters and pagination.
+   * Load risks from API with filters, sorting, and pagination.
    *
    * @param {number} [page=1]
    * @param {object} [filters] - { severity, source, domain, status, owner, search }
@@ -27,6 +49,10 @@
     params.set('page', String(page));
     params.set('per_page', String(perPage));
 
+    // Sorting
+    params.set('sort_by', currentSortBy);
+    params.set('order', currentSortOrder);
+
     if (filters.severity && filters.severity !== 'all') params.set('severity', filters.severity);
     if (filters.source && filters.source !== 'all') params.set('source', filters.source);
     if (filters.domain && filters.domain !== 'all') params.set('domain', filters.domain);
@@ -37,10 +63,210 @@
     try {
       var data = await window.URIP.apiFetch('/risks?' + params.toString());
       renderRiskTable(data);
+      updateSortHeaders();
+      loadFilterOptions(filters);
     } catch (err) {
       window.URIP.showNotification('Error', 'Failed to load risk register.', 'error');
     }
   }
+
+  // ─── SORTABLE COLUMN HEADERS ────────────────────────────────
+
+  /**
+   * Replace static <th> text with clickable sort headers.
+   * Called once on DOMContentLoaded.
+   */
+  function initSortableHeaders() {
+    var thead = document.querySelector('.risk-table thead tr');
+    if (!thead) return;
+
+    var ths = thead.querySelectorAll('th');
+    ths.forEach(function (th) {
+      var label = th.textContent.trim();
+      var sortField = SORTABLE_COLUMNS[label];
+      if (!sortField) return; // Not sortable (e.g. "Actions")
+
+      th.textContent = '';
+      th.style.cursor = 'pointer';
+      th.style.userSelect = 'none';
+      th.setAttribute('data-sort-field', sortField);
+
+      var wrapper = document.createElement('span');
+      wrapper.style.cssText = 'display:inline-flex;align-items:center;gap:6px';
+
+      var textSpan = document.createElement('span');
+      textSpan.textContent = label;
+      wrapper.appendChild(textSpan);
+
+      var iconEl = document.createElement('i');
+      iconEl.className = 'fas fa-sort';
+      iconEl.style.cssText = 'font-size:0.75rem;opacity:0.4';
+      iconEl.setAttribute('data-sort-icon', sortField);
+      wrapper.appendChild(iconEl);
+
+      th.appendChild(wrapper);
+
+      th.addEventListener('click', (function (field) {
+        return function () {
+          if (currentSortBy === field) {
+            currentSortOrder = currentSortOrder === 'asc' ? 'desc' : 'asc';
+          } else {
+            currentSortBy = field;
+            currentSortOrder = 'asc';
+          }
+          loadRiskRegister(1, collectFilters());
+        };
+      })(sortField));
+    });
+  }
+
+  /**
+   * Update sort arrow icons on column headers to reflect current sort state.
+   */
+  function updateSortHeaders() {
+    var icons = document.querySelectorAll('[data-sort-icon]');
+    icons.forEach(function (icon) {
+      var field = icon.getAttribute('data-sort-icon');
+      if (field === currentSortBy) {
+        icon.className = currentSortOrder === 'asc'
+          ? 'fas fa-sort-up'
+          : 'fas fa-sort-down';
+        icon.style.opacity = '1';
+      } else {
+        icon.className = 'fas fa-sort';
+        icon.style.opacity = '0.4';
+      }
+    });
+  }
+
+  // ─── CASCADING / DYNAMIC FILTERS ────────────────────────────
+
+  /**
+   * After a filter change, fetch the full filtered dataset (high per_page)
+   * and update dropdown options for the OTHER filters to show only
+   * values that exist in the current result set.
+   *
+   * @param {object} currentFilters - the filters currently applied
+   */
+  async function loadFilterOptions(currentFilters) {
+    currentFilters = currentFilters || {};
+
+    // Build query with current filters but large page to get all matching IDs
+    var params = new URLSearchParams();
+    params.set('page', '1');
+    params.set('per_page', '2000');
+
+    if (currentFilters.severity && currentFilters.severity !== 'all') params.set('severity', currentFilters.severity);
+    if (currentFilters.source && currentFilters.source !== 'all') params.set('source', currentFilters.source);
+    if (currentFilters.domain && currentFilters.domain !== 'all') params.set('domain', currentFilters.domain);
+    if (currentFilters.status && currentFilters.status !== 'all') params.set('status', currentFilters.status);
+    if (currentFilters.owner && currentFilters.owner !== 'all') params.set('owner', currentFilters.owner);
+    if (currentFilters.search) params.set('search', currentFilters.search);
+
+    try {
+      var data = await window.URIP.apiFetch('/risks?' + params.toString());
+      if (!data || !data.items) return;
+
+      var items = data.items;
+
+      // Extract unique values for each filter dimension
+      var uniqueSeverities = extractUnique(items, 'severity');
+      var uniqueSources = extractUnique(items, 'source');
+      var uniqueDomains = extractUnique(items, 'domain');
+      var uniqueStatuses = extractUnique(items, 'status');
+      var uniqueOwners = extractUnique(items, 'owner_team');
+
+      // Update each filter dropdown — but only for filters that are NOT currently selected
+      // (don't change the dropdown for a filter that is actively filtering)
+      if (!currentFilters.severity || currentFilters.severity === 'all') {
+        updateFilterDropdown('severityFilter', uniqueSeverities, 'All Severities', capitalizeFirst);
+      }
+      if (!currentFilters.source || currentFilters.source === 'all') {
+        updateFilterDropdown('sourceFilter', uniqueSources, 'All Sources', formatSourceName);
+      }
+      if (!currentFilters.domain || currentFilters.domain === 'all') {
+        updateFilterDropdown('domainFilter', uniqueDomains, 'All Domains', capitalizeFirst);
+      }
+      if (!currentFilters.status || currentFilters.status === 'all') {
+        updateFilterDropdown('statusFilter', uniqueStatuses, 'All Status', formatStatus);
+      }
+      if (!currentFilters.owner || currentFilters.owner === 'all') {
+        updateFilterDropdown('ownerFilter', uniqueOwners, 'All Owners', formatOwnerName);
+      }
+    } catch (_err) {
+      // Silent fail — filter options stay as-is
+    }
+  }
+
+  /**
+   * Extract unique non-empty values from an array of objects by key.
+   *
+   * @param {Array} items
+   * @param {string} key
+   * @returns {string[]} sorted unique values
+   */
+  function extractUnique(items, key) {
+    var seen = {};
+    items.forEach(function (item) {
+      var val = item[key];
+      if (val && val !== '') {
+        seen[val] = true;
+      }
+    });
+    return Object.keys(seen).sort();
+  }
+
+  /**
+   * Update a <select> dropdown with new option values while preserving the current selection.
+   *
+   * @param {string} selectId - DOM id of the <select>
+   * @param {string[]} values - available option values
+   * @param {string} allLabel - label for the "all" option
+   * @param {function} formatFn - function to format display text from value
+   */
+  function updateFilterDropdown(selectId, values, allLabel, formatFn) {
+    var select = document.getElementById(selectId);
+    if (!select) return;
+
+    var currentValue = select.value;
+
+    // Remove all options except the first "all" option
+    select.textContent = '';
+
+    // Re-add "all" option
+    var allOpt = document.createElement('option');
+    allOpt.value = 'all';
+    allOpt.textContent = allLabel;
+    select.appendChild(allOpt);
+
+    // Add available values
+    values.forEach(function (val) {
+      var opt = document.createElement('option');
+      opt.value = val;
+      opt.textContent = formatFn(val);
+      select.appendChild(opt);
+    });
+
+    // Restore previous selection if it still exists
+    if (currentValue && currentValue !== 'all') {
+      var exists = values.indexOf(currentValue) !== -1;
+      if (exists) {
+        select.value = currentValue;
+      } else {
+        select.value = 'all';
+      }
+    }
+  }
+
+  /**
+   * Format owner team name for display.
+   */
+  function formatOwnerName(name) {
+    if (!name) return '';
+    return name.replace(/[-_]/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+  }
+
+  // ─── RISK TABLE RENDERING ──────────────────────────────────
 
   /**
    * Render risk table from API response.
@@ -177,7 +403,7 @@
         // Status
         var tdStatus = document.createElement('td');
         var statusTag = document.createElement('span');
-        var statusClass = 'status-' + (risk.status || 'open').replace('_', '-');
+        var statusClass = 'status-' + (risk.status || 'open').replace(/_/g, '-');
         statusTag.className = 'status-tag ' + statusClass;
         statusTag.textContent = formatStatus(risk.status);
         tdStatus.appendChild(statusTag);
@@ -216,7 +442,7 @@
         }
         tr.appendChild(tdSla);
 
-        // Notes
+        // Notes (Jira Ticket)
         var tdNotes = document.createElement('td');
         tdNotes.textContent = risk.jira_ticket || '-';
         tr.appendChild(tdNotes);
@@ -230,12 +456,24 @@
         viewBtn.className = 'action-btn view';
         viewBtn.title = 'View Details';
         viewBtn.appendChild(createIcon('fa-eye'));
+        viewBtn.addEventListener('click', (function (riskId) {
+          return function (e) {
+            e.stopPropagation();
+            showRiskDetailModal(riskId);
+          };
+        })(risk.risk_id));
         actionsDiv.appendChild(viewBtn);
 
         var assignBtn = document.createElement('button');
         assignBtn.className = 'action-btn assign';
         assignBtn.title = 'Assign';
         assignBtn.appendChild(createIcon('fa-user-plus'));
+        assignBtn.addEventListener('click', (function (riskId) {
+          return function (e) {
+            e.stopPropagation();
+            showAssignModal(riskId, e.currentTarget);
+          };
+        })(risk.risk_id));
         actionsDiv.appendChild(assignBtn);
 
         if (risk.status !== 'accepted' && risk.status !== 'closed') {
@@ -264,6 +502,395 @@
     if (showingEnd) showingEnd.textContent = String(Math.min(data.page * perPage, data.total));
     if (totalItems) totalItems.textContent = String(data.total);
   }
+
+  // ─── VIEW DETAIL MODAL ─────────────────────────────────────
+
+  /**
+   * Fetch full risk details and display in a modal overlay.
+   *
+   * @param {string} riskId - e.g. "RISK-001"
+   */
+  async function showRiskDetailModal(riskId) {
+    // Remove any existing modal
+    closeModal('urip-risk-detail-modal');
+
+    // Create overlay
+    var overlay = document.createElement('div');
+    overlay.id = 'urip-risk-detail-modal';
+    overlay.style.cssText =
+      'position:fixed;top:0;left:0;width:100%;height:100%;' +
+      'background:rgba(0,0,0,0.5);z-index:10000;display:flex;' +
+      'align-items:center;justify-content:center;padding:20px';
+
+    // Close on overlay click
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closeModal('urip-risk-detail-modal');
+    });
+
+    // Modal box
+    var modal = document.createElement('div');
+    modal.style.cssText =
+      'background:#fff;border-radius:12px;width:100%;max-width:680px;' +
+      'max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);' +
+      'padding:0';
+
+    // Loading state
+    var loadingDiv = document.createElement('div');
+    loadingDiv.style.cssText = 'padding:40px;text-align:center;color:#64748B';
+    loadingDiv.textContent = 'Loading risk details...';
+    modal.appendChild(loadingDiv);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    try {
+      var data = await window.URIP.apiFetch('/risks/' + encodeURIComponent(riskId));
+      modal.textContent = '';
+      renderRiskDetailContent(modal, data);
+    } catch (err) {
+      modal.textContent = '';
+      var errorDiv = document.createElement('div');
+      errorDiv.style.cssText = 'padding:40px;text-align:center;color:#E74C3C';
+      errorDiv.textContent = 'Failed to load risk details: ' + (err.message || 'Unknown error');
+      modal.appendChild(errorDiv);
+
+      var closeBtn = document.createElement('button');
+      closeBtn.textContent = 'Close';
+      closeBtn.style.cssText =
+        'display:block;margin:0 auto 20px;padding:8px 24px;border:none;' +
+        'background:#64748B;color:#fff;border-radius:6px;cursor:pointer';
+      closeBtn.addEventListener('click', function () { closeModal('urip-risk-detail-modal'); });
+      modal.appendChild(closeBtn);
+    }
+  }
+
+  /**
+   * Populate the detail modal with risk information and history.
+   *
+   * @param {HTMLElement} modal
+   * @param {object} data - API response from /risks/{risk_id}, may contain .risk and .history
+   */
+  function renderRiskDetailContent(modal, data) {
+    // The API may return { risk: {...}, history: [...] } or just the risk object
+    var risk = data.risk || data;
+    var history = data.history || [];
+
+    // Header bar
+    var header = document.createElement('div');
+    header.style.cssText =
+      'display:flex;align-items:center;justify-content:space-between;' +
+      'padding:20px 24px;border-bottom:1px solid #E2E8F0';
+
+    var titleDiv = document.createElement('div');
+    var titleH3 = document.createElement('h3');
+    titleH3.style.cssText = 'margin:0;font-size:1.125rem;font-weight:600;color:#1E293B';
+    titleH3.textContent = 'Risk Details';
+    titleDiv.appendChild(titleH3);
+
+    var idBadge = document.createElement('span');
+    idBadge.style.cssText =
+      'display:inline-block;margin-top:4px;font-size:0.8125rem;' +
+      'color:#6366F1;font-weight:500';
+    idBadge.textContent = risk.risk_id || '';
+    titleDiv.appendChild(idBadge);
+    header.appendChild(titleDiv);
+
+    var closeBtn = document.createElement('button');
+    closeBtn.style.cssText =
+      'background:none;border:none;font-size:1.25rem;color:#94A3B8;' +
+      'cursor:pointer;padding:4px 8px;border-radius:4px';
+    closeBtn.textContent = '\u00D7'; // multiplication sign as close icon
+    closeBtn.title = 'Close';
+    closeBtn.addEventListener('click', function () { closeModal('urip-risk-detail-modal'); });
+    header.appendChild(closeBtn);
+    modal.appendChild(header);
+
+    // Body
+    var body = document.createElement('div');
+    body.style.cssText = 'padding:24px';
+
+    // Main detail fields
+    var fields = [
+      { label: 'Risk ID', value: risk.risk_id },
+      { label: 'Finding', value: risk.finding },
+      { label: 'Description', value: risk.description },
+      { label: 'Source', value: formatSourceName(risk.source) },
+      { label: 'Domain', value: capitalizeFirst(risk.domain) },
+      { label: 'CVSS Score', value: risk.cvss_score != null ? String(risk.cvss_score) : '-' },
+      { label: 'Severity', value: capitalizeFirst(risk.severity) },
+      { label: 'Asset', value: risk.asset || '-' },
+      { label: 'Owner Team', value: risk.owner_team || '-' },
+      { label: 'Status', value: formatStatus(risk.status) },
+      { label: 'SLA Deadline', value: formatDate(risk.sla_deadline) },
+      { label: 'Jira Ticket', value: risk.jira_ticket || '-' },
+      { label: 'CVE ID', value: risk.cve_id || '-' },
+      { label: 'Created At', value: formatDate(risk.created_at) }
+    ];
+
+    var grid = document.createElement('div');
+    grid.style.cssText =
+      'display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;margin-bottom:24px';
+
+    fields.forEach(function (f) {
+      var fieldDiv = document.createElement('div');
+
+      var labelEl = document.createElement('div');
+      labelEl.style.cssText = 'font-size:0.75rem;font-weight:500;color:#94A3B8;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px';
+      labelEl.textContent = f.label;
+
+      var valueEl = document.createElement('div');
+      valueEl.style.cssText = 'font-size:0.875rem;color:#1E293B;word-break:break-word';
+      valueEl.textContent = f.value || '-';
+
+      // Special styling for description — full width
+      if (f.label === 'Description' || f.label === 'Finding') {
+        fieldDiv.style.gridColumn = '1 / -1';
+      }
+
+      fieldDiv.appendChild(labelEl);
+      fieldDiv.appendChild(valueEl);
+      grid.appendChild(fieldDiv);
+    });
+
+    body.appendChild(grid);
+
+    // History section
+    if (history.length > 0) {
+      var historySection = document.createElement('div');
+      historySection.style.cssText = 'border-top:1px solid #E2E8F0;padding-top:20px';
+
+      var historyTitle = document.createElement('h4');
+      historyTitle.style.cssText =
+        'font-size:0.8125rem;font-weight:600;color:#475569;' +
+        'text-transform:uppercase;letter-spacing:0.05em;margin:0 0 12px';
+      historyTitle.textContent = 'Change History';
+      historySection.appendChild(historyTitle);
+
+      history.forEach(function (entry) {
+        var entryDiv = document.createElement('div');
+        entryDiv.style.cssText =
+          'display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:0.8125rem';
+
+        var timeDiv = document.createElement('div');
+        timeDiv.style.cssText = 'color:#94A3B8;min-width:120px;flex-shrink:0';
+        timeDiv.textContent = formatDate(entry.changed_at || entry.timestamp || entry.created_at);
+
+        var detailDiv = document.createElement('div');
+        detailDiv.style.cssText = 'color:#1E293B;flex:1';
+
+        var userSpan = document.createElement('span');
+        userSpan.style.cssText = 'font-weight:500';
+        userSpan.textContent = entry.changed_by || entry.user || 'System';
+        detailDiv.appendChild(userSpan);
+
+        var actionText = document.createTextNode(
+          ' changed ' + (entry.field || 'status') +
+          (entry.old_value ? ' from "' + entry.old_value + '"' : '') +
+          (entry.new_value ? ' to "' + entry.new_value + '"' : '')
+        );
+        detailDiv.appendChild(actionText);
+
+        entryDiv.appendChild(timeDiv);
+        entryDiv.appendChild(detailDiv);
+        historySection.appendChild(entryDiv);
+      });
+
+      body.appendChild(historySection);
+    }
+
+    modal.appendChild(body);
+
+    // Footer with close button
+    var footer = document.createElement('div');
+    footer.style.cssText =
+      'padding:16px 24px;border-top:1px solid #E2E8F0;text-align:right';
+
+    var footerCloseBtn = document.createElement('button');
+    footerCloseBtn.style.cssText =
+      'padding:8px 24px;border:1px solid #CBD5E1;background:#fff;' +
+      'color:#475569;border-radius:6px;cursor:pointer;font-size:0.875rem;font-weight:500';
+    footerCloseBtn.textContent = 'Close';
+    footerCloseBtn.addEventListener('click', function () { closeModal('urip-risk-detail-modal'); });
+    footer.appendChild(footerCloseBtn);
+    modal.appendChild(footer);
+  }
+
+  // ─── ASSIGN MODAL ──────────────────────────────────────────
+
+  /**
+   * Show a small dropdown modal to assign a user to a risk.
+   *
+   * @param {string} riskId
+   * @param {HTMLElement} anchorBtn - the button that was clicked, for positioning
+   */
+  async function showAssignModal(riskId, anchorBtn) {
+    // Remove any existing assign modal
+    closeModal('urip-assign-modal');
+
+    // Create overlay
+    var overlay = document.createElement('div');
+    overlay.id = 'urip-assign-modal';
+    overlay.style.cssText =
+      'position:fixed;top:0;left:0;width:100%;height:100%;' +
+      'background:rgba(0,0,0,0.3);z-index:10000;display:flex;' +
+      'align-items:center;justify-content:center;padding:20px';
+
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closeModal('urip-assign-modal');
+    });
+
+    // Modal box
+    var modal = document.createElement('div');
+    modal.style.cssText =
+      'background:#fff;border-radius:10px;width:100%;max-width:400px;' +
+      'box-shadow:0 20px 60px rgba(0,0,0,0.25);overflow:hidden';
+
+    // Header
+    var header = document.createElement('div');
+    header.style.cssText =
+      'display:flex;align-items:center;justify-content:space-between;' +
+      'padding:16px 20px;border-bottom:1px solid #E2E8F0';
+
+    var titleEl = document.createElement('h4');
+    titleEl.style.cssText = 'margin:0;font-size:0.9375rem;font-weight:600;color:#1E293B';
+    titleEl.textContent = 'Assign Risk ' + riskId;
+    header.appendChild(titleEl);
+
+    var closeBtn = document.createElement('button');
+    closeBtn.style.cssText =
+      'background:none;border:none;font-size:1.125rem;color:#94A3B8;cursor:pointer;padding:2px 6px';
+    closeBtn.textContent = '\u00D7';
+    closeBtn.addEventListener('click', function () { closeModal('urip-assign-modal'); });
+    header.appendChild(closeBtn);
+    modal.appendChild(header);
+
+    // Body — loading state
+    var body = document.createElement('div');
+    body.style.cssText = 'padding:16px 20px;max-height:320px;overflow-y:auto';
+
+    var loadingText = document.createElement('div');
+    loadingText.style.cssText = 'text-align:center;color:#64748B;padding:12px';
+    loadingText.textContent = 'Loading users...';
+    body.appendChild(loadingText);
+    modal.appendChild(body);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    // Fetch users
+    try {
+      var users = await window.URIP.apiFetch('/settings/users');
+      body.textContent = '';
+
+      // users may be an array or { items: [...] }
+      var userList = Array.isArray(users) ? users : (users.items || users.users || []);
+
+      if (userList.length === 0) {
+        var noUsers = document.createElement('div');
+        noUsers.style.cssText = 'text-align:center;color:#94A3B8;padding:12px';
+        noUsers.textContent = 'No users available.';
+        body.appendChild(noUsers);
+        return;
+      }
+
+      userList.forEach(function (user) {
+        var userRow = document.createElement('div');
+        userRow.style.cssText =
+          'display:flex;align-items:center;gap:12px;padding:10px 12px;' +
+          'border-radius:6px;cursor:pointer;transition:background 0.15s';
+
+        userRow.addEventListener('mouseenter', function () {
+          userRow.style.background = '#F1F5F9';
+        });
+        userRow.addEventListener('mouseleave', function () {
+          userRow.style.background = 'transparent';
+        });
+
+        // Avatar
+        var avatar = document.createElement('div');
+        avatar.style.cssText =
+          'width:36px;height:36px;border-radius:50%;background:#6366F1;' +
+          'color:#fff;display:flex;align-items:center;justify-content:center;' +
+          'font-size:0.8125rem;font-weight:600;flex-shrink:0';
+        avatar.textContent = getInitials(user.name || user.username || '');
+
+        var infoDiv = document.createElement('div');
+        infoDiv.style.cssText = 'flex:1;min-width:0';
+
+        var nameEl = document.createElement('div');
+        nameEl.style.cssText = 'font-size:0.875rem;font-weight:500;color:#1E293B';
+        nameEl.textContent = user.name || user.username || 'Unknown';
+
+        var roleEl = document.createElement('div');
+        roleEl.style.cssText = 'font-size:0.75rem;color:#94A3B8';
+        roleEl.textContent = user.role || user.team || '';
+
+        infoDiv.appendChild(nameEl);
+        infoDiv.appendChild(roleEl);
+
+        userRow.appendChild(avatar);
+        userRow.appendChild(infoDiv);
+
+        userRow.addEventListener('click', (function (userId, userName) {
+          return function () {
+            assignRiskToUser(riskId, userId, userName);
+          };
+        })(user.id, user.name || user.username));
+
+        body.appendChild(userRow);
+      });
+    } catch (err) {
+      body.textContent = '';
+      var errorDiv = document.createElement('div');
+      errorDiv.style.cssText = 'text-align:center;color:#E74C3C;padding:12px';
+      errorDiv.textContent = 'Failed to load users: ' + (err.message || 'Unknown error');
+      body.appendChild(errorDiv);
+    }
+  }
+
+  /**
+   * POST assignment of a user to a risk, then close the modal and reload.
+   *
+   * @param {string} riskId
+   * @param {string} userId
+   * @param {string} userName
+   */
+  async function assignRiskToUser(riskId, userId, userName) {
+    try {
+      await window.URIP.apiFetch('/risks/' + encodeURIComponent(riskId) + '/assign', {
+        method: 'POST',
+        body: JSON.stringify({ user_id: userId })
+      });
+      closeModal('urip-assign-modal');
+      window.URIP.showNotification(
+        'Assigned',
+        'Risk ' + riskId + ' assigned to ' + userName + '.',
+        'success'
+      );
+      // Reload the table to reflect the change
+      loadRiskRegister(currentPage, collectFilters());
+    } catch (err) {
+      window.URIP.showNotification(
+        'Error',
+        'Failed to assign risk: ' + (err.message || 'Unknown error'),
+        'error'
+      );
+    }
+  }
+
+  // ─── MODAL HELPERS ─────────────────────────────────────────
+
+  /**
+   * Close and remove a modal overlay by ID.
+   *
+   * @param {string} modalId
+   */
+  function closeModal(modalId) {
+    var existing = document.getElementById(modalId);
+    if (existing && existing.parentNode) {
+      existing.parentNode.removeChild(existing);
+    }
+  }
+
+  // ─── PAGINATION ─────────────────────────────────────────────
 
   /**
    * Render pagination controls dynamically.
@@ -721,6 +1348,9 @@
     var isAcceptance = !!document.getElementById('requestList');
 
     if (isRiskRegister) {
+      // Initialize sortable column headers before first load
+      initSortableHeaders();
+
       loadRiskRegister(1, collectFilters());
 
       // Attach filter change listeners
@@ -752,4 +1382,6 @@
   window.selectRequest = selectRequest;
   window.approveRequest = approveRequest;
   window.rejectRequest = rejectRequest;
+  window.showRiskDetailModal = showRiskDetailModal;
+  window.showAssignModal = showAssignModal;
 })();
