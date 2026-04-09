@@ -16,6 +16,7 @@ class RiskCreate(BaseModel):
     epss_score: float | None = None
     in_kev_catalog: bool = False
     exploit_status: str | None = None
+    asset_tier: int | None = None
     composite_score: float | None = None
 
 
@@ -46,6 +47,7 @@ class RiskRead(BaseModel):
     epss_percentile: float | None = None
     in_kev_catalog: bool = False
     exploit_status: str | None = None
+    asset_tier: int | None = None
     composite_score: float | None = None
     created_at: datetime
     updated_at: datetime

@@ -40,6 +40,7 @@ def risk_to_read(r: Risk) -> RiskRead:
         epss_percentile=float(r.epss_percentile) if r.epss_percentile is not None else None,
         in_kev_catalog=r.in_kev_catalog,
         exploit_status=r.exploit_status,
+        asset_tier=r.asset_tier,
         composite_score=float(r.composite_score) if r.composite_score is not None else None,
         created_at=r.created_at,
         updated_at=r.updated_at,
@@ -175,6 +176,10 @@ async def create_risk(
         sla_deadline=sla_deadline,
         cve_id=data.cve_id,
     )
+
+    # Auto-classify asset tier
+    from backend.services.asset_criticality_service import classify_asset
+    risk.asset_tier = data.asset_tier if data.asset_tier else classify_asset(data.asset)
 
     # Apply exploitability fields if provided (e.g. from simulator)
     has_exploitability = data.composite_score is not None

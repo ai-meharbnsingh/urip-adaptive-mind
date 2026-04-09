@@ -241,10 +241,17 @@ _SEVERITY_EPSS_DEFAULTS = {
 }
 
 
-def _compute_composite(cvss: float, epss: float | None, in_kev: bool, severity: str) -> float:
+def _compute_composite(cvss: float, epss: float | None, in_kev: bool, severity: str, asset_name: str = "") -> float:
+    from backend.services.asset_criticality_service import classify_asset, get_asset_bonus
     effective_epss = epss if epss is not None else _SEVERITY_EPSS_DEFAULTS.get(severity, 0.05)
     kev_bonus = 2.0 if in_kev else 0.0
-    return round(min(10.0, max(0.0, 0.55 * cvss + 2.5 * effective_epss + kev_bonus)), 1)
+    asset_bonus = get_asset_bonus(classify_asset(asset_name))
+    return round(max(0.0, min(10.0, 0.55 * cvss + 2.5 * effective_epss + kev_bonus + asset_bonus)), 1)
+
+
+def _classify_asset_tier(asset_name: str) -> int:
+    from backend.services.asset_criticality_service import classify_asset
+    return classify_asset(asset_name)
 
 
 def _derive_exploit_status(epss: float | None, in_kev: bool) -> str:
@@ -342,8 +349,9 @@ def push_vulnerabilities(count: int, token: str, client: httpx.Client) -> int:
         vuln["epss_score"] = epss_score
         vuln["in_kev_catalog"] = in_kev
         vuln["exploit_status"] = _derive_exploit_status(epss_score, in_kev)
+        vuln["asset_tier"] = _classify_asset_tier(vuln["asset"])
         vuln["composite_score"] = _compute_composite(
-            vuln["cvss_score"], epss_score, in_kev, vuln["severity"]
+            vuln["cvss_score"], epss_score, in_kev, vuln["severity"], vuln["asset"]
         )
 
     success = 0

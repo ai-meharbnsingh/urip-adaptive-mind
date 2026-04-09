@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Numeric, String, Text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Integer, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -39,6 +39,8 @@ class Risk(Base):
     epss_percentile: Mapped[float | None] = mapped_column(Numeric(5, 2), nullable=True)
     in_kev_catalog: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="false")
     exploit_status: Mapped[str | None] = mapped_column(String(15), nullable=True)  # none, poc, active, weaponized
+    # Asset criticality
+    asset_tier: Mapped[int | None] = mapped_column(Integer, nullable=True)  # 1=Critical, 2=High, 3=Medium, 4=Low
     composite_score: Mapped[float | None] = mapped_column(Numeric(4, 1), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(
