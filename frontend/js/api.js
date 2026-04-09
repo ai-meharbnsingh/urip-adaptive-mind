@@ -7,6 +7,11 @@
 
   var URIP = window.URIP || {};
 
+  // API base URL: use Railway backend in production, local /api in dev
+  var API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? '/api'
+    : 'https://urip-backend-production.up.railway.app/api';
+
   /**
    * Wraps fetch with JWT auth and base-path prepending.
    * On 401, redirects to login page.
@@ -30,7 +35,7 @@
 
     options.headers = headers;
 
-    var url = '/api' + path;
+    var url = API_BASE + path;
     var response;
     try {
       response = await fetch(url, options);
