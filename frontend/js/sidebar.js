@@ -15,7 +15,7 @@
         { label: 'Risk Register', href: 'risk-register.html', icon: 'fa-list-alt', page: 'risk-register', badgeAPI: '/risks?per_page=1' },
         { label: 'Acceptance Workflow', href: 'acceptance-workflow.html', icon: 'fa-clipboard-check', page: 'acceptance-workflow', badgeAPI: '/acceptance?status=pending' },
         { label: 'Remediation Tracker', href: 'remediation-tracker.html', icon: 'fa-tasks', page: 'remediation-tracker' },
-        { label: 'Threat Map', href: '#', icon: 'fa-globe', page: 'threat-map' }
+        { label: 'Threat Map', href: 'threat-map.html', icon: 'fa-globe', page: 'threat-map' }
       ]
     },
     {

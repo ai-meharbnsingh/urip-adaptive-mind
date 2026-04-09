@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Threat Intelligence | URIP - Unified Risk Intelligence Platform</title>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+
+  <!-- Threat Intel Styles (inline to avoid extra CSS file) -->
+  <style>
+    /* ─── KPI Grid ─────────────────────────────────── */
+    .ti-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 1100px) { .ti-kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px)  { .ti-kpi-grid { grid-template-columns: 1fr; } }
+
+    .ti-kpi-card {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: box-shadow var(--transition-base), transform var(--transition-base);
+    }
+    .ti-kpi-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .ti-kpi-icon {
+      width: 48px; height: 48px;
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; color: #fff;
+    }
+    .ti-kpi-icon.pulses   { background: linear-gradient(135deg, #E74C3C, #C0392B); }
+    .ti-kpi-icon.iocs     { background: linear-gradient(135deg, #E67E22, #D35400); }
+    .ti-kpi-icon.apt      { background: linear-gradient(135deg, #8E44AD, #6C3483); }
+    .ti-kpi-icon.relevant { background: linear-gradient(135deg, #1ABC9C, #16A085); }
+    .ti-kpi-value {
+      font-size: 28px; font-weight: 700; color: var(--gray-800);
+      line-height: 1;
+    }
+    .ti-kpi-label {
+      font-size: 13px; color: var(--gray-500); margin-top: 4px;
+    }
+
+    /* ─── Section Cards ────────────────────────────── */
+    .ti-section {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .ti-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .ti-section-title {
+      font-size: 16px; font-weight: 700; color: var(--gray-800);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .ti-section-title i { color: var(--teal-accent); }
+    .ti-section-body { padding: 24px; }
+
+    /* ─── Pulse Cards ──────────────────────────────── */
+    .ti-pulse-card {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    }
+    .ti-pulse-card:hover {
+      border-color: var(--teal-accent);
+      box-shadow: var(--shadow-md);
+    }
+    .ti-pulse-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 12px; margin-bottom: 8px;
+    }
+    .ti-pulse-name {
+      font-size: 15px; font-weight: 700; color: var(--gray-800);
+      line-height: 1.4;
+    }
+    .ti-pulse-adversary {
+      font-size: 13px; color: var(--gray-600); margin-bottom: 8px;
+    }
+    .ti-pulse-adversary i { color: var(--red-critical); margin-right: 4px; }
+    .ti-pulse-desc {
+      font-size: 13px; color: var(--gray-500); line-height: 1.5;
+      margin-bottom: 12px;
+    }
+    .ti-pulse-meta {
+      display: flex; gap: 20px; margin-bottom: 12px;
+      font-size: 12px; color: var(--gray-500);
+    }
+    .ti-pulse-meta i { margin-right: 4px; }
+    .ti-pulse-relevance {
+      margin-bottom: 12px;
+    }
+    .ti-relevance-label {
+      font-size: 12px; color: var(--gray-600); font-weight: 600;
+      display: block; margin-bottom: 4px;
+    }
+    .ti-pulse-tags {
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+
+    /* ─── Tags ─────────────────────────────────────── */
+    .ti-tag {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 500;
+      background: var(--gray-200);
+      color: var(--gray-700);
+    }
+    .ti-tag-sm { font-size: 10px; padding: 1px 8px; }
+    .ti-tag-more { background: var(--gray-300); }
+    .ti-tag-sector {
+      background: rgba(26, 188, 156, 0.15);
+      color: #0E7C6B;
+    }
+
+    /* ─── Tables ───────────────────────────────────── */
+    .ti-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .ti-table thead th {
+      text-align: left;
+      padding: 12px 14px;
+      font-weight: 600;
+      color: var(--gray-600);
+      background: var(--gray-50);
+      border-bottom: 2px solid var(--gray-200);
+      white-space: nowrap;
+    }
+    .ti-table tbody td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--gray-100);
+      color: var(--gray-700);
+      vertical-align: middle;
+    }
+    .ti-table tbody tr:hover { background: var(--gray-50); }
+    .ti-ioc-type { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .ti-ioc-type i { color: var(--teal-accent); }
+
+    /* ─── Dark Web Cards ───────────────────────────── */
+    .ti-dw-card {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .ti-dw-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 12px; margin-bottom: 10px;
+    }
+    .ti-dw-title {
+      font-size: 15px; font-weight: 700; color: var(--gray-800);
+    }
+    .ti-dw-type {
+      display: flex; align-items: center; gap: 16px;
+      font-size: 13px; color: var(--gray-600);
+      margin-bottom: 10px;
+    }
+    .ti-dw-type i { margin-right: 4px; }
+    .ti-dw-desc {
+      font-size: 13px; color: var(--gray-500); line-height: 1.5;
+      margin-bottom: 12px;
+    }
+    .ti-dw-domains {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+      margin-bottom: 12px; font-size: 13px;
+    }
+    .ti-dw-status-row {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 12px; font-size: 13px;
+    }
+    .ti-dw-accounts i { margin-right: 4px; color: var(--gray-500); }
+    .ti-dw-actions {
+      background: rgba(26, 188, 156, 0.06);
+      border: 1px solid rgba(26, 188, 156, 0.2);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-top: 8px;
+    }
+    .ti-dw-actions-label {
+      font-size: 12px; font-weight: 700; color: var(--teal-accent);
+      margin-bottom: 8px;
+    }
+    .ti-dw-actions-list {
+      list-style: disc;
+      padding-left: 20px;
+      font-size: 12px;
+      color: var(--gray-600);
+    }
+    .ti-dw-actions-list li { margin-bottom: 4px; }
+
+    /* ─── Geo Cards ────────────────────────────────── */
+    .ti-geo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+    .ti-geo-card {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+    .ti-geo-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .ti-geo-tlps {
+      display: flex; gap: 6px; margin-bottom: 10px;
+    }
+    .ti-geo-pulses { margin-bottom: 10px; }
+    .ti-geo-pulse-name {
+      font-size: 12px; color: var(--gray-600);
+      padding: 2px 0;
+    }
+    .ti-geo-pulse-name i {
+      color: var(--red-critical);
+      margin-right: 4px;
+      font-size: 10px;
+    }
+    .ti-geo-relevance {
+      font-size: 12px; color: var(--gray-500);
+    }
+    .ti-geo-relevance span { display: block; margin-bottom: 4px; }
+
+    /* ─── Search ───────────────────────────────────── */
+    .ti-search-input {
+      width: 100%; max-width: 360px;
+      padding: 10px 14px 10px 38px;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      color: var(--gray-700);
+      background: #fff;
+      transition: border-color var(--transition-fast);
+    }
+    .ti-search-input:focus {
+      outline: none;
+      border-color: var(--teal-accent);
+      box-shadow: 0 0 0 3px rgba(26, 188, 156, 0.15);
+    }
+    .ti-search-wrap {
+      position: relative;
+    }
+    .ti-search-wrap i {
+      position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-400);
+    }
+
+    /* ─── IOC Match Summary ────────────────────────── */
+    .ti-match-summary i { margin-right: 4px; }
+
+    /* ─── Loading / Empty / Error ──────────────────── */
+    .ti-loading, .ti-empty, .ti-error {
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px; font-size: 14px;
+    }
+    .ti-empty { color: var(--gray-400); }
+    .ti-error i { margin-right: 8px; }
+
+    /* ─── Two-column layout ────────────────────────── */
+    .ti-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 1000px) { .ti-two-col { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar Mount Point -->
+    <div id="sidebar-mount"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar (populated by sidebar.js) -->
+      <header class="topbar"></header>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Threat Intelligence</h1>
+            <p class="page-subtitle">Real-time threat landscape and IOC monitoring for Royal Enfield</p>
+          </div>
+          <div class="flex gap-3">
+            <button class="btn btn-primary" id="btnRefreshTI">
+              <i class="fas fa-sync-alt"></i>
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="ti-kpi-grid">
+          <div class="ti-kpi-card">
+            <div class="ti-kpi-icon pulses">
+              <i class="fas fa-satellite-dish"></i>
+            </div>
+            <div>
+              <div class="ti-kpi-value"><span id="kpi-pulses">--</span></div>
+              <div class="ti-kpi-label">Active Threat Pulses</div>
+            </div>
+          </div>
+          <div class="ti-kpi-card">
+            <div class="ti-kpi-icon iocs">
+              <i class="fas fa-crosshairs"></i>
+            </div>
+            <div>
+              <div class="ti-kpi-value"><span id="kpi-iocs">--</span></div>
+              <div class="ti-kpi-label">IOCs Detected</div>
+            </div>
+          </div>
+          <div class="ti-kpi-card">
+            <div class="ti-kpi-icon apt">
+              <i class="fas fa-user-secret"></i>
+            </div>
+            <div>
+              <div class="ti-kpi-value"><span id="kpi-apt-groups">--</span></div>
+              <div class="ti-kpi-label">APT Groups Tracking</div>
+            </div>
+          </div>
+          <div class="ti-kpi-card">
+            <div class="ti-kpi-icon relevant">
+              <i class="fas fa-bullseye"></i>
+            </div>
+            <div>
+              <div class="ti-kpi-value"><span id="kpi-re-alerts">--</span></div>
+              <div class="ti-kpi-label">RE Relevance Alerts</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- IOC Matches (top priority) -->
+        <div class="ti-section">
+          <div class="ti-section-header">
+            <div class="ti-section-title">
+              <i class="fas fa-exclamation-triangle"></i>
+              IOC Matches in Infrastructure
+            </div>
+          </div>
+          <div class="ti-section-body" id="ioc-matches-container"></div>
+        </div>
+
+        <!-- Threat Pulses + Dark Web Alerts (two columns) -->
+        <div class="ti-two-col">
+          <!-- Threat Pulses -->
+          <div class="ti-section">
+            <div class="ti-section-header">
+              <div class="ti-section-title">
+                <i class="fas fa-rss"></i>
+                Threat Pulses
+              </div>
+            </div>
+            <div class="ti-section-body" id="threat-pulses-container"></div>
+          </div>
+
+          <!-- Dark Web Alerts -->
+          <div class="ti-section">
+            <div class="ti-section-header">
+              <div class="ti-section-title">
+                <i class="fas fa-mask"></i>
+                Dark Web Monitoring
+              </div>
+            </div>
+            <div class="ti-section-body" id="dark-web-container"></div>
+          </div>
+        </div>
+
+        <!-- IOC Table -->
+        <div class="ti-section">
+          <div class="ti-section-header">
+            <div class="ti-section-title">
+              <i class="fas fa-database"></i>
+              Indicators of Compromise (IOCs)
+            </div>
+            <div class="ti-search-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" id="ioc-search" class="ti-search-input" placeholder="Search IOCs (IP, domain, hash...)">
+            </div>
+          </div>
+          <div class="ti-section-body" id="ioc-table-container"></div>
+        </div>
+
+        <!-- APT Groups -->
+        <div class="ti-section">
+          <div class="ti-section-header">
+            <div class="ti-section-title">
+              <i class="fas fa-users-slash"></i>
+              APT Groups (MITRE ATT&CK)
+            </div>
+          </div>
+          <div class="ti-section-body" id="apt-groups-container"></div>
+        </div>
+
+        <!-- Geo Stats -->
+        <div class="ti-section">
+          <div class="ti-section-header">
+            <div class="ti-section-title">
+              <i class="fas fa-globe-asia"></i>
+              Threats by Region
+            </div>
+          </div>
+          <div class="ti-section-body">
+            <div class="ti-geo-grid" id="geo-stats-container"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/threat-map.js"></script>
+  <script>
+    checkAuth();
+
+    document.addEventListener('DOMContentLoaded', function() {
+      renderSidebar('threat-map');
+
+      // Animate KPI cards on load
+      var kpiCards = document.querySelectorAll('.ti-kpi-card');
+      kpiCards.forEach(function(card, index) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(function() {
+          card.style.transition = 'all 0.5s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, index * 100);
+      });
+
+      // Animate section cards
+      var sections = document.querySelectorAll('.ti-section');
+      sections.forEach(function(section, index) {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(20px)';
+        setTimeout(function() {
+          section.style.transition = 'all 0.5s ease';
+          section.style.opacity = '1';
+          section.style.transform = 'translateY(0)';
+        }, 400 + index * 100);
+      });
+
+      // Initialize all threat intel sections
+      initThreatMap();
+    });
+  </script>
+</body>
+</html>

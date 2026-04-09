@@ -31,7 +31,7 @@ else:
     )
 
 # Import and register routers
-from backend.routers import acceptance, audit_log, auth, dashboard, remediation, reports, risks, settings as settings_router  # noqa: E402
+from backend.routers import acceptance, audit_log, auth, dashboard, remediation, reports, risks, settings as settings_router, threat_intel  # noqa: E402
 
 app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
@@ -41,6 +41,7 @@ app.include_router(remediation.router, prefix="/api/remediation", tags=["Remedia
 app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
 app.include_router(audit_log.router, prefix="/api/audit-log", tags=["Audit Log"])
 app.include_router(settings_router.router, prefix="/api/settings", tags=["Settings"])
+app.include_router(threat_intel.router, prefix="/api/threat-intel", tags=["Threat Intelligence"])
 
 # Serve frontend static files
 app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
