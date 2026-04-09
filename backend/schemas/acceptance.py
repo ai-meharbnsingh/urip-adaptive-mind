@@ -19,7 +19,7 @@ class AcceptanceRead(BaseModel):
     risk_id: str
     requested_by: str
     justification: str
-    compensating_controls: dict | None = None
+    compensating_controls: list | dict | None = None
     residual_risk: str | None = None
     recommendation: str | None = None
     status: str
