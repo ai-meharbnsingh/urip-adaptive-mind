@@ -222,7 +222,7 @@
     badges.forEach(function (badge) {
       var apiPath = badge.getAttribute('data-badge-api');
       if (window.URIP && window.URIP.apiFetch) {
-        window.URIP.apiFetch(apiPath)
+        window.URIP.apiFetch(apiPath, { silent: true })
           .then(function (data) {
             var count = 0;
             if (data && typeof data.total === 'number') {

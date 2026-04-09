@@ -22,6 +22,8 @@
    */
   async function apiFetch(path, options) {
     options = options || {};
+    var silent = options.silent || false;
+    delete options.silent;
     var headers = options.headers || {};
 
     var token = localStorage.getItem('urip_token');
@@ -40,7 +42,9 @@
     try {
       response = await fetch(url, options);
     } catch (err) {
-      showNotification('Network Error', 'Unable to reach the server. Please check your connection.', 'error');
+      if (!silent) {
+        showNotification('Network Error', 'Unable to reach the server. Please check your connection.', 'error');
+      }
       throw err;
     }
 
