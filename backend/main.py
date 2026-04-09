@@ -12,13 +12,23 @@ app = FastAPI(
 
 # CORS
 origins = [o.strip() for o in settings.CORS_ORIGINS.split(",")]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+if "*" in origins:
+    # Wildcard mode: no credentials (browser requirement)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=False,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 # Import and register routers
 from backend.routers import acceptance, audit_log, auth, dashboard, remediation, reports, risks, settings as settings_router  # noqa: E402
