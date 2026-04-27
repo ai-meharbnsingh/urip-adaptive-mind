@@ -24,6 +24,9 @@ from sqlalchemy import Text
 from sqlalchemy.types import TypeDecorator, CHAR
 
 
+import json as _json
+
+
 class SQLiteUUID(TypeDecorator):
     """Store UUID as a 32-char hex string in SQLite."""
 
@@ -43,14 +46,32 @@ class SQLiteUUID(TypeDecorator):
         return uuid.UUID(value)
 
 
+class SQLiteJSON(TypeDecorator):
+    """Store JSON-serializable values (dict/list/etc.) as TEXT in SQLite."""
+
+    impl = Text
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return None
+        return _json.dumps(value)
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return None
+        return _json.loads(value)
+
+
 # Monkey-patch the PostgreSQL types so models compile against SQLite
 pg_dialect.UUID = SQLiteUUID  # type: ignore[attr-defined]
-pg_dialect.JSON = Text  # type: ignore[attr-defined]
+pg_dialect.JSON = SQLiteJSON  # type: ignore[attr-defined]
 
 # NOW import the app and models (they rely on patched types)
 from backend.database import Base, get_db  # noqa: E402
 from backend.main import app  # noqa: E402
 from backend.middleware.auth import create_access_token, hash_password  # noqa: E402
+from backend.models.tenant import Tenant  # noqa: E402 — must be imported so tenants table is in Base.metadata
 from backend.models.user import User  # noqa: E402
 from backend.models.risk import Risk  # noqa: E402
 
@@ -102,7 +123,29 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
 
 
 @pytest_asyncio.fixture
-async def auth_headers(db_session: AsyncSession) -> dict[str, str]:
+async def default_tenant(db_session: AsyncSession) -> "Tenant":
+    """
+    Create a default 'urip-test' tenant used by all existing fixtures.
+
+    This is the backward-compat tenant that ensures pre-multi-tenant tests
+    continue to work.  All existing users and risks are created under this tenant.
+    """
+    t = Tenant(
+        id=uuid.uuid4(),
+        name="URIP Test Tenant",
+        slug="urip-test",
+        domain="urip.test",
+        is_active=True,
+        settings={},
+    )
+    db_session.add(t)
+    await db_session.commit()
+    await db_session.refresh(t)
+    return t
+
+
+@pytest_asyncio.fixture
+async def auth_headers(db_session: AsyncSession, default_tenant: "Tenant") -> dict[str, str]:
     """Create a CISO user and return Authorization headers with a valid JWT."""
     user = User(
         id=uuid.uuid4(),
@@ -112,17 +155,18 @@ async def auth_headers(db_session: AsyncSession) -> dict[str, str]:
         role="ciso",
         team="Security",
         is_active=True,
+        tenant_id=default_tenant.id,
     )
     db_session.add(user)
     await db_session.commit()
     await db_session.refresh(user)
 
-    token = create_access_token(str(user.id), user.role)
+    token = create_access_token(str(user.id), user.role, tenant_id=str(default_tenant.id))
     return {"Authorization": f"Bearer {token}"}
 
 
 @pytest_asyncio.fixture
-async def it_team_headers(db_session: AsyncSession) -> dict[str, str]:
+async def it_team_headers(db_session: AsyncSession, default_tenant: "Tenant") -> dict[str, str]:
     """Create an IT-team user and return Authorization headers."""
     user = User(
         id=uuid.uuid4(),
@@ -132,17 +176,18 @@ async def it_team_headers(db_session: AsyncSession) -> dict[str, str]:
         role="it_team",
         team="Infrastructure",
         is_active=True,
+        tenant_id=default_tenant.id,
     )
     db_session.add(user)
     await db_session.commit()
     await db_session.refresh(user)
 
-    token = create_access_token(str(user.id), user.role)
+    token = create_access_token(str(user.id), user.role, tenant_id=str(default_tenant.id))
     return {"Authorization": f"Bearer {token}"}
 
 
 @pytest_asyncio.fixture
-async def seeded_risks(db_session: AsyncSession, auth_headers: dict) -> list[Risk]:
+async def seeded_risks(db_session: AsyncSession, auth_headers: dict, default_tenant: "Tenant") -> list[Risk]:
     """Insert 10 test risks with varying severities and return them."""
     severities = ["critical", "critical", "high", "high", "high",
                    "medium", "medium", "medium", "low", "low"]
@@ -170,6 +215,7 @@ async def seeded_risks(db_session: AsyncSession, auth_headers: dict) -> list[Ris
             status="open",
             sla_deadline=now + timedelta(days=7 + i),
             cve_id=f"CVE-2026-{1000 + i}" if i < 5 else None,
+            tenant_id=default_tenant.id,
         )
         db_session.add(risk)
         risks.append(risk)
