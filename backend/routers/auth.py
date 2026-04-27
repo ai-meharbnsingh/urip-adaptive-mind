@@ -53,7 +53,9 @@ async def login(request: LoginRequest, req: Request, db: AsyncSession = Depends(
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Account is deactivated")
 
-    token = create_access_token(str(user.id), user.role)
+    # Embed tenant_id in JWT — str() works whether tenant_id is UUID or None (legacy users)
+    tenant_id_str = str(user.tenant_id) if user.tenant_id else None
+    token = create_access_token(str(user.id), user.role, tenant_id=tenant_id_str)
     return TokenResponse(
         access_token=token,
         user=UserProfile(
