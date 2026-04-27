@@ -409,101 +409,11 @@ This is the key sales narrative — Sprinto cannot do this, URIP can:
 
 The pitch to a buyer: *"Sprinto tells you you're audit-ready. URIP tells you you're audit-ready AND shows you which CVE is about to break it."*
 
-### 7.6 Two Options — Side-by-Side Comparison
+### 7.6 Decision — We Are Building This Natively
 
-Same structure as CloudSEK section. Both options are presented with their actual benefits so the client can choose informed.
+URIP will build the Compliance & Audit-Readiness Module natively (items C1–C14 in Section 7.4). We are **not** integrating with Sprinto. This is a definitive scope decision, not an open option.
 
-#### Option A — "Adverb keeps Sprinto; URIP integrates with Sprinto's API"
-
-**What it means:** Adverb's existing Sprinto subscription continues. Sprinto handles all compliance automation (control monitoring, evidence, policies, training). URIP pulls Sprinto's compliance data via API and shows it inside the unified URIP dashboard alongside vulnerability and threat data.
-
-**Benefits to Adverb:**
-- ✅ **Single pane of glass** — compliance status appears in URIP next to vulnerability and threat data. Auditors and CISO see one view.
-- ✅ **Full Sprinto product depth** — all 14 Sprinto capabilities (training, BGV integrations, hundreds of pre-built control checks, policy templates) are inherited as-is.
-- ✅ **Compliance data gets URIP context** — when a control fails in Sprinto, URIP can show which CVE / threat is causing it (e.g., SOC 2 control "CC7.1 vulnerability detection" failing because of an unpatched Tenable finding).
-- ✅ **Faster delivery** — same connector pattern as any other source.
-- ✅ **No new operational burden on us** — Sprinto runs the compliance ops; we just integrate.
-- ✅ **Sprinto roadmap inherited** — when Sprinto adds new framework support (e.g., new ISO version), Adverb gets it automatically.
-- ✅ **Auditor portal already exists** — Sprinto's auditor portal is mature; we don't need to build one.
-
-**Trade-offs:**
-- ❌ Adverb continues paying Sprinto subscription (typically ₹8–25 lakh/year depending on team size and frameworks).
-- ❌ Two-vendor relationship to manage.
-- ❌ Compliance data lives in Sprinto cloud — limited if Adverb wants on-prem / VPC deployment.
-- ❌ Cannot deeply customize compliance workflow — bound by Sprinto's product opinions.
-- ❌ Workflow lives in two systems — risk acceptance in URIP, control evidence in Sprinto. Some context-switching remains.
-
-**Best for:** Clients who already have Sprinto, are happy with it, want unified visibility on top, and don't want to compromise on compliance feature depth.
-
----
-
-#### Option B — "URIP builds Sprinto-equivalent compliance features natively (replaces Sprinto)"
-
-**What it means:** Adverb cancels Sprinto subscription. URIP builds its own framework engine, control library, evidence automation, policy management, access reviews, vendor risk, auditor portal, and compliance scoring. Single platform for risk + compliance.
-
-**Benefits to Adverb:**
-- ✅ **True single vendor / single platform** — risk + threat + vulnerability + compliance + audit-readiness all in one tool. One contract, one bill, one support team.
-- ✅ **Subscription cost saving** — Sprinto license cost (~₹8–25 lakh/year) goes away. Adverb consolidates spend.
-- ✅ **Native control-to-risk linkage** — failing controls automatically inherit URIP's risk context. A SOC 2 control failure shows the underlying CVE, EPSS exploit probability, APT attribution, affected assets — all in one click. **Sprinto literally cannot do this** because Sprinto doesn't have URIP's threat enrichment layer.
-- ✅ **Customization** — Adverb can ask for custom controls, custom report templates, India DPDP-specific workflows, custom evidence types. With Sprinto, Adverb gets what Sprinto gives.
-- ✅ **Data sovereignty** — all compliance evidence and audit data stays inside URIP infra (or Adverb's own cloud if VPC deployment chosen).
-- ✅ **Strategic moat for URIP** — once we have native compliance, URIP competes head-on with Sprinto + Tenable + ServiceNow GRC in one platform. Massive market expansion.
-- ✅ **Higher contract value for us** — compliance is a board-level budget line. Customers pay 3–5x more for "compliance + risk platform" vs "vulnerability dashboard".
-- ✅ **Sprinto's tech is buildable** — unlike CloudSEK's crawler infrastructure, Sprinto is mostly framework data + automation logic + connectors. We can build it.
-
-**Trade-offs (smaller than CloudSEK Option B, but still real):**
-- ❌ **Significant build scope** — items C1–C14 in Section 7.4 are all real engineering work.
-- ❌ **Framework data curation is ongoing** — SOC 2 trust services criteria change (2017 → 2022), ISO 27001 has Annex A revisions, India DPDP rules are evolving. We commit to maintaining framework data forever.
-- ❌ **Auditor adoption** — Sprinto has trained thousands of auditors on their portal. Auditors may push back on a new portal initially. We need to make ours obviously usable.
-- ❌ **No training video library** — Sprinto licenses or builds training content. We explicitly stay out of this (Section 7.8). For training, Adverb integrates KnowBe4 / Hoxhunt via our connector. This is a feature gap vs Sprinto-direct.
-- ❌ **No BGV execution** — same pattern. We integrate with AuthBridge / OnGrid; we don't run BGV.
-- ❌ **Slower than Option A** — connector integration ships fast; building a compliance platform takes longer.
-
-**Best for:** Clients who want a single platform long-term, value the risk-to-control linkage that only URIP can provide, are open to integrating with third-party LMS / BGV providers (rather than getting them bundled), and want Adverb's compliance data inside their own controlled infrastructure.
-
----
-
-### 7.6.1 Side-by-Side Decision Matrix
-
-| Dimension | Option A (Integrate Sprinto) | Option B (Build Native) |
-|---|---|---|
-| Time to value for Adverb | Fast (single connector) | Slower (multi-module build) |
-| Sprinto subscription cost | Continues | Eliminated |
-| URIP subscription cost | Standard + Compliance Module light | Higher (full Compliance Module) |
-| Vendor count | 2 (URIP + Sprinto) | 1 (URIP only) |
-| Compliance feature depth | Full (Sprinto product) | Strong but no built-in training / BGV (integrated, not bundled) |
-| Risk-to-control linkage | Limited (two systems) | **Native — URIP's unique edge** |
-| Customization | Low | High |
-| Data sovereignty | Mixed (compliance data in Sprinto cloud) | Full (in URIP / Adverb's cloud) |
-| Auditor portal | Sprinto's mature portal | New URIP portal (we build) |
-| Training content | Sprinto-bundled | Via LMS integration (KnowBe4, Hoxhunt) |
-| BGV execution | Sprinto-bundled | Via integration (AuthBridge, OnGrid) |
-| Strategic value for URIP product | Low (aggregator) | **High (platform play)** |
-| Recurring framework maintenance | Sprinto's problem | Our problem |
-
-### 7.6.2 Recommended Position to Adverb
-
-> "Sprinto and URIP can work together (Option A), or URIP can replace Sprinto (Option B). The big strategic question: do you want compliance data in two systems with vendor consolidation as a long-term goal, or do you want everything in one platform from day one with the trade-off of integrating LMS and BGV via connectors? Both are valid. Option A is faster; Option B is more strategic and saves your Sprinto subscription long-term."
-
-**Our internal default recommendation: Option B (build native).**
-
-Reasons:
-1. Sprinto is buildable (unlike CloudSEK)
-2. Native risk-to-control linkage is a moat competitors cannot match
-3. Compliance is a board-level spend — selling Compliance Module raises URIP's deal size 3–5x
-4. Long-term, customers want fewer vendors, not more
-
-**Fallback to Option A if:**
-- Adverb has a multi-year Sprinto contract they can't exit
-- Adverb is mid-audit and switching is too risky
-- Adverb explicitly values training-content-bundled or BGV-bundled features that we don't build
-
-### 7.6.3 What we will commit to in this engagement
-
-- ⚪ Decision deferred to client review meeting
-- If Option A chosen: Sprinto API connector included in Phase 2 (light Compliance Module — UI shell + Sprinto sync)
-- If Option B chosen: Full Compliance Module (C1–C14) built in Phase 2
-- Either way, Phase 1 productization (item 1.11 — compliance schema foundation) is the same and ships first
+The out-of-scope items in Section 7.8 (training content, BGV execution, pen testing, legal advice, auditor services) remain out of scope.
 
 ### 7.7 Module Subscription — Compliance Module
 
@@ -618,12 +528,11 @@ Before signing, Adverb must understand:
 | 1 | Internal review of this blueprint | Semantic Gravity team |
 | 2 | Pricing model alignment (Phase 1 setup, Phase 2 per-connector + Compliance Module, ongoing subscription) | CMO |
 | 3 | Adverb client review meeting + walkthrough | Semantic Gravity + Adverb |
-| 4 | Resolve CloudSEK Interpretation A vs B | Adverb |
-| 5 | Resolve Sprinto / Compliance Interpretation A vs B (existing Sprinto subscription? or build native?) | Adverb |
-| 6 | Confirm Burp Enterprise license status | Adverb |
-| 7 | Confirm which compliance frameworks Adverb is targeting (SOC 2 / ISO 27001 / GDPR / India DPDP / etc.) — drives priority of framework data seeding | Adverb |
-| 8 | Issue SoW with locked scope, pricing, and timeline | Semantic Gravity |
-| 9 | Phase 1 kickoff | Engineering |
+| 4 | Resolve CloudSEK Option A (integrate via API) vs Option B (build native) | Adverb |
+| 5 | Confirm Burp Enterprise license status | Adverb |
+| 6 | Confirm which compliance frameworks Adverb is targeting (SOC 2 / ISO 27001 / GDPR / India DPDP / etc.) — drives priority of framework data seeding | Adverb |
+| 7 | Issue SoW with locked scope, pricing, and timeline | Semantic Gravity |
+| 8 | Phase 1 kickoff | Engineering |
 
 ---
 
