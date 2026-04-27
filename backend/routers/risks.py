@@ -10,12 +10,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.database import get_db
 from backend.middleware.auth import get_current_user
 from backend.middleware.rbac import role_required
+from backend.middleware.tenant import TenantContext
 from backend.models.audit_log import AuditLog
 from backend.models.risk import Risk, RiskHistory
 from backend.models.user import User
 from backend.schemas.risk import AssignRequest, RiskCreate, RiskListResponse, RiskRead, RiskUpdate
 from backend.services.exploitability_service import enrich_risk
 from backend.services.sla_service import compute_sla_deadline
+from backend.services.tenant_query import apply_tenant_filter
 from backend.services.threat_intel_service import get_apt_for_cve
 from backend.utils import parse_uuid
 
@@ -69,6 +71,10 @@ async def list_risks(
 ):
     query = select(Risk)
     count_query = select(func.count()).select_from(Risk)
+
+    # Apply tenant isolation — only return risks belonging to the current tenant
+    query = apply_tenant_filter(query, Risk)
+    count_query = count_query.where(Risk.tenant_id == TenantContext.get())
 
     # Apply filters
     if severity:
@@ -128,7 +134,10 @@ async def get_risk(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    result = await db.execute(select(Risk).where(Risk.risk_id == risk_id))
+    # Scope by both risk_id string AND tenant_id — prevents cross-tenant ID fishing
+    result = await db.execute(
+        select(Risk).where(Risk.risk_id == risk_id, Risk.tenant_id == TenantContext.get())
+    )
     risk = result.scalar_one_or_none()
     if not risk:
         raise HTTPException(status_code=404, detail="Risk not found")
@@ -160,10 +169,11 @@ async def create_risk(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(role_required("it_team")),
 ):
-    # Generate unique risk_id using timestamp + random suffix (no race condition)
+    # Generate unique risk_id using full year + random suffix.
+    # Format: RISK-YYYY-XXXX (tenant-neutral; replaces the old RE- Royal Enfield prefix)
     now = datetime.now(timezone.utc)
     suffix = secrets.token_hex(2).upper()  # 4 hex chars
-    risk_id = f"RE-{now.strftime('%y%m')}-{suffix}"
+    risk_id = f"RISK-{now.strftime('%Y')}-{suffix}"
 
     sla_deadline = compute_sla_deadline(data.severity)
 
@@ -180,6 +190,7 @@ async def create_risk(
         status="open",
         sla_deadline=sla_deadline,
         cve_id=data.cve_id,
+        tenant_id=TenantContext.get(),  # stamp tenant on create
     )
 
     # Auto-classify asset tier
@@ -196,13 +207,14 @@ async def create_risk(
 
     db.add(risk)
 
-    # Audit log
+    # Audit log — stamped with the same tenant_id
     db.add(AuditLog(
         user_id=current_user.id,
         action="risk_created",
         resource_type="risk",
         resource_id=risk.id,
         details={"finding": data.finding, "severity": data.severity},
+        tenant_id=TenantContext.get(),
     ))
 
     await db.commit()
@@ -222,7 +234,9 @@ async def update_risk(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(role_required("it_team")),
 ):
-    result = await db.execute(select(Risk).where(Risk.risk_id == risk_id))
+    result = await db.execute(
+        select(Risk).where(Risk.risk_id == risk_id, Risk.tenant_id == TenantContext.get())
+    )
     risk = result.scalar_one_or_none()
     if not risk:
         raise HTTPException(status_code=404, detail="Risk not found")
@@ -273,7 +287,9 @@ async def assign_risk(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(role_required("it_team")),
 ):
-    result = await db.execute(select(Risk).where(Risk.risk_id == risk_id))
+    result = await db.execute(
+        select(Risk).where(Risk.risk_id == risk_id, Risk.tenant_id == TenantContext.get())
+    )
     risk = result.scalar_one_or_none()
     if not risk:
         raise HTTPException(status_code=404, detail="Risk not found")

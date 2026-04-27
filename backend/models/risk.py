@@ -15,6 +15,7 @@ class Risk(Base):
         Index("idx_risks_source", "source"),
         Index("idx_risks_domain", "domain"),
         Index("idx_risks_composite_score", "composite_score"),
+        Index("idx_risks_tenant_id", "tenant_id"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -42,6 +43,12 @@ class Risk(Base):
     # Asset criticality
     asset_tier: Mapped[int | None] = mapped_column(Integer, nullable=True)  # 1=Critical, 2=High, 3=Medium, 4=Low
     composite_score: Mapped[float | None] = mapped_column(Numeric(4, 1), nullable=True)
+    # Multi-tenant FK
+    tenant_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("tenants.id", ondelete="RESTRICT"),
+        nullable=True,
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

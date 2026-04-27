@@ -17,6 +17,31 @@ from backend.models.user import User
 # ---------------------------------------------------------------------------
 
 async def _make_user(db_session, role: str, email: str) -> dict[str, str]:
+    # NOTE (multi-tenant): create_access_token now requires tenant_id.
+    # We create a dummy tenant for RBAC tests since they test role enforcement,
+    # not tenant isolation. A fixed UUID is used so multiple calls share the same
+    # logical tenant without needing to hit the DB.
+    # Assertions in these tests remain unchanged — we only fixed the setup so that
+    # the auth layer can proceed to the RBAC check rather than stopping at 401.
+    from backend.models.tenant import Tenant
+
+    dummy_tenant_id = uuid.UUID("00000000-0000-0000-0000-000000000001")
+
+    # Ensure dummy tenant exists (idempotent)
+    from sqlalchemy import select
+    result = await db_session.execute(select(Tenant).where(Tenant.id == dummy_tenant_id))
+    if not result.scalar_one_or_none():
+        t = Tenant(
+            id=dummy_tenant_id,
+            name="RBAC Test Tenant",
+            slug="rbac-test",
+            domain="rbactest.urip",
+            is_active=True,
+            settings={},
+        )
+        db_session.add(t)
+        await db_session.commit()
+
     user = User(
         id=uuid.uuid4(),
         email=email,
@@ -25,11 +50,12 @@ async def _make_user(db_session, role: str, email: str) -> dict[str, str]:
         role=role,
         team="General",
         is_active=True,
+        tenant_id=dummy_tenant_id,
     )
     db_session.add(user)
     await db_session.commit()
     await db_session.refresh(user)
-    token = create_access_token(str(user.id), user.role)
+    token = create_access_token(str(user.id), user.role, tenant_id=str(dummy_tenant_id))
     return {"Authorization": f"Bearer {token}"}
 
 
