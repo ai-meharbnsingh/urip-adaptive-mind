@@ -240,31 +240,87 @@ CloudSEK is not a single tool. It is **three distinct products** with their own 
 
 This took CloudSEK years and significant funding to build.
 
-### 6.2 Two interpretations of Adverb's request
+### 6.2 Two Options — Side-by-Side Comparison
 
-**Interpretation A — "Ingest CloudSEK alerts into URIP"**
-- ✅ Feasible. CloudSEK has a REST API. We pull alerts, normalize, push through URIP scoring.
-- Adverb keeps their CloudSEK license, URIP unifies CloudSEK alerts with the other 10 sources.
-- Same connector pattern as any other source.
+Both options are presented in full so the client can make an informed choice. Each has real benefits and real trade-offs.
 
-**Interpretation B — "Replicate all CloudSEK features inside URIP"**
-- ❌ Not feasible at any reasonable scope.
-- Would require building dark web crawler infra, paid threat intel feeds, APK analysis engine, brand monitoring AI, and a 24/7 SOC team.
-- This puts the entire URIP delivery at risk if attempted.
+#### Option A — "Adverb keeps CloudSEK; URIP integrates via CloudSEK's API"
 
-### 6.3 Recommended Position to Adverb
+**What it means:** Adverb's existing CloudSEK subscription stays. CloudSEK does what it does best (dark web monitoring, brand abuse, supply chain risk). URIP pulls CloudSEK's alerts via API and surfaces them inside the unified URIP dashboard alongside Tenable, SentinelOne, Zscaler, etc.
 
-> "URIP unifies what your security tools already know. CloudSEK is a security tool itself — it generates findings the way Tenable or SentinelOne do. The right pattern is: Adverb maintains the CloudSEK subscription, URIP integrates with CloudSEK's API to pull alerts into the unified risk view alongside your other 10 sources. This way you get CloudSEK's full product depth plus URIP's prioritization layer on top. If you want us to *replace* CloudSEK with URIP-native features, that is a separate engagement we should scope independently."
+**Benefits to Adverb:**
+- ✅ **Single pane of glass** — CloudSEK alerts appear in URIP next to all other risk sources. No more switching dashboards.
+- ✅ **Full CloudSEK product depth** — XVigil, BeVigil, SVigil — Adverb gets the complete CloudSEK feature set as-is. Nothing is lost.
+- ✅ **CloudSEK alerts get URIP prioritization** — every CloudSEK finding flows through URIP's EPSS + KEV + asset criticality scoring. A leaked credential becomes a Tier-1 risk if the affected user has admin role on a Tier-1 asset.
+- ✅ **Auto-ticket creation** — CloudSEK alert → URIP risk → ManageEngine SDP ticket → SLA tracking → audit trail. Workflow continuity.
+- ✅ **Faster delivery** — same connector pattern as any other source (Sentinel, Tenable etc.)
+- ✅ **No new operational burden** — CloudSEK runs their crawler infra, we don't have to.
+- ✅ **CloudSEK roadmap inherited** — when CloudSEK adds new features, Adverb gets them automatically without us having to build anything.
 
-If Adverb pushes back and insists on Interpretation B, we should:
-1. Walk them through the reality of what CloudSEK actually is (Section 6.2)
-2. Propose a phased CloudSEK-feature build *as URIP v2*, not as part of this engagement
-3. Be willing to walk away from this specific demand rather than over-promise
+**Trade-offs:**
+- ❌ Adverb continues paying CloudSEK subscription (typically ₹15–40 lakh/year depending on tier).
+- ❌ Two-vendor relationship to manage (URIP + CloudSEK).
+- ❌ Dependency on CloudSEK API stability — if CloudSEK changes their API, our connector breaks.
+- ❌ Cannot customize what CloudSEK reports — we get whatever CloudSEK chooses to expose.
+- ❌ Limited ability to differentiate URIP from CloudSEK at the feature level — we are an aggregator on top.
 
-### 6.4 What we will commit to in this engagement
+**Best for:** Clients who already have CloudSEK and want unified visibility, or clients who value CloudSEK's specific dark-web and external-threat depth and don't want to compromise on it.
 
-- ✅ CloudSEK API connector (Interpretation A) — included in Phase 2
-- ❌ CloudSEK feature replication — explicitly out of scope, documented in SoW
+---
+
+#### Option B — "URIP builds CloudSEK-equivalent features natively (replaces CloudSEK)"
+
+**What it means:** Adverb cancels CloudSEK subscription. URIP builds its own dark-web monitoring, leaked-credential detection, brand abuse, mobile attack surface, and supply chain risk capabilities. Single vendor, single platform.
+
+**Benefits to Adverb:**
+- ✅ **Single vendor relationship** — one contract, one support team, one throat to choke.
+- ✅ **Subscription cost saving** — CloudSEK license cost (~₹15–40 lakh/year) goes away. Money stays with Adverb (or partly funds URIP subscription expansion).
+- ✅ **Tighter integration** — native features mean URIP risk register, scoring, workflow, audit log all natively understand external threat signals. No data normalization gap.
+- ✅ **Customization** — Adverb can request features, modifications, custom alerting rules. With CloudSEK, Adverb is one of thousands of customers.
+- ✅ **Data sovereignty** — all data stays inside URIP infra (which can be Adverb's own cloud account if they want VPC deployment). With CloudSEK, threat intel data lives in CloudSEK's cloud.
+- ✅ **Strategic moat for URIP** — once we have native external-threat layer, URIP is no longer just an aggregator — it's a full platform competing with CloudSEK + Sprinto + Tenable in one product.
+
+**Trade-offs (and these are real):**
+- ❌ **Massive infra build** — distributed dark-web crawlers (Tor exit nodes, residential proxies), Telegram scraping bot fleet, paid DNS feeds (DomainTools / WhoisXML — typically $2K–5K/month each), image-matching AI for logo abuse, APK static analysis engine, internet-wide scanner (Shodan-class).
+- ❌ **Paid threat intel feed licenses** — HaveIBeenPwned ($3.5K/year), DeHashed / Constella / IntelX ($10K+/year each). Real recurring cost.
+- ❌ **24/7 operational burden** — crawlers fail, proxies get blocked, Telegram channels go dark. Someone is on-call.
+- ❌ **8+ years of CloudSEK head start** — we will not match CloudSEK's depth on day one. Maybe not in year one.
+- ❌ **Quality risk** — if our dark-web coverage is 60% of CloudSEK's, Adverb will notice. "Why did CloudSEK find this leak last year and URIP didn't this year?"
+- ❌ **Engineering team expansion required** — current URIP team cannot do this alongside Phase 2 connector work. New hires (threat researcher, ML engineer) needed.
+- ❌ **Slower delivery** — this is not a 2-month build. It is a multi-quarter program.
+
+**Best for:** Clients who want a single platform long-term, are willing to accept reduced external-threat coverage in early stages in exchange for vendor consolidation and customization, and where Adverb is willing to co-fund the build (e.g., higher subscription tier or one-time platform fee).
+
+---
+
+### 6.3 Side-by-Side Decision Matrix
+
+| Dimension | Option A (Integrate) | Option B (Build Native) |
+|---|---|---|
+| Time to value for Adverb | Fast (single connector) | Slow (multi-quarter build) |
+| CloudSEK subscription cost | Continues | Eliminated |
+| URIP subscription cost | Standard | Higher (covers build + ops) |
+| Vendor count | 2 (URIP + CloudSEK) | 1 (URIP only) |
+| External threat depth | Full (CloudSEK product) | Starts limited, grows over time |
+| Customization | Limited | High |
+| Data sovereignty | Mixed (some data in CloudSEK cloud) | Full (in URIP / Adverb's cloud) |
+| Operational burden on Semantic Gravity | Low | High (24/7) |
+| Risk to overall URIP delivery | Low | Medium-High if not staffed properly |
+| Strategic value for URIP product | Marginal (aggregator) | Major (platform play) |
+
+### 6.4 Recommended Position to Adverb
+
+> "We can do both — and the right answer depends on what Adverb optimises for. If Adverb wants the deepest external-threat coverage right now and can keep the CloudSEK subscription, Option A gives you unified visibility fast. If Adverb wants to consolidate vendors, control the roadmap, and move external-threat data into URIP's own infra long-term, Option B is the right path — but it is a multi-quarter program and we will be transparent about coverage gaps in early stages."
+
+**Our internal default recommendation: Option A in this engagement, Option B as a follow-on URIP v2 conversation** — because Option B done badly destroys trust, and Adverb's first URIP delivery should be a clean win.
+
+If Adverb explicitly chooses Option B from day one, we will scope it as a separate parallel engagement with its own team, budget, and milestone definitions.
+
+### 6.5 What we will commit to in this engagement
+
+- ✅ **Option A — CloudSEK API connector** is included in Phase 2 by default
+- ⚪ **Option B — CloudSEK-equivalent native features** is available as a separate engagement; not included by default
+- Decision deferred to client review meeting (Next Steps, Section 11)
 
 ---
 
@@ -353,20 +409,101 @@ This is the key sales narrative — Sprinto cannot do this, URIP can:
 
 The pitch to a buyer: *"Sprinto tells you you're audit-ready. URIP tells you you're audit-ready AND shows you which CVE is about to break it."*
 
-### 7.6 Two Interpretations (Same Pattern as CloudSEK)
+### 7.6 Two Options — Side-by-Side Comparison
 
-**Interpretation A — "Integrate with existing Sprinto if Adverb already has it"**
-- ✅ Feasible. Sprinto has an API. We pull control status, evidence pointers, compliance score and surface inside URIP.
-- Adverb keeps Sprinto subscription, URIP unifies Sprinto compliance data with risk data.
-- Pattern: same as any other connector.
+Same structure as CloudSEK section. Both options are presented with their actual benefits so the client can choose informed.
 
-**Interpretation B — "Replicate Sprinto-equivalent features inside URIP" (recommended)**
-- ✅ Feasible. Sprinto's tech is mostly framework data + automation logic + integrations — buildable, unlike CloudSEK's crawler infra.
-- Replaces Sprinto subscription cost for the customer.
-- This is the **strategic upsell** — turns URIP into a true platform, not just a dashboard.
-- Scope is C1–C14 above.
+#### Option A — "Adverb keeps Sprinto; URIP integrates with Sprinto's API"
 
-**Recommendation:** Default to Interpretation B (build native compliance module). Offer Interpretation A as a fallback if Adverb already has a 3-year Sprinto contract they can't exit.
+**What it means:** Adverb's existing Sprinto subscription continues. Sprinto handles all compliance automation (control monitoring, evidence, policies, training). URIP pulls Sprinto's compliance data via API and shows it inside the unified URIP dashboard alongside vulnerability and threat data.
+
+**Benefits to Adverb:**
+- ✅ **Single pane of glass** — compliance status appears in URIP next to vulnerability and threat data. Auditors and CISO see one view.
+- ✅ **Full Sprinto product depth** — all 14 Sprinto capabilities (training, BGV integrations, hundreds of pre-built control checks, policy templates) are inherited as-is.
+- ✅ **Compliance data gets URIP context** — when a control fails in Sprinto, URIP can show which CVE / threat is causing it (e.g., SOC 2 control "CC7.1 vulnerability detection" failing because of an unpatched Tenable finding).
+- ✅ **Faster delivery** — same connector pattern as any other source.
+- ✅ **No new operational burden on us** — Sprinto runs the compliance ops; we just integrate.
+- ✅ **Sprinto roadmap inherited** — when Sprinto adds new framework support (e.g., new ISO version), Adverb gets it automatically.
+- ✅ **Auditor portal already exists** — Sprinto's auditor portal is mature; we don't need to build one.
+
+**Trade-offs:**
+- ❌ Adverb continues paying Sprinto subscription (typically ₹8–25 lakh/year depending on team size and frameworks).
+- ❌ Two-vendor relationship to manage.
+- ❌ Compliance data lives in Sprinto cloud — limited if Adverb wants on-prem / VPC deployment.
+- ❌ Cannot deeply customize compliance workflow — bound by Sprinto's product opinions.
+- ❌ Workflow lives in two systems — risk acceptance in URIP, control evidence in Sprinto. Some context-switching remains.
+
+**Best for:** Clients who already have Sprinto, are happy with it, want unified visibility on top, and don't want to compromise on compliance feature depth.
+
+---
+
+#### Option B — "URIP builds Sprinto-equivalent compliance features natively (replaces Sprinto)"
+
+**What it means:** Adverb cancels Sprinto subscription. URIP builds its own framework engine, control library, evidence automation, policy management, access reviews, vendor risk, auditor portal, and compliance scoring. Single platform for risk + compliance.
+
+**Benefits to Adverb:**
+- ✅ **True single vendor / single platform** — risk + threat + vulnerability + compliance + audit-readiness all in one tool. One contract, one bill, one support team.
+- ✅ **Subscription cost saving** — Sprinto license cost (~₹8–25 lakh/year) goes away. Adverb consolidates spend.
+- ✅ **Native control-to-risk linkage** — failing controls automatically inherit URIP's risk context. A SOC 2 control failure shows the underlying CVE, EPSS exploit probability, APT attribution, affected assets — all in one click. **Sprinto literally cannot do this** because Sprinto doesn't have URIP's threat enrichment layer.
+- ✅ **Customization** — Adverb can ask for custom controls, custom report templates, India DPDP-specific workflows, custom evidence types. With Sprinto, Adverb gets what Sprinto gives.
+- ✅ **Data sovereignty** — all compliance evidence and audit data stays inside URIP infra (or Adverb's own cloud if VPC deployment chosen).
+- ✅ **Strategic moat for URIP** — once we have native compliance, URIP competes head-on with Sprinto + Tenable + ServiceNow GRC in one platform. Massive market expansion.
+- ✅ **Higher contract value for us** — compliance is a board-level budget line. Customers pay 3–5x more for "compliance + risk platform" vs "vulnerability dashboard".
+- ✅ **Sprinto's tech is buildable** — unlike CloudSEK's crawler infrastructure, Sprinto is mostly framework data + automation logic + connectors. We can build it.
+
+**Trade-offs (smaller than CloudSEK Option B, but still real):**
+- ❌ **Significant build scope** — items C1–C14 in Section 7.4 are all real engineering work.
+- ❌ **Framework data curation is ongoing** — SOC 2 trust services criteria change (2017 → 2022), ISO 27001 has Annex A revisions, India DPDP rules are evolving. We commit to maintaining framework data forever.
+- ❌ **Auditor adoption** — Sprinto has trained thousands of auditors on their portal. Auditors may push back on a new portal initially. We need to make ours obviously usable.
+- ❌ **No training video library** — Sprinto licenses or builds training content. We explicitly stay out of this (Section 7.8). For training, Adverb integrates KnowBe4 / Hoxhunt via our connector. This is a feature gap vs Sprinto-direct.
+- ❌ **No BGV execution** — same pattern. We integrate with AuthBridge / OnGrid; we don't run BGV.
+- ❌ **Slower than Option A** — connector integration ships fast; building a compliance platform takes longer.
+
+**Best for:** Clients who want a single platform long-term, value the risk-to-control linkage that only URIP can provide, are open to integrating with third-party LMS / BGV providers (rather than getting them bundled), and want Adverb's compliance data inside their own controlled infrastructure.
+
+---
+
+### 7.6.1 Side-by-Side Decision Matrix
+
+| Dimension | Option A (Integrate Sprinto) | Option B (Build Native) |
+|---|---|---|
+| Time to value for Adverb | Fast (single connector) | Slower (multi-module build) |
+| Sprinto subscription cost | Continues | Eliminated |
+| URIP subscription cost | Standard + Compliance Module light | Higher (full Compliance Module) |
+| Vendor count | 2 (URIP + Sprinto) | 1 (URIP only) |
+| Compliance feature depth | Full (Sprinto product) | Strong but no built-in training / BGV (integrated, not bundled) |
+| Risk-to-control linkage | Limited (two systems) | **Native — URIP's unique edge** |
+| Customization | Low | High |
+| Data sovereignty | Mixed (compliance data in Sprinto cloud) | Full (in URIP / Adverb's cloud) |
+| Auditor portal | Sprinto's mature portal | New URIP portal (we build) |
+| Training content | Sprinto-bundled | Via LMS integration (KnowBe4, Hoxhunt) |
+| BGV execution | Sprinto-bundled | Via integration (AuthBridge, OnGrid) |
+| Strategic value for URIP product | Low (aggregator) | **High (platform play)** |
+| Recurring framework maintenance | Sprinto's problem | Our problem |
+
+### 7.6.2 Recommended Position to Adverb
+
+> "Sprinto and URIP can work together (Option A), or URIP can replace Sprinto (Option B). The big strategic question: do you want compliance data in two systems with vendor consolidation as a long-term goal, or do you want everything in one platform from day one with the trade-off of integrating LMS and BGV via connectors? Both are valid. Option A is faster; Option B is more strategic and saves your Sprinto subscription long-term."
+
+**Our internal default recommendation: Option B (build native).**
+
+Reasons:
+1. Sprinto is buildable (unlike CloudSEK)
+2. Native risk-to-control linkage is a moat competitors cannot match
+3. Compliance is a board-level spend — selling Compliance Module raises URIP's deal size 3–5x
+4. Long-term, customers want fewer vendors, not more
+
+**Fallback to Option A if:**
+- Adverb has a multi-year Sprinto contract they can't exit
+- Adverb is mid-audit and switching is too risky
+- Adverb explicitly values training-content-bundled or BGV-bundled features that we don't build
+
+### 7.6.3 What we will commit to in this engagement
+
+- ⚪ Decision deferred to client review meeting
+- If Option A chosen: Sprinto API connector included in Phase 2 (light Compliance Module — UI shell + Sprinto sync)
+- If Option B chosen: Full Compliance Module (C1–C14) built in Phase 2
+- Either way, Phase 1 productization (item 1.11 — compliance schema foundation) is the same and ships first
 
 ### 7.7 Module Subscription — Compliance Module
 
