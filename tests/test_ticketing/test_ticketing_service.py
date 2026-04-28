@@ -137,7 +137,7 @@ async def test_on_ticket_status_changed_resolved_closes_risk(
     risk.ticket_provider = "mock"
     await db_session.commit()
 
-    updated = await on_ticket_status_changed(db_session, "MOCK-9999", TicketStatus.RESOLVED)
+    updated = await on_ticket_status_changed(db_session, risk.tenant_id, "MOCK-9999", TicketStatus.RESOLVED)
     await db_session.commit()
     assert updated is not None
     assert updated.status == "resolved"
@@ -151,7 +151,7 @@ async def test_on_ticket_status_changed_in_progress_updates_risk(
     risk.ticket_id = "MOCK-9998"
     await db_session.commit()
 
-    await on_ticket_status_changed(db_session, "MOCK-9998", TicketStatus.IN_PROGRESS)
+    await on_ticket_status_changed(db_session, risk.tenant_id, "MOCK-9998", TicketStatus.IN_PROGRESS)
     await db_session.commit()
     await db_session.refresh(risk)
     assert risk.status == "in_progress"
@@ -159,7 +159,8 @@ async def test_on_ticket_status_changed_in_progress_updates_risk(
 
 @pytest.mark.asyncio
 async def test_on_ticket_status_changed_unknown_ticket_noop(db_session: AsyncSession):
-    out = await on_ticket_status_changed(db_session, "NEVER-EXISTED", TicketStatus.RESOLVED)
+    dummy_tenant_id = uuid.uuid4()
+    out = await on_ticket_status_changed(db_session, dummy_tenant_id, "NEVER-EXISTED", TicketStatus.RESOLVED)
     assert out is None
 
 

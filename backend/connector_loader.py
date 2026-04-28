@@ -15,8 +15,8 @@ though ``connectors/tenable/connector.py`` etc. were unit-tested and looked
 the running app — a textbook INV-1 violation (no dead code).
 
 By importing this module from ``backend/main.py``, every connector's
-``@register_connector`` runs once at process start, and all 9 connectors
-(7 production + 2 simulators) become callable through the registry, the
+``@register_connector`` runs once at process start, and all 33 connectors
+(31 production + 2 simulators) become callable through the registry, the
 scheduler, and the new /api/connectors router.
 
 Design decisions

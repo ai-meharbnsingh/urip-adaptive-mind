@@ -9,6 +9,8 @@ Run with:
 from __future__ import annotations
 
 import os
+import secrets
+import string
 import uuid
 import random
 from datetime import datetime, timedelta, timezone
@@ -25,7 +27,25 @@ from backend.models.risk import Risk
 
 DEFAULT_TENANT_ID = uuid.UUID("00000000-0000-0000-0000-000000000001")
 ADMIN_EMAIL = "admin@adaptive-mind.com"
-ADMIN_PASSWORD = "Urip@2026"
+
+
+def _generate_random_password(length: int = 16) -> str:
+    """Produce a strong random password with mixed case, digits, and symbols."""
+    alphabet = string.ascii_letters + string.digits + "!@#$%^&*()-_=+"
+    while True:
+        pwd = "".join(secrets.choice(alphabet) for _ in range(length))
+        # Guarantee at least one of each required character class.
+        has_upper = any(c in string.ascii_uppercase for c in pwd)
+        has_lower = any(c in string.ascii_lowercase for c in pwd)
+        has_digit = any(c in string.digits for c in pwd)
+        has_symbol = any(c in "!@#$%^&*()-_=+" for c in pwd)
+        if has_upper and has_lower and has_digit and has_symbol:
+            return pwd
+
+
+_ENV_PASSWORD = os.environ.get("URIP_DEV_ADMIN_PASSWORD")
+ADMIN_PASSWORD = _ENV_PASSWORD or _generate_random_password()
+_PASSWORD_IS_GENERATED = _ENV_PASSWORD is None
 
 
 def main() -> None:
@@ -67,13 +87,19 @@ def main() -> None:
             )
             s.add(admin)
             s.commit()
-            print(f"[+] Created admin {ADMIN_EMAIL} / password={ADMIN_PASSWORD!r}")
+            if _PASSWORD_IS_GENERATED:
+                print(f"[+] Created admin {ADMIN_EMAIL} / password={ADMIN_PASSWORD!r}  ← auto-generated; set URIP_DEV_ADMIN_PASSWORD env var to pin it")
+            else:
+                print(f"[+] Created admin {ADMIN_EMAIL} (password unchanged from env)")
         else:
             # Reset password so we always know what it is
             admin.hashed_password = hash_password(ADMIN_PASSWORD)
             admin.is_active = True
             s.commit()
-            print(f"[=] Admin {ADMIN_EMAIL} exists — password reset to {ADMIN_PASSWORD!r}")
+            if _PASSWORD_IS_GENERATED:
+                print(f"[=] Admin {ADMIN_EMAIL} exists — password reset (auto-generated; set URIP_DEV_ADMIN_PASSWORD env var to pin it)")
+            else:
+                print(f"[=] Admin {ADMIN_EMAIL} exists — password reset (from env)")
 
         # ── 3. Demo risks ────────────────────────────────────────────
         risk_count = s.execute(select(Risk)).scalars().all()

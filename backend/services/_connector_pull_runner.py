@@ -152,6 +152,14 @@ async def run_connector_pull(tenant_id: str, connector_name: str) -> dict[str, A
             try:
                 record = instance.normalize(raw)
             except (KeyError, ValueError, TypeError, AttributeError):
+                logger.warning(
+                    "normalize_skipped",
+                    extra={
+                        "connector": connector_name,
+                        "raw_id": getattr(raw, "id", None),
+                    },
+                    exc_info=True,
+                )
                 errors += 1
                 continue
 

@@ -181,8 +181,10 @@ class TestCertInFetchRSS:
         )
         since = datetime(2024, 6, 1, tzinfo=timezone.utc)
         findings = connector.fetch_findings(since, tenant_id="tenant-certin")
-        # Since our mock above overrides, we verify scrape fallback via explicit test below
-        assert True
+        # The last mock registered wins in respx; the connector returned a list
+        # (may be empty or contain scraped rows depending on mock resolution order).
+        # Scraper-path correctness is fully covered by TestCertInFetchScraper below.
+        assert isinstance(findings, list)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

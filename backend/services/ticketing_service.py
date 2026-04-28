@@ -157,6 +157,7 @@ async def on_risk_assigned(
 
 async def on_ticket_status_changed(
     db: AsyncSession,
+    tenant_id: uuid.UUID,
     ticket_id: str,
     new_status: str,
     *,
@@ -166,18 +167,27 @@ async def on_ticket_status_changed(
     """
     Webhook entry point: the external system reports a ticket changed state.
 
-    Returns the updated Risk row (or None if no risk has that ticket_id).
+    ``tenant_id`` is required to scope the Risk lookup to a single tenant,
+    preventing cross-tenant data leaks (a risk owned by tenant A cannot be
+    accidentally resolved by a webhook from tenant B).
+
+    Returns the updated Risk row (or None if no risk has that ticket_id for
+    the given tenant).
     """
     if new_status not in TicketStatus.ALL:
         logger.warning("on_ticket_status_changed: unknown status %r — ignored",
                        new_status)
         return None
 
-    q = await db.execute(select(Risk).where(Risk.ticket_id == ticket_id))
+    q = await db.execute(
+        select(Risk).where(Risk.tenant_id == tenant_id, Risk.ticket_id == ticket_id)
+    )
     risk = q.scalar_one_or_none()
     if risk is None:
-        # Fallback to legacy jira_ticket column.
-        q2 = await db.execute(select(Risk).where(Risk.jira_ticket == ticket_id))
+        # Fallback to legacy jira_ticket column (tenant-scoped).
+        q2 = await db.execute(
+            select(Risk).where(Risk.tenant_id == tenant_id, Risk.jira_ticket == ticket_id)
+        )
         risk = q2.scalar_one_or_none()
     if risk is None:
         logger.info("on_ticket_status_changed: no risk found for ticket %s", ticket_id)

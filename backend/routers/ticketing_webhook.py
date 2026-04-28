@@ -109,7 +109,7 @@ async def jira_webhook(
     if new_status == TicketStatus.UNKNOWN:
         return {"ok": True, "ignored": True, "reason": f"unmapped status {vendor_status!r}"}
 
-    risk = await on_ticket_status_changed(db, ticket_id, new_status)
+    risk = await on_ticket_status_changed(db, _tenant.id, ticket_id, new_status)
     await db.commit()
     return {
         "ok": True,
@@ -158,7 +158,7 @@ async def servicenow_webhook(
     if new_status == TicketStatus.UNKNOWN:
         return {"ok": True, "ignored": True, "reason": f"unmapped state {state!r}"}
 
-    risk = await on_ticket_status_changed(db, ticket_id, new_status)
+    risk = await on_ticket_status_changed(db, _tenant.id, ticket_id, new_status)
     await db.commit()
     return {
         "ok": True,

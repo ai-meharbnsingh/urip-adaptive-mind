@@ -88,7 +88,7 @@ async def test_on_ticket_status_changed_to_terminal_writes_audit(db_session, ope
     await db_session.commit()
 
     risk = await on_ticket_status_changed(
-        db_session, "URIP-200", "resolved", comment="closed via webhook"
+        db_session, open_risk.tenant_id, "URIP-200", "resolved", comment="closed via webhook"
     )
     await db_session.commit()
     assert risk is not None

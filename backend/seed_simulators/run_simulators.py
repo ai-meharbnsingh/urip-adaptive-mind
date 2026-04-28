@@ -14,10 +14,13 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import logging
 import os
 import sys
 import uuid
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncSession
@@ -63,8 +66,12 @@ async def _archive_then_clear(session: AsyncSession, tenant_id: uuid.UUID) -> di
                     f"DELETE FROM {table} WHERE tenant_id = :tid"
                 ), {"tid": str(tenant_id)})
                 archived[table] = cnt
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.exception(
+                "simulator reset/archive failed",
+                extra={"connector": table, "tenant_id": str(tenant_id)},
+            )
+            continue
     await session.commit()
     return archived
 
