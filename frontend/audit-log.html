@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/app.css?v=20260437">
+  <link rel="stylesheet" href="css/app.css?v=20260438">
 </head>
 <body class="urip-app">
   <div id="app-shell" data-page="audit-log">
@@ -100,14 +100,49 @@
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/shell.js?v=20260437"></script>
+  <script src="js/shell.js?v=20260438"></script>
   <script>
     if (typeof checkAuth === 'function') checkAuth();
+
+    function exportToBlob(filename, data, type) {
+      var blob = new Blob([data], { type: type });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
       window.URIP.shell.mount({
         page: 'audit-log',
         title: 'Audit Log',
         breadcrumb: 'Operations / Audit Log'
+      });
+
+      document.getElementById('btnExportAudit').addEventListener('click', async function () {
+        try {
+          var rows = await window.URIP.apiFetch('/audit-log?page=1&per_page=1000', { silent: true, retries: 1 });
+          var items = (rows && rows.items) ? rows.items : (Array.isArray(rows) ? rows : []);
+          if (!items.length) {
+            window.URIP.showNotification('Export', 'No audit log entries to export.', 'info');
+            return;
+          }
+          var headers = Object.keys(items[0]).join(',');
+          var csvRows = items.map(function(r) {
+            return Object.values(r).map(function(v) {
+              var s = (v == null) ? '' : String(v);
+              return '"' + s.replace(/"/g, '""') + '"';
+            }).join(',');
+          });
+          exportToBlob('urip-audit-log.csv', [headers].concat(csvRows).join('
+'), 'text/csv');
+        } catch (e) {
+          window.URIP.showNotification('Export', 'CSV export failed — please try again.', 'error');
+        }
       });
     });
   </script>

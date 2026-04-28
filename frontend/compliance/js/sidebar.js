@@ -67,7 +67,7 @@
 
     // Header / Logo (branded)
     var brand = (window.COMPLIANCE && window.COMPLIANCE.branding) || {};
-    var brandAppName = brand.app_name || 'Adverb Compliance';
+    var brandAppName = brand.app_name || 'URIP Compliance';
     var brandTagline = brand.app_tagline || 'Audit-Ready, Always';
 
     var header = el('div', 'sidebar-header');
@@ -142,7 +142,7 @@
 
     // Footer
     var footer = el('div', 'sidebar-footer');
-    footer.appendChild(el('div', 'sidebar-version', 'Adverb Compliance v1.0'));
+    footer.appendChild(el('div', 'sidebar-version', 'URIP Compliance v1.0'));
     sidebar.appendChild(footer);
 
     var mount = document.getElementById('sidebar-mount');
@@ -194,7 +194,7 @@
     var user = (typeof window.getCurrentUser === 'function') ? window.getCurrentUser() : null;
 
     var brand = (window.COMPLIANCE && window.COMPLIANCE.branding) || {};
-    var orgLabel = brand.app_name || 'Adverb';
+    var orgLabel = brand.app_name || 'URIP Compliance';
 
     var left = el('div', 'topbar-left');
     var org = el('span', 'org-name');

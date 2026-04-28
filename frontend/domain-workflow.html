@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/app.css?v=20260437">
+  <link rel="stylesheet" href="css/app.css?v=20260438">
   <link rel="stylesheet" href="css/domain-page.css">
   <link rel="stylesheet" href="css/module-tools.css">
 </head>
@@ -120,7 +120,7 @@
             <div>
               <div class="stat-value" id="sdpSyncStatus">—</div>
               <div class="stat-label">ManageEngine SDP</div>
-              <a class="ticket-connect-link" id="sdpConnectLink" href="connector-wizard.html?tool=manageengine_sdp" style="display:none">Connect SDP →</a>
+              <a class="ticket-connect-link" id="sdpConnectLink" href="connector-wizard.html?tool=me_sdp" style="display:none">Connect SDP →</a>
             </div>
           </div>
         </div>
@@ -129,7 +129,7 @@
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/shell.js?v=20260437"></script>
+  <script src="js/shell.js?v=20260438"></script>
   <script src="js/domain-page.js"></script>
   <script src="js/module-tools.js"></script>
   <script>
@@ -195,7 +195,7 @@
         td2.style.padding = '1.5rem';
         td2.style.textAlign = 'center';
         td2.style.color = '#94A3B8';
-        td2.textContent = 'Auto-remediation endpoint not available — feature roadmap.';
+        td2.textContent = 'No auto-remediation tasks pending.';
         tr2.appendChild(td2);
         body2.appendChild(tr2);
       }
@@ -285,7 +285,7 @@
         setSyncStatus('snowSyncStatus', 'snowConnectLink', (sh && sh.status) ? sh.status : 'Connected');
       } catch (e) { setSyncStatus('snowSyncStatus', 'snowConnectLink', 'Not configured'); }
       try {
-        var sdph = await apiFetch('/integrations/manageengine_sdp/health', { silent: true });
+        var sdph = await apiFetch('/integrations/me_sdp/health', { silent: true });
         setSyncStatus('sdpSyncStatus', 'sdpConnectLink', (sdph && sdph.status) ? sdph.status : 'Connected');
       } catch (e) { setSyncStatus('sdpSyncStatus', 'sdpConnectLink', 'Not configured'); }
 

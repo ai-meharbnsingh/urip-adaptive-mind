@@ -134,7 +134,7 @@
           ]},
         { name: 'username', label: 'Admin Username', type: 'text', required: true,
           help: 'API-enabled admin account (NOT your SSO email).',
-          placeholder: 'api-admin@acme.com' },
+          placeholder: 'admin@example.com' },
         { name: 'password', label: 'Admin Password', type: 'password', required: true, secret: true,
           help: 'Password for the API admin account above.',
           placeholder: '••••••••' },
@@ -156,7 +156,7 @@
       fields: [
         { name: 'tenant_url', label: 'Tenant URL', type: 'url', required: true,
           help: 'Your Netskope tenant URL, e.g. https://yourorg.goskope.com.',
-          placeholder: 'https://acme.goskope.com', pattern: URL_RX },
+          placeholder: 'https://yourorg.goskope.com', pattern: URL_RX },
         { name: 'api_token', label: 'REST API v2 Token', type: 'password', required: true, secret: true,
           help: 'Settings → Tools → REST API v2 → generate token with read-only scopes.',
           placeholder: 'eyJ…' },
@@ -276,7 +276,7 @@
       poll: '60 min',
       fields: [
         { name: 'base_url', label: 'Endpoint Central URL', type: 'url', required: true,
-          placeholder: 'https://endpointcentral.acme.com:8383', pattern: URL_RX,
+          placeholder: 'https://endpointcentral.example.com:8383', pattern: URL_RX,
           help: 'Server URL including port (default 8383 / 8443).' },
         { name: 'auth_token', label: 'API Auth Token', type: 'password', required: true, secret: true,
           placeholder: '24F1…',
@@ -314,7 +314,7 @@
       poll: '4 h',
       fields: [
         { name: 'base_url', label: 'Burp Enterprise URL', type: 'url', required: true,
-          placeholder: 'https://burp-enterprise.acme.com', pattern: URL_RX,
+          placeholder: 'https://burp-enterprise.example.com', pattern: URL_RX,
           help: 'Requires Burp Suite Enterprise — Pro is NOT supported (no API).' },
         { name: 'api_key', label: 'GraphQL API Key', type: 'password', required: true, secret: true,
           placeholder: 'bse_…',
@@ -333,7 +333,7 @@
       poll: '60 min',
       fields: [
         { name: 'base_url', label: 'EPP Server URL', type: 'url', required: true,
-          placeholder: 'https://epp.acme.com', pattern: URL_RX,
+          placeholder: 'https://epp.example.com', pattern: URL_RX,
           help: 'EPP server URL (cloud or on-prem).' },
         { name: 'api_key', label: 'API Key', type: 'password', required: true, secret: true,
           placeholder: 'epp_…',
@@ -395,6 +395,89 @@
         { name: 'risk_jql', label: 'JQL Filter (security tickets to ingest)', type: 'text', required: true,
           placeholder: 'project = SEC AND labels = "security"',
           help: 'JQL expression selecting security tickets for URIP to ingest.' }
+      ]
+    }    ,
+    {
+      key: 'crowdstrike',
+      name: 'CrowdStrike Falcon',
+      category: 'EDR',
+      description: 'Endpoint detections, threat intelligence, and host inventory from CrowdStrike Falcon.',
+      logoLetter: 'C',
+      logoColor: C.crimson,
+      docsUrl: 'https://developer.crowdstrike.com/crowdstrike/docs',
+      sourceType: 'crowdstrike',
+      poll: '15 min',
+      statusPill: 'Available — connector coming Q3 2026',
+      fields: [
+        { name: 'api_url', label: 'Falcon API Base URL', type: 'url', required: true,
+          default: 'https://api.crowdstrike.com',
+          placeholder: 'https://api.crowdstrike.com', pattern: URL_RX,
+          help: 'US-1 default is https://api.crowdstrike.com. For US-2/EU-1 check your Falcon console.' },
+        { name: 'api_key', label: 'Client Secret (API Key)', type: 'password', required: true, secret: true,
+          placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+          help: 'Falcon → Support → API Clients → create client with Detections:Read and Hosts:Read scopes.' }
+      ]
+    },
+    {
+      key: 'vanta',
+      name: 'Vanta',
+      category: 'GRC',
+      description: 'Compliance evidence, control pass/fail status, and vendor risk from Vanta.',
+      logoLetter: 'V',
+      logoColor: C.violet,
+      docsUrl: 'https://developer.vanta.com/docs',
+      sourceType: 'vanta',
+      poll: '60 min',
+      statusPill: 'Available — connector coming Q3 2026',
+      fields: [
+        { name: 'api_url', label: 'Vanta API Base URL', type: 'url', required: true,
+          default: 'https://api.vanta.com',
+          placeholder: 'https://api.vanta.com', pattern: URL_RX,
+          help: 'Vanta REST API base URL — keep default unless on a custom domain.' },
+        { name: 'api_key', label: 'API Key', type: 'password', required: true, secret: true,
+          placeholder: 'vanta_pat_…',
+          help: 'Vanta → Settings → API Tokens → generate a read-only personal access token.' }
+      ]
+    },
+    {
+      key: 'drata',
+      name: 'Drata',
+      category: 'GRC',
+      description: 'Compliance readiness scores, control evidence, and audit trail from Drata.',
+      logoLetter: 'D',
+      logoColor: C.indigo,
+      docsUrl: 'https://developers.drata.com/docs',
+      sourceType: 'drata',
+      poll: '60 min',
+      statusPill: 'Available — connector coming Q3 2026',
+      fields: [
+        { name: 'api_url', label: 'Drata API Base URL', type: 'url', required: true,
+          default: 'https://public-api.drata.com',
+          placeholder: 'https://public-api.drata.com', pattern: URL_RX,
+          help: 'Drata REST API base URL — keep default.' },
+        { name: 'api_key', label: 'API Key', type: 'password', required: true, secret: true,
+          placeholder: 'drata_…',
+          help: 'Drata → Settings → Integrations → API Keys → generate a read-only key.' }
+      ]
+    },
+    {
+      key: 'onetrust',
+      name: 'OneTrust',
+      category: 'GRC',
+      description: 'Privacy, GRC, and vendor risk data from OneTrust.',
+      logoLetter: 'O',
+      logoColor: C.teal,
+      docsUrl: 'https://developer.onetrust.com/onetrust/docs',
+      sourceType: 'onetrust',
+      poll: '60 min',
+      statusPill: 'Available — connector coming Q3 2026',
+      fields: [
+        { name: 'api_url', label: 'OneTrust API Base URL', type: 'url', required: true,
+          placeholder: 'https://app.onetrust.com', pattern: URL_RX,
+          help: 'Your OneTrust tenant base URL (e.g. https://yourorg.onetrust.com).' },
+        { name: 'api_key', label: 'Bearer Token', type: 'password', required: true, secret: true,
+          placeholder: 'eyJ…',
+          help: 'OneTrust → Settings → Developers → API Tokens → generate bearer token.' }
       ]
     }
   ];

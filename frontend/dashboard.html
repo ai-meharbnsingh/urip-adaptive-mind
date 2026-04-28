@@ -15,7 +15,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/app.css?v=20260437">
+  <link rel="stylesheet" href="css/app.css?v=20260438">
   <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body class="urip-app">
@@ -211,7 +211,7 @@
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/shell.js?v=20260437"></script>
+  <script src="js/shell.js?v=20260438"></script>
   <script src="js/charts.js"></script>
   <script>
     if (typeof checkAuth === 'function') checkAuth();
@@ -343,7 +343,30 @@
       document.getElementById('btnRefresh').addEventListener('click', function() {
         window.location.reload();
       });
+
+      // Export button — download current dashboard KPIs as JSON blob
+      document.getElementById('btnExport').addEventListener('click', async function () {
+        try {
+          var kpis = await window.URIP.apiFetch('/dashboard/kpis', { silent: true, retries: 1 });
+          var summary = await window.URIP.apiFetch('/risk-summary', { silent: true, retries: 1 });
+          exportToBlob('urip-dashboard-export.json', JSON.stringify({ kpis: kpis, summary: summary, exportedAt: new Date().toISOString() }, null, 2), 'application/json');
+        } catch (e) {
+          window.URIP.showNotification('Export', 'Export failed — please try again.', 'error');
+        }
+      });
     });
+
+    function exportToBlob(filename, data, type) {
+      var blob = new Blob([data], { type: type });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+    }
   </script>
 </body>
 </html>

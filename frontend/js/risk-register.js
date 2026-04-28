@@ -46,10 +46,7 @@
       actions: [
         { label: 'Export CSV', icon: 'fa-file-csv', variant: 'is-ghost', onClick: exportCsv },
         { label: 'Refresh', icon: 'fa-rotate', variant: 'is-ghost', onClick: load },
-        { label: 'Add Risk', icon: 'fa-plus', variant: 'is-primary', onClick: function () {
-            window.URIP.showNotification('Add Risk', 'Manual risk creation — coming soon.', 'info');
-          }
-        }
+        { label: 'Add Risk', icon: 'fa-plus', variant: 'is-primary', onClick: openAddRiskModal }
       ]
     });
 
@@ -652,6 +649,71 @@
     a.click();
     URL.revokeObjectURL(url);
   }
+
+  // ---------------------------------------------------------------------------
+  // Add Risk modal
+  // ---------------------------------------------------------------------------
+  function openAddRiskModal() {
+    // Remove any existing modal
+    var existing = document.getElementById('addRiskModal');
+    if (existing) existing.remove();
+
+    var overlay = document.createElement('div');
+    overlay.id = 'addRiskModal';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9000;display:flex;align-items:center;justify-content:center;';
+
+    var box = document.createElement('div');
+    box.style.cssText = 'background:var(--navy-800,#0D1B2A);border:1px solid var(--gray-200,rgba(255,255,255,.12));border-radius:12px;padding:2rem;min-width:420px;max-width:540px;width:100%;';
+
+    box.innerHTML = [
+      '<h2 style="margin:0 0 1.25rem;font-size:1.1rem;color:var(--white,#fff)"><i class="fas fa-plus" style="color:var(--teal-accent,#1ABC9C);margin-right:.5rem"></i>Add Manual Risk</h2>',
+      '<label style="display:block;margin-bottom:.25rem;font-size:.85rem;color:var(--gray-400,#94A3B8)">Title <span style="color:#E11D48">*</span></label>',
+      '<input id="arTitle" type="text" placeholder="e.g. Misconfigured S3 bucket" style="width:100%;padding:.55rem .75rem;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:#0D2137;color:#fff;font-size:.9rem;box-sizing:border-box;margin-bottom:1rem">',
+      '<label style="display:block;margin-bottom:.25rem;font-size:.85rem;color:var(--gray-400,#94A3B8)">Description</label>',
+      '<textarea id="arDesc" rows="3" placeholder="Optional: explain the risk..." style="width:100%;padding:.55rem .75rem;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:#0D2137;color:#fff;font-size:.9rem;box-sizing:border-box;margin-bottom:1rem;resize:vertical"></textarea>',
+      '<label style="display:block;margin-bottom:.25rem;font-size:.85rem;color:var(--gray-400,#94A3B8)">Severity</label>',
+      '<select id="arSeverity" style="width:100%;padding:.55rem .75rem;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:#0D2137;color:#fff;font-size:.9rem;box-sizing:border-box;margin-bottom:1.5rem"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="critical">Critical</option></select>',
+      '<label style="display:block;margin-bottom:.25rem;font-size:.85rem;color:var(--gray-400,#94A3B8)">Domain</label>',
+      '<select id="arDomain" style="width:100%;padding:.55rem .75rem;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:#0D2137;color:#fff;font-size:.9rem;box-sizing:border-box;margin-bottom:1.5rem"><option value="">— select —</option><option value="endpoint">Endpoint</option><option value="identity">Identity</option><option value="cloud">Cloud</option><option value="network">Network</option><option value="email">Email &amp; Collaboration</option><option value="workflow">Workflow</option><option value="compliance">Compliance</option><option value="mobile">Mobile</option><option value="ot">OT / ICS</option><option value="external_threat">External Threat</option></select>',
+      '<div style="display:flex;gap:.75rem;justify-content:flex-end">',
+      '<button id="arCancel" style="padding:.5rem 1rem;border-radius:6px;border:1px solid rgba(255,255,255,.2);background:transparent;color:#fff;cursor:pointer;font-size:.9rem">Cancel</button>',
+      '<button id="arSubmit" style="padding:.5rem 1.25rem;border-radius:6px;border:none;background:var(--teal-accent,#1ABC9C);color:#fff;cursor:pointer;font-size:.9rem;font-weight:600">Create Risk</button>',
+      '</div>',
+    ].join('');
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    document.getElementById('arCancel').onclick = function () { overlay.remove(); };
+    overlay.onclick = function (e) { if (e.target === overlay) overlay.remove(); };
+
+    document.getElementById('arSubmit').onclick = async function () {
+      var title = (document.getElementById('arTitle').value || '').trim();
+      if (!title) { document.getElementById('arTitle').style.borderColor = '#E11D48'; return; }
+      var btn = document.getElementById('arSubmit');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating…';
+      try {
+        await window.URIP.apiFetch('/risks', {
+          method: 'POST',
+          body: JSON.stringify({
+            title: title,
+            description: document.getElementById('arDesc').value || '',
+            severity: document.getElementById('arSeverity').value,
+            domain: document.getElementById('arDomain').value || null
+          })
+        });
+        overlay.remove();
+        window.URIP.showNotification('Risk Created', 'Manual risk added successfully.', 'success');
+        load();
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Create Risk';
+        window.URIP.showNotification('Error', 'Failed to create risk — ' + (e.message || 'try again.'), 'error');
+      }
+    };
+  }
+
   function csv(s) {
     if (s == null) return '';
     s = String(s);

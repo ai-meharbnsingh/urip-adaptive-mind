@@ -26,7 +26,7 @@
       actions: [
         { label: 'Refresh', icon: 'fa-rotate', variant: 'is-ghost', onClick: function () { location.reload(); } },
         { label: 'Export', icon: 'fa-download', variant: 'is-ghost', onClick: function () {
-            window.URIP.showNotification('Export', 'PDF/CSV export coming soon.', 'info');
+            exportRiskIndexToJson();
           }
         },
         { label: 'Configure', icon: 'fa-sliders', variant: 'is-primary', href: 'admin-scoring.html' }
@@ -435,4 +435,29 @@
       body.appendChild(window.URIP.shell.makeEmpty('fa-triangle-exclamation', 'Could not load activity', 'Try refreshing in a moment.'));
     }
   }
+
+  // ---------------------------------------------------------------------------
+  // Export helper — exports current risk-index data as JSON blob
+  // ---------------------------------------------------------------------------
+  function exportRiskIndexToJson() {
+    loadRiskIndex().then(function (data) {
+      if (!data) {
+        window.URIP.showNotification('Export', 'No risk data available to export.', 'info');
+        return;
+      }
+      var payload = JSON.stringify({ riskIndex: data, exportedAt: new Date().toISOString() }, null, 2);
+      var blob = new Blob([payload], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'urip-risk-overview.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+    }).catch(function () {
+      window.URIP.showNotification('Export', 'Export failed — please try again.', 'error');
+    });
+  }
+
 })();

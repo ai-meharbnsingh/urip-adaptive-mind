@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Auditor Portal | Adverb Compliance</title>
+  <title>Auditor Portal | URIP Compliance</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="../css/app.css?v=20260438" />
 
   <style>
     /* Auditor portal is single-page, no sidebar — uses its own minimal nav */
@@ -108,7 +109,7 @@
     .drawer-overlay.open { display: block; animation: fadeIn 200ms ease; }
   </style>
 </head>
-<body>
+<body class="urip-app">
   <!-- SIGN-IN VIEW -->
   <div class="signin-page" id="signinView">
     <div class="signin-card">
@@ -138,13 +139,13 @@
     <header class="auditor-topbar">
       <div class="auditor-brand">
         <div class="auditor-brand-icon"><i class="fas fa-shield-halved"></i></div>
-        <span>Adverb Auditor Portal</span>
+        <span>URIP Auditor Portal</span>
       </div>
       <nav class="auditor-tabs">
-        <a href="#" class="auditor-tab active" data-tab="controls"><i class="fas fa-list-check"></i> Controls</a>
-        <a href="#" class="auditor-tab" data-tab="evidence"><i class="fas fa-folder-open"></i> Evidence</a>
-        <a href="#" class="auditor-tab" data-tab="policies"><i class="fas fa-file-signature"></i> Policies</a>
-        <a href="#" class="auditor-tab" data-tab="activity"><i class="fas fa-history"></i> My activity</a>
+        <button class="auditor-tab active" type="button" data-tab="controls"><i class="fas fa-list-check"></i> Controls</button>
+        <button class="auditor-tab" type="button" data-tab="evidence"><i class="fas fa-folder-open"></i> Evidence</button>
+        <button class="auditor-tab" type="button" data-tab="policies"><i class="fas fa-file-signature"></i> Policies</button>
+        <button class="auditor-tab" type="button" data-tab="activity"><i class="fas fa-history"></i> My activity</button>
       </nav>
       <div class="auditor-user">
         <span id="userEmail" class="text-sm" style="opacity:.85"></span>
@@ -255,7 +256,7 @@
     <aside class="drawer" id="drawer">
       <div class="drawer-header">
         <h3 id="drawerTitle">—</h3>
-        <button class="modal-close" id="drawerClose"><i class="fas fa-times"></i></button>
+        <button class="modal-close" id="drawerClose" aria-label="Close drawer"><i class="fas fa-times"></i></button>
       </div>
       <div class="drawer-body" id="drawerBody"></div>
     </aside>

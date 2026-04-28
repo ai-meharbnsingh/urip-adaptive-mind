@@ -57,7 +57,7 @@
       var items = data && data.items ? data.items : [];
       if (!items.length) {
         body.innerHTML = '<p class="text-gray">No clouds connected.</p>' +
-          '<a href="#" class="btn btn-primary" onclick="showConnectModal();return false;">Connect a Cloud</a>';
+          '<a href="connector-wizard.html?category=CSPM" class="btn btn-primary">Connect a Cloud</a>';
         return;
       }
       body.innerHTML = '';

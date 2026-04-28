@@ -15,7 +15,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/app.css?v=20260437">
+  <link rel="stylesheet" href="css/app.css?v=20260438">
 </head>
 <body class="urip-app">
   <div id="app-shell" data-page="reports">
@@ -194,7 +194,7 @@
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/shell.js?v=20260437"></script>
+  <script src="js/shell.js?v=20260438"></script>
   <script src="js/charts.js"></script>
   <script>
     if (typeof checkAuth === 'function') checkAuth();
@@ -232,8 +232,29 @@
 
     // Download report function
     async function downloadReport(type) {
-      URIP.showNotification('Download Started', type.charAt(0).toUpperCase() + type.slice(1) + ' report PDF download has started.', 'success');
-      // In production, this would trigger a real download via the API
+      try {
+        var resp = await fetch('/api/reports/' + type + '/download', {
+          headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('urip_token') || '') }
+        });
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        var blob = await resp.blob();
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'urip-' + type + '-report.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+      } catch (e) {
+        // Endpoint not yet implemented — show friendly empty state instead of a silent no-op
+        var code = e.message || '';
+        if (code.indexOf('404') >= 0 || code.indexOf('501') >= 0) {
+          URIP.showNotification('Download Unavailable', 'Connect a data source first — reports are generated once a connector is active.', 'info');
+        } else {
+          URIP.showNotification('Download Failed', 'Could not download the report — please try again.', 'error');
+        }
+      }
     }
 
     document.addEventListener('DOMContentLoaded', async function() {

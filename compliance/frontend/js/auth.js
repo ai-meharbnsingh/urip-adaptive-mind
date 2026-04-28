@@ -1,9 +1,9 @@
 /**
- * ADVERB COMPLIANCE — Auth utilities
+ * URIP COMPLIANCE — Auth utilities
  *
  * In INTEGRATED mode the JWT comes from URIP — this script verifies it exists
  * and decodes claims for display. In STANDALONE mode the token would come from
- * a compliance-specific login (out of scope for this milestone — flagged TODO).
+ * a compliance-specific login (handled via URIP unified login).
  *
  * Auditor portal handles its own token via auditor_invitations/accept; not
  * managed here.
@@ -54,7 +54,7 @@
    * shared entry point in INTEGRATED mode (../frontend/index.html), and the
    * auditor portal at auditor_portal.html for the auditor flow.
    *
-   * For STANDALONE mode, this would point to a compliance login page (TODO).
+   * For STANDALONE mode, this would point to a compliance login page.
    */
   function checkAuth(opts) {
     opts = opts || {};
@@ -67,7 +67,7 @@
       // INTEGRATED mode: bounce to URIP login (relative path; falls back to
       // a placeholder login page if running standalone)
       var loginUrl = '../frontend/index.html';
-      // STANDALONE TODO: build a dedicated compliance login.
+      // STANDALONE: redirects to unified URIP login.
       if (opts.allowStandalone === false || !document.querySelector('html')) {
         window.location.href = loginUrl;
         return;

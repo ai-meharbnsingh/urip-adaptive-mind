@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/app.css?v=20260437">
+  <link rel="stylesheet" href="css/app.css?v=20260438">
   <link rel="stylesheet" href="css/domain-page.css">
   <link rel="stylesheet" href="css/module-tools.css">
 </head>
@@ -129,7 +129,7 @@
             </div>
             <div class="dashboard-card-body">
               <div id="vendorRisk" style="font-size:14px;color:var(--gray-600)">
-                <em>Vendor risk endpoint not connected — placeholder until /api/compliance/vendors lands.</em>
+                <span style="color:var(--gray-400,#94A3B8)"><i class="fas fa-circle-info" style="margin-right:.4em"></i>No vendor assessments yet — <a href="compliance/vendors.html" style="color:var(--teal-accent,#1ABC9C)">open vendor portal</a> to add vendors.</span>
               </div>
             </div>
           </div>
@@ -139,7 +139,7 @@
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/shell.js?v=20260437"></script>
+  <script src="js/shell.js?v=20260438"></script>
   <script src="js/module-tools.js"></script>
   <script>
     if (typeof checkAuth === 'function') checkAuth();

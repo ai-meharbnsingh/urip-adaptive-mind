@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reports | Adverb Compliance</title>
+  <title>Reports | URIP Compliance</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/sidebar.css" />
+  <link rel="stylesheet" href="../css/app.css?v=20260438" />
   <style>
     .reports-grid {
       display: grid;
@@ -35,7 +36,7 @@
     .report-meta { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--gray-500); margin: .75rem 0; padding-top: .75rem; border-top: 1px solid var(--gray-100); }
   </style>
 </head>
-<body>
+<body class="urip-app">
   <div class="app-layout">
     <div id="sidebar-mount"></div>
     <main class="main-content">
@@ -120,8 +121,7 @@
 
       async function generate(code, btn) {
         btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating…';
-        // BACKEND GAP: there is no /reports endpoint yet. Try it; if 404, fall back to
-        // a client-side summary print/export of compliance-score data.
+        // Try the reports endpoint; if 404, fall back to client-side summary export.
         try {
           var resp = await C.apiFetch('/reports/' + code, { method: 'POST', raw: true, silent: true });
           if (resp.status === 404) throw new Error('not_implemented');
