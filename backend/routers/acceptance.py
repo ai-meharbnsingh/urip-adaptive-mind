@@ -346,7 +346,10 @@ async def acceptance_detail(
         "risk_id": risk.risk_id if risk else None,
         "severity": risk.severity if risk else None,
         "title": risk.finding if risk else None,
-        "description": risk.finding if risk else None,
+        # Risk has a dedicated description column (Text, nullable). Use it
+        # when populated; fall back to the headline finding otherwise so
+        # the UI's detail panel always has something to render.
+        "description": (risk.description or risk.finding) if risk else None,
         "justification": ar.justification,
         "compensating_controls": ar.compensating_controls,
         "residual_risk": ar.residual_risk,
