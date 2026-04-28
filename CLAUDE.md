@@ -17,7 +17,11 @@
 | Migrations | `alembic/` (URIP), `compliance/alembic/` (compliance) |
 | Config files (allowed at root) | `Dockerfile`, `docker-compose.yml`, `requirements.txt`, `alembic.ini`, `pytest.ini`, `.env.example`, `.gitignore` |
 | Trash / archive | `_trash/` (NEVER `rm` — INV-0; always `mv`) |
-| Generated artifacts | `out/`, `dist/`, `htmlcov/`, `.pytest_cache/` (all gitignored) |
+| Generated artifacts | `out/`, `dist/`, `htmlcov/`, `.pytest_cache/`, `.playwright-mcp/` (all gitignored) |
+| Document images / screenshots | `docs/screenshots/` (NEVER drop loose `.png`/`.jpg` in `docs/` root) |
+| PowerPoint / decks / PDFs | `docs/decks/` (one folder per deck if needed) |
+| Hand-off audits / Playwright reports | `docs/audit_<yyyymmdd>/` |
+| Frontend product images | `frontend/assets/<domain>/` (e.g., `frontend/assets/enrichment/prism-enrichment.svg`) |
 
 **Rules:**
 - Every new file goes to its correct directory at creation time. Never default to root.

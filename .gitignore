@@ -41,3 +41,21 @@ htmlcov/
 
 # Alembic
 alembic/versions/__pycache__/
+
+# Playwright MCP cache (browser snapshots from agents)
+.playwright-mcp/
+
+# Trash bin — INV-0 'no rm' policy means deletes go here, never push
+_trash/
+
+# Local backup files
+*.bak
+*.backup
+
+# Editor swap files (already covered above but be explicit)
+*~
+
+# OS
+.DS_Store
+._.DS_Store
+**/.DS_Store
