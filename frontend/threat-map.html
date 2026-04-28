@@ -260,13 +260,14 @@
     .ti-search-input {
       width: 100%; max-width: 360px;
       padding: 10px 14px 10px 38px;
-      border: 1px solid var(--gray-300);
+      border: 1px solid var(--u-border, var(--gray-300));
       border-radius: var(--radius-md);
       font-size: 14px;
-      color: var(--gray-700);
-      background: #fff;
+      color: var(--u-fg, var(--gray-700));
+      background: var(--u-card, #fff);
       transition: border-color var(--transition-fast);
     }
+    .ti-search-input::placeholder { color: var(--u-fg-3, var(--gray-400)); }
     .ti-search-input:focus {
       outline: none;
       border-color: var(--teal-accent);
@@ -310,7 +311,7 @@
     .ti-cloud-canvas {
       width: 100%;
       min-height: 240px;
-      background: linear-gradient(180deg, #fafbfc, #ffffff);
+      background: var(--u-card, #fafbfc);
       border-radius: var(--radius-md);
       display: block;
     }
