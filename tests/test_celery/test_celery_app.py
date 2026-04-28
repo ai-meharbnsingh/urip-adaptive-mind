@@ -32,6 +32,18 @@ import unittest.mock as mock
 
 import pytest
 
+# Module-level skip when celery is not installed. backend/services/celery_app.py
+# tolerates the missing import (celery_app=None) so the rest of the app can
+# still boot, but every test below dereferences celery_app.* — so this whole
+# module must skip on a clean clone without celery. Pattern matches the same
+# clean-clone guard used in tests/test_critfix_auth/test_audit_fix_critical.py.
+from backend.services.celery_app import _CELERY_AVAILABLE  # noqa: E402
+
+pytestmark = pytest.mark.skipif(
+    not _CELERY_AVAILABLE,
+    reason="celery package not installed — celery_app is None, all tests would AttributeError",
+)
+
 
 def test_celery_app_instance_exists_and_is_named():
     from backend.services.celery_app import celery_app
