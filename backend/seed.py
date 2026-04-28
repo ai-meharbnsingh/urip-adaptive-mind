@@ -1,10 +1,13 @@
 """
 URIP Seed Script — Generate 200 synthetic risks + users + test data
-Royal Enfield cybersecurity context
 
 Usage: python -m backend.seed
+       URIP_SEED_PASSWORD='strong!pass' python -m backend.seed
 """
+import os
 import random
+import secrets
+import string
 import uuid
 from datetime import datetime, timedelta, timezone
 
@@ -14,6 +17,16 @@ from sqlalchemy.orm import Session
 from backend.config import settings
 from backend.database import Base
 from backend.middleware.auth import hash_password
+
+
+def _resolve_seed_password() -> tuple[str, bool]:
+    """Return (password, was_generated). Prefer URIP_SEED_PASSWORD over a
+    random one so a known-weak demo string is never committed to source."""
+    env = os.environ.get("URIP_SEED_PASSWORD")
+    if env:
+        return env, False
+    alphabet = string.ascii_letters + string.digits + "!@#$%^&*"
+    return "".join(secrets.choice(alphabet) for _ in range(20)), True
 from backend.models import (
     AcceptanceRequest,
     AuditLog,
@@ -272,7 +285,8 @@ def seed_database():
             return
 
         now = datetime.now(timezone.utc)
-        password_hash = hash_password("Urip@2026")
+        seed_password, generated = _resolve_seed_password()
+        password_hash = hash_password(seed_password)
 
         # ─── USERS ─────────────────────────────────────────────
         users = [
@@ -465,8 +479,12 @@ def seed_database():
         print("Created 50 audit log entries")
 
         session.commit()
-        print("\nSeed complete! Database populated with Royal Enfield URIP demo data.")
-        print(f"  Login: ciso@royalenfield.com / Urip@2026")
+        print("\nSeed complete. Database populated with URIP demo data.")
+        if generated:
+            print(f"  Login: ciso@example.com / {seed_password}")
+            print("  (auto-generated — set URIP_SEED_PASSWORD env var to use a known value)")
+        else:
+            print("  Login: ciso@example.com / (password unchanged from URIP_SEED_PASSWORD)")
 
 
 if __name__ == "__main__":

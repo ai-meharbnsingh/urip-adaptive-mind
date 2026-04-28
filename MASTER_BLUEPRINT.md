@@ -63,7 +63,7 @@ This list exists because every CISO conversation eventually asks "so are you ano
 - **15 compliance frameworks pre-seeded** with **~895 controls total** — SOC 2 (Trust Services 2017+2022), ISO 27001:2022, GDPR, HIPAA, PCI DSS v4.0, India DPDP Act 2023, NIST CSF 2.0 (original 7 — full audit-grade), plus ISO 42001 (AI management), EU AI Act, DORA (EU financial), NIS2 (EU critical infra), ISO 27017 (cloud), ISO 27018 (PII in cloud), ISO 27701 (privacy management), CIS Controls v8 (8 new — scaffold-grade control catalogue, customers should reconcile against licensed PDFs for audit submission)
 - **4 live external intelligence feeds** — FIRST.org EPSS, CISA KEV catalog, MITRE ATT&CK CVE-to-APT mapping, AlienVault OTX
 - **16 license modules** — CORE (mandatory) + 15 capability modules including CSPM and the 5 MVP-scaffold modules (DSPM, AI Security, ZTNA, Attack Path Prediction, Cyber Risk Quantification / FAIR — see §13 honest scaffold caveat)
-- **833 tests** across services — URIP backend, Compliance backend, connectors, CSPM engine, ticketing, VAPT pipeline, Trust Center, Auto-Remediation framework
+- **~2,000 tests** (pytest collects ~2,030 across parametrized cases) across services — URIP backend, Compliance backend, connectors, CSPM engine, ticketing, VAPT pipeline, Trust Center, Auto-Remediation framework
 - **3 deployment modes** — Pure SaaS, On-Premise Licensed, Hybrid-SaaS (recommended)
 - **2 dashboards, 1 data layer, 1 auth, 1 audit log**
 - **0 sensitive data leaves the customer network** in the recommended Hybrid-SaaS mode
@@ -918,7 +918,7 @@ Honest LIVE / PARTIAL / ROADMAP breakdown. Three labels used consistently — `�
 Migration: `alembic/versions/0015_p33a_section13_modules.py` (creates 13 tables across the 5 modules).
 **Honest depth caveat (read this in every customer demo):** these are MVP scaffolds — model + REST surface + 1 frontend page + seed-data hooks so a buyer sees the module exists in nav, can fetch from API, and can populate it from existing connector data. Full feature parity with vertically-integrated competitors (Wiz DSPM, Hidden Layer / Lakera AI, BloodHound XM Cyber, RiskLens FAIR) is the next-iteration roadmap. The MVP scaffold value proposition is that all 16 modules sit on one cockpit with one risk register — not that any single one is best-of-breed yet.
 
-**1800+ tests** across services — `tests/test_{vapt,cspm,ticketing,trust_center,auto_remediation,...}/`.
+**~2,000 tests** across services — `tests/test_{vapt,cspm,ticketing,trust_center,auto_remediation,...}/`.
 
 **Demo seed data** — `adverb-demo` tenant with ~5,100 control runs, ~850 evidence files, 18 vendors, 30 incidents, 120 assets, 20 access review campaigns / 500 decisions, 4 auditor invitations, 630 compliance score snapshots, ~1,200 audit log entries.
 

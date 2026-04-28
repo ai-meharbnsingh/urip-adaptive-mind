@@ -109,7 +109,11 @@ def real_client_ip(request: Request) -> str:
 # /api/auth/login by simply waiting for a deploy.
 #
 # Gemini MEDIUM finding (AUDIT_GEMINI_TRI_A.md:65): ensure prod uses Redis.
-_RATE_LIMIT_STORAGE_URI = os.environ.get("RATE_LIMIT_STORAGE_URI", "memory://")
+# Codex round-B CRIT (AUDIT_CODEX_TRI_B.md): tests reference rl._DEFAULT_STORAGE
+# in teardown — expose the dev default as a stable module attribute so test
+# fixtures can restore limiter state without coupling to private internals.
+_DEFAULT_STORAGE = "memory://"
+_RATE_LIMIT_STORAGE_URI = os.environ.get("RATE_LIMIT_STORAGE_URI", _DEFAULT_STORAGE)
 
 # Emit a runtime warning when running in production-like conditions without
 # a durable rate-limit backend.  URIP_ENV=production triggers this guard.

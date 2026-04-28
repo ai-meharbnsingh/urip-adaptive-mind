@@ -112,8 +112,15 @@ async def run_connector_pull(tenant_id: str, connector_name: str) -> dict[str, A
 
         creds = decrypt_credentials(cred_row.encrypted_blob)
 
+        # Connector contract is sync; this runner can be invoked from inside
+        # an asyncio loop (FastAPI request handler). Offload sync calls to a
+        # worker thread so the loop is never blocked on connector HTTP I/O.
+        # Codex round-B MED finding (AUDIT_CODEX_TRI_B.md): without this,
+        # a slow connector freezes every request on the same worker.
+        import anyio
+
         try:
-            instance.authenticate(creds)
+            await anyio.to_thread.run_sync(instance.authenticate, creds)
         except Exception:
             logger.exception(
                 "connector_pull authenticate() failed (tenant=%s, connector=%s)",
@@ -129,11 +136,15 @@ async def run_connector_pull(tenant_id: str, connector_name: str) -> dict[str, A
             }
 
         since = datetime.now(timezone.utc) - timedelta(minutes=15)
-        try:
+
+        def _fetch():
             try:
-                raw_findings = instance.fetch_findings(since, tenant_id=str(tenant_uuid))
+                return instance.fetch_findings(since, tenant_id=str(tenant_uuid))
             except TypeError:
-                raw_findings = instance.fetch_findings(since)
+                return instance.fetch_findings(since)
+
+        try:
+            raw_findings = await anyio.to_thread.run_sync(_fetch)
         except Exception:
             logger.exception(
                 "connector_pull fetch_findings() failed (tenant=%s, connector=%s)",

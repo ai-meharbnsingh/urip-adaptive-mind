@@ -55,12 +55,13 @@ class TestURIPVerifier:
         """A token with a tampered payload (invalid signature) must raise TokenVerificationError."""
         verifier = URIPVerifier(secret=_SECRET, algorithm=_ALGORITHM)
         token = _make_token()
-        # Tamper: replace last char of signature
+        # Tamper: flip the FIRST character of the signature, not the last —
+        # the last base64url char can encode unused bits, so a single-char
+        # flip there is occasionally a no-op (Codex round-B finding).
         parts = token.split(".")
         assert len(parts) == 3
         sig = parts[2]
-        # Flip last character
-        tampered_sig = sig[:-1] + ("A" if sig[-1] != "A" else "B")
+        tampered_sig = ("A" if sig[0] != "A" else "B") + sig[1:]
         tampered_token = ".".join(parts[:2] + [tampered_sig])
         with pytest.raises(TokenVerificationError):
             verifier.verify(tampered_token)

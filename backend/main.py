@@ -127,6 +127,10 @@ app.include_router(attack_path_router.router, prefix="/api/attack-paths", tags=[
 app.include_router(risk_quant_router.router, prefix="/api/risk-quantification", tags=["Cyber Risk Quantification"])
 # Jira connector — integrations health endpoint
 app.include_router(integrations_router.router, prefix="/api/integrations", tags=["Integrations"])
+# Notifications — surface event_subscribers' in-process store via API
+# (Gemini round-B "zombie data sink" finding closed — INV-1).
+from backend.routers import notifications as notifications_router  # noqa: E402
+app.include_router(notifications_router.router, prefix="/api/notifications", tags=["Notifications"])
 
 # M12 (Codex MED-004) — Block dotfile / dotdir requests at the static-mount
 # layer.  StaticFiles will happily serve frontend/.vercel/project.json,
