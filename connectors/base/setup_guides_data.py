@@ -4607,6 +4607,326 @@ _ONGRID = SetupGuideSpec(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# ServiceNow ITSM
+# ─────────────────────────────────────────────────────────────────────────────
+
+_SERVICENOW = SetupGuideSpec(
+    quick_facts=QuickFacts(
+        category="ITSM",
+        module="ITSM",
+        difficulty="easy",
+        approx_setup_minutes=15,
+        vendor_docs_url="https://developer.servicenow.com/dev.do#!/reference/api/utah/rest/c_TableAPI",
+        polling_default_minutes=15,
+        supports_webhooks=True,
+        license_tier_required="ServiceNow ITSM (Utah / Vancouver / Washington / Xanadu — any paid tier).",
+    ),
+    what_pulled=[
+        "Security incidents (category=security) pushed to URIP as risks",
+        "Incident urgency + impact used for URIP severity mapping",
+        "URIP risks auto-created as ServiceNow incidents (bidirectional)",
+        "Assigned-to field carried into URIP owner_team",
+    ],
+    prerequisites=[
+        PrereqItem(
+            label="Admin or impersonation rights",
+            requirement=(
+                "A ServiceNow user account with at least the 'itil' role "
+                "(read + create incidents).  For production use, create a dedicated "
+                "integration user — never use a named technician account."
+            ),
+        ),
+        PrereqItem(
+            label="Network",
+            requirement=(
+                "Allow URIP egress to your ServiceNow instance "
+                "(https://<tenant>.service-now.com) on TCP 443."
+            ),
+        ),
+        PrereqItem(
+            label="Auth method decision",
+            requirement=(
+                "Choose Basic Auth (username + password) for quick setup, "
+                "or OAuth Bearer Token for production (token issued via "
+                "your IdP or ServiceNow's OAuth provider table)."
+            ),
+        ),
+    ],
+    steps=[
+        SetupStep(
+            n=1,
+            title="Create integration user (Basic Auth path)",
+            body=(
+                "ServiceNow → **User Administration → Users** → New.  "
+                "Set Username (e.g. urip_integration), assign the **itil** role.  "
+                "Copy the username + password — paste into URIP wizard."
+            ),
+        ),
+        SetupStep(
+            n=2,
+            title="Generate OAuth Bearer Token (OAuth path)",
+            body=(
+                "Navigate to your OAuth provider or use **System OAuth → "
+                "Application Registry** to register URIP as a client.  "
+                "Generate a Bearer token with scope `incident.read incident.write`.  "
+                "Paste the token into URIP — Basic Auth fields will be ignored."
+            ),
+        ),
+        SetupStep(
+            n=3,
+            title="Set the encoded query",
+            body=(
+                "The **Risk Query** field controls which incidents URIP ingests.  "
+                "Default: `category=security^active=true`.  "
+                "Extend with assignment group, priority, or custom fields as needed "
+                "(ServiceNow encoded query syntax)."
+            ),
+        ),
+        SetupStep(
+            n=4,
+            title="Test connection",
+            body=(
+                "URIP → Tool Catalog → ServiceNow tile → paste credentials → "
+                "click **Test Connection**.  URIP calls GET /api/now/table/sys_user "
+                "as a lightweight ping.  A green tick confirms auth is working."
+            ),
+        ),
+    ],
+    required_scopes=[
+        ScopeItem(
+            name="itil role",
+            description="Read + create incidents on the Table API.",
+            required=True,
+        ),
+        ScopeItem(
+            name="incident.read / incident.write (OAuth)",
+            description="OAuth scopes when using Bearer token auth.",
+            required=False,
+        ),
+    ],
+    sample_data={
+        "sys_id": "abc123def456ghi789",
+        "number": "INC0012345",
+        "short_description": "Suspicious login from unrecognised IP",
+        "urgency": "1",
+        "impact": "2",
+        "state": "In Progress",
+        "assigned_to": "secops@example.com",
+    },
+    not_collected=[
+        "Non-security incident categories (IT requests, change records)",
+        "Attachments and file uploads on incidents",
+        "Internal notes / work-notes not visible to URIP integration user",
+    ],
+    common_errors=[
+        ErrorFix(
+            error="401 Unauthorized on first poll",
+            cause=(
+                "Username/password incorrect, or OAuth Bearer token expired / revoked."
+            ),
+            fix=(
+                "Verify the username/password or OAuth token.  "
+                "For Basic Auth, ensure the integration user's password has not expired "
+                "(ServiceNow may enforce password rotation policies)."
+            ),
+        ),
+        ErrorFix(
+            error="403 Forbidden — record not visible",
+            cause=(
+                "The integration user account is missing the 'itil' role, or a "
+                "ServiceNow ACL is restricting read access to the incident table."
+            ),
+            fix=(
+                "The integration user lacks the **itil** role or an ACL is blocking "
+                "access to the incident table.  Ask your SN admin to verify role assignment."
+            ),
+        ),
+        ErrorFix(
+            error="Empty result on first sync",
+            cause=(
+                "The Risk Query encoded query does not match any incident records, "
+                "possibly because the category or state filter is too restrictive."
+            ),
+            fix=(
+                "Check the encoded query in the Risk Query field.  "
+                "Test directly in ServiceNow: open a list view of Incidents, "
+                "paste the query into the filter bar, verify records appear."
+            ),
+        ),
+    ],
+    polling=PollingSpec(
+        default_minutes=15,
+        first_sync_estimate_minutes=5,
+        webhook_supported=True,
+        manual_refresh="Tool Catalog → ServiceNow tile → Run Now.",
+    ),
+    disconnect_steps=[
+        "Tool Catalog → ServiceNow tile → Disable.",
+        "Deactivate the integration user in ServiceNow (User Administration → Users → set Active = false).",
+        _CRED_VAULT_DELETE,
+        _KEEP_HISTORY,
+    ],
+    references=[
+        "https://developer.servicenow.com/dev.do#!/reference/api/utah/rest/c_TableAPI",
+        "https://docs.servicenow.com/bundle/utah-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html",
+    ],
+)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Jira Cloud / Data Center
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+_JIRA = SetupGuideSpec(
+    quick_facts=QuickFacts(
+        category="ITSM",
+        module="ITSM",
+        difficulty="easy",
+        approx_setup_minutes=10,
+        vendor_docs_url="https://developer.atlassian.com/cloud/jira/platform/rest/v3/",
+        polling_default_minutes=15,
+        supports_webhooks=True,
+        license_tier_required="Jira Cloud (any paid plan) or Jira Data Center ≥ 9.0.",
+    ),
+    what_pulled=[
+        "Security tickets ingested from Jira using a configurable JQL filter",
+        "URIP risks pushed as Jira issues (bidirectional)",
+        "Issue priority and status mapped to URIP severity and risk status",
+        "Resolution tracking — closed Jira issues reflected in URIP risk register",
+    ],
+    prerequisites=[
+        PrereqItem(
+            label="License tier",
+            requirement=(
+                "Jira Cloud (Free / Standard / Premium) or "
+                "Jira Data Center ≥ 9.0 / Jira Server ≥ 9.0."
+            ),
+        ),
+        PrereqItem(
+            label="Permissions",
+            requirement=(
+                "API token user must have at least 'Browse Projects' + 'Create Issues' "
+                "on the target project(s)."
+            ),
+        ),
+        PrereqItem(
+            label="Network",
+            requirement=(
+                "Allow URIP egress to https://your-org.atlassian.net (Cloud) "
+                "or your internal Jira DC host on TCP 443."
+            ),
+        ),
+    ],
+    steps=[
+        SetupStep(
+            n=1,
+            title="Generate credentials",
+            body=(
+                "**Cloud (Basic auth)**: Visit https://id.atlassian.com → Security → "
+                "API tokens → Create API token. Copy the token value — it is shown only once.\n"
+                "**DC/Server (PAT)**: Jira → Profile → Personal Access Tokens → Create token. "
+                "Copy the token value."
+            ),
+        ),
+        SetupStep(
+            n=2,
+            title="Pick a project key",
+            body=(
+                "Decide which Jira project will receive URIP-pushed risks "
+                "(e.g. 'SEC' or 'CSEC'). You can use a different project per tenant. "
+                "Note the project KEY (not name) — visible in the project URL."
+            ),
+        ),
+        SetupStep(
+            n=3,
+            title="Write your JQL filter",
+            body=(
+                "Decide which Jira tickets URIP should ingest back. "
+                "Example: `project = SEC AND labels = \"security\" ORDER BY created DESC`. "
+                "Test the JQL in Jira → Issues → Advanced Search before pasting."
+            ),
+        ),
+        SetupStep(
+            n=4,
+            title="Configure in URIP",
+            body=(
+                "Tool Catalog → Jira tile → enter Base URL, select Auth Method, "
+                "paste credentials, set Default Project Key and JQL filter, "
+                "then click **Test Connection**."
+            ),
+        ),
+    ],
+    required_scopes=[
+        ScopeItem(
+            name="read:jira-work",
+            description="Read issues, projects, and comments.",
+            required=True,
+        ),
+        ScopeItem(
+            name="write:jira-work",
+            description="Create and update issues (required for bidirectional push).",
+            required=True,
+        ),
+    ],
+    sample_data={
+        "issue_key": "SEC-1042",
+        "summary": "Unpatched critical CVE on prod DB server",
+        "priority": "High",
+        "status": "In Progress",
+        "linked_urip_risk_id": "RISK-B1A2C3D4",
+    },
+    not_collected=[
+        "Jira issues outside the configured JQL filter",
+        "Attachments, images, and binary files in issues",
+        "Comment bodies unless they originate from URIP automation",
+    ],
+    common_errors=[
+        ErrorFix(
+            error="401 Unauthorized",
+            cause="Wrong API token or email, or token revoked.",
+            fix=(
+                "Re-generate the API token at id.atlassian.com → Security → API tokens. "
+                "Ensure the email matches the Atlassian account that owns the token."
+            ),
+        ),
+        ErrorFix(
+            error="403 Forbidden",
+            cause="Token user lacks project permission.",
+            fix=(
+                "In Jira → Project Settings → People → add the API token user "
+                "with at least 'Developer' role on the target project."
+            ),
+        ),
+        ErrorFix(
+            error="No issues returned",
+            cause="JQL filter matches zero issues.",
+            fix=(
+                "Test the JQL in Jira → Issues → Advanced Search. "
+                "Confirm the label / project key is correct."
+            ),
+        ),
+    ],
+    polling=PollingSpec(
+        default_minutes=15,
+        first_sync_estimate_minutes=2,
+        webhook_supported=True,
+        manual_refresh="Tool Catalog → Jira tile → Run Now.",
+    ),
+    disconnect_steps=[
+        "Tool Catalog → Jira tile → Disconnect.",
+        f"{_CRED_VAULT_DELETE}",
+        "Optionally revoke the API token at id.atlassian.com → Security → API tokens.",
+        f"{_KEEP_HISTORY}",
+    ],
+    references=[
+        "https://developer.atlassian.com/cloud/jira/platform/rest/v3/",
+        "https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/",
+    ],
+)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Public registry — single dict keyed by connector NAME
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -4639,11 +4959,15 @@ SETUP_GUIDES: dict[str, SetupGuideSpec] = {
     "gtb": _GTB,
     "simulator": _SIMULATOR,
     "extended_simulator": _EXTENDED_SIMULATOR,
+    # ITSM — ServiceNow
+    "servicenow": _SERVICENOW,
     # P33 — LMS + BGV connectors
     "knowbe4": _KNOWBE4,
     "hoxhunt": _HOXHUNT,
     "authbridge": _AUTHBRIDGE,
     "ongrid": _ONGRID,
+    # ITSM — Jira Cloud + Data Center
+    "jira": _JIRA,
 }
 
 

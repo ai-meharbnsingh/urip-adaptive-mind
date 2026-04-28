@@ -200,7 +200,7 @@
       var starBtn = document.createElement('button');
       starBtn.className = 'star-btn' + (starred.has(a.id) ? ' starred' : '');
       starBtn.innerHTML = '<i class="fa-' + (starred.has(a.id) ? 'solid' : 'regular') + ' fa-star"></i>';
-      starBtn.title = starred.has(a.id) ? 'Unflag' : 'Flag as critical';
+      starBtn.title = starred.has(a.id) ? 'Unflag' : 'Flag as critical'; starBtn.setAttribute('aria-label', starred.has(a.id) ? 'Unflag asset' : 'Flag asset as critical');
       starBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         var s = getStarred();

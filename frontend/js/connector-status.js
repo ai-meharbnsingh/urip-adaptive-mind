@@ -167,7 +167,7 @@
 
     var pull = document.createElement('button');
     pull.className = 'u-btn is-sm';
-    pull.title = 'Trigger manual pull';
+    pull.title = 'Trigger manual pull'; pull.setAttribute('aria-label', 'Trigger manual pull');
     pull.innerHTML = '<i class="fas fa-rotate"></i>';
     pull.addEventListener('click', function (ev) {
       ev.stopPropagation();
@@ -178,7 +178,7 @@
     var cfg = document.createElement('button');
     cfg.className = 'u-btn is-sm';
     cfg.style.marginLeft = '6px';
-    cfg.title = 'Reconfigure';
+    cfg.title = 'Reconfigure'; cfg.setAttribute('aria-label', 'Reconfigure connector');
     cfg.innerHTML = '<i class="fas fa-gear"></i>';
     cfg.addEventListener('click', function (ev) {
       ev.stopPropagation();
@@ -189,7 +189,7 @@
     var del = document.createElement('button');
     del.className = 'u-btn is-sm is-danger';
     del.style.marginLeft = '6px';
-    del.title = 'Disable';
+    del.title = 'Disable'; del.setAttribute('aria-label', 'Disable connector');
     del.innerHTML = '<i class="fas fa-power-off"></i>';
     del.addEventListener('click', function (ev) {
       ev.stopPropagation();

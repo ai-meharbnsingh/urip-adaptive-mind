@@ -33,7 +33,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    renderSidebar('cspm-findings');
+    if (typeof renderSidebar === 'function') renderSidebar('cspm-findings');
     loadFindings();
     document.getElementById('btnFilter').addEventListener('click', loadFindings);
   });

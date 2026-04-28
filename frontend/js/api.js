@@ -7,10 +7,8 @@
 
   var URIP = window.URIP || {};
 
-  // API base URL: use Railway backend in production, local /api in dev
-  var API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? '/api'
-    : 'https://urip-backend-production.up.railway.app/api';
+  // API base URL: use relative /api for all environments (handled by Vercel rewrites in prod)
+  var API_BASE = '/api';
 
   /**
    * Wraps fetch with JWT auth and base-path prepending.

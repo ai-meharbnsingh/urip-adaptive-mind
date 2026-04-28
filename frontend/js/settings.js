@@ -180,7 +180,7 @@
 
       var editBtn = document.createElement('button');
       editBtn.className = 'action-btn view';
-      editBtn.title = 'Edit User';
+      editBtn.title = 'Edit User'; editBtn.setAttribute('aria-label', 'Edit user');
       var editIcon = document.createElement('i');
       editIcon.className = 'fas fa-edit';
       editBtn.appendChild(editIcon);

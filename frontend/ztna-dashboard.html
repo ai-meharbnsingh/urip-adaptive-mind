@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/app.css?v=20260435">
+  <link rel="stylesheet" href="css/app.css?v=20260436">
 </head>
 <body class="urip-app">
   <div id="app-shell" data-page="ztna">
@@ -76,7 +76,7 @@
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/shell.js?v=20260435"></script>
+  <script src="js/shell.js?v=20260436"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       window.URIP.shell.mount({
@@ -100,8 +100,8 @@
               <tr>
                 <td>${p.policy_name}</td>
                 <td>${p.target_app}</td>
-                <td>${p.identity_required ? '<i class="fas fa-check"></i>' : '<i class="fas fa-times"></i>'}</td>
-                <td>${p.mfa_required ? '<i class="fas fa-check"></i>' : '<i class="fas fa-times"></i>'}</td>
+                <td>${p.identity_required ? '<span aria-label="Yes"><i class="fas fa-check" aria-hidden="true"></i></span>' : '<span aria-label="No"><i class="fas fa-times" aria-hidden="true"></i></span>'}</td>
+                <td>${p.mfa_required ? '<span aria-label="Yes"><i class="fas fa-check" aria-hidden="true"></i></span>' : '<span aria-label="No"><i class="fas fa-times" aria-hidden="true"></i></span>'}</td>
                 <td>${(p.device_posture_required || []).join(', ') || '—'}</td>
                 <td>${p.source_provider || '—'}</td>
               </tr>

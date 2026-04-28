@@ -336,6 +336,7 @@
     var c = document.createElement('input');
     c.type = 'checkbox';
     c.dataset.riskId = riskId;
+    c.setAttribute('aria-label', 'Select risk ' + riskId);
     c.addEventListener('change', function (e) {
       if (e.target.checked) state.selected.add(riskId);
       else state.selected.delete(riskId);

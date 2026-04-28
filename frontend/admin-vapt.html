@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
   <link rel="stylesheet" href="css/main.css" />
-  <link rel="stylesheet" href="css/app.css?v=20260435" />
+  <link rel="stylesheet" href="css/app.css?v=20260436" />
 </head>
 <body class="urip-app">
   <div id="app-shell" data-page="admin-vapt">
@@ -45,7 +45,7 @@
                 <th scope="col">Submissions</th>
                 <th scope="col">Invited</th>
                 <th scope="col">Last login</th>
-                <th scope="col"></th>
+                <th scope="col" aria-label="Actions"></th>
               </tr>
             </thead>
             <tbody id="vendorsBody"></tbody>
@@ -86,7 +86,7 @@
                 <th scope="col">Status</th>
                 <th scope="col">URIP Risk</th>
                 <th scope="col">Submitted</th>
-                <th scope="col"></th>
+                <th scope="col" aria-label="Actions"></th>
               </tr>
             </thead>
             <tbody id="subsBody"></tbody>
@@ -100,11 +100,11 @@
   </div>
 
   <!-- Invite modal -->
-  <div id="inviteModal" class="modal-backdrop" style="display:none">
+  <div id="inviteModal" class="modal-backdrop" style="display:none" role="dialog" aria-modal="true" aria-labelledby="inviteModalTitle" aria-hidden="true">
     <div class="modal">
       <div class="modal-head">
-        <h3>Invite VAPT vendor</h3>
-        <button class="modal-close" id="inviteClose">&times;</button>
+        <h3 id="inviteModalTitle">Invite VAPT vendor</h3>
+        <button class="modal-close" id="inviteClose" aria-label="Close invite modal">&times;</button>
       </div>
       <form id="inviteForm" class="modal-body">
         <div class="form-row">
@@ -147,7 +147,7 @@
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/shell.js?v=20260435"></script>
+  <script src="js/shell.js?v=20260436"></script>
   <script>
     if (typeof checkAuth === 'function') checkAuth();
     document.addEventListener('DOMContentLoaded', function () {

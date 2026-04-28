@@ -91,7 +91,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    renderSidebar('cspm-dashboard');
+    // Sidebar is rendered by the unified shell (js/shell.js); no need to call renderSidebar here.
     loadScores();
     loadFailingControls();
     loadCloudAccounts();

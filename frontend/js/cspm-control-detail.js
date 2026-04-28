@@ -28,7 +28,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    renderSidebar('cspm-control-detail');
+    if (typeof renderSidebar === 'function') renderSidebar('cspm-control-detail');
     loadControlDetail();
   });
 })();

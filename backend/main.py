@@ -1,10 +1,13 @@
+import logging
+
 from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from backend.config import settings
+from backend.middleware.cors import install_cors
 from backend.middleware.rate_limit import install_rate_limiting
+from shared.logging_setup import install_json_logging
 
 # Ensure all connectors self-register on boot (INV-1 fix)
 import backend.connector_loader  # noqa: F401
@@ -20,28 +23,47 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# Gemini Gap 6 (MEDIUM) — install structured logging so the global exception
+# handler below emits JSON log lines that downstream SIEM / log aggregation
+# tooling can ingest. install_json_logging() is idempotent so repeated imports
+# (uvicorn --reload, test runs that import backend.main) are safe.
+install_json_logging()
+logger = logging.getLogger("backend.main")
+
 # HIGH-009 — install rate limiter BEFORE other middlewares so it sees every
 # request before they get a chance to short-circuit / mutate the path.
 install_rate_limiting(app)
 
 # CORS
-origins = [o.strip() for o in settings.CORS_ORIGINS.split(",")]
-if "*" in origins:
-    # Wildcard mode: no credentials (browser requirement)
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=False,
-        allow_methods=["*"],
-        allow_headers=["*"],
+install_cors(app)
+
+
+# Gemini Gap 6 (MEDIUM) — global exception handler.  Without this, an
+# uncaught exception inside any route handler renders FastAPI's default HTML
+# stack-trace page (in debug) or a generic 500 with no audit trail (in prod).
+# This handler logs a structured JSON line capturing the path, method, and
+# any tenant/user context already populated on request.state, then returns
+# an opaque 500 to the caller so we never leak internal frame data.
+#
+# IMPORTANT: this MUST NOT shadow FastAPI's HTTPException handler — those are
+# intentional control-flow signals (404, 401, 403, 422 etc.) that should keep
+# their declared status code and detail message.  We register the handler
+# only for the bare `Exception` base class, which FastAPI consults *after*
+# its built-in HTTPException handler has had its chance.
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    logger.exception(
+        "uncaught_exception",
+        extra={
+            "path": request.url.path,
+            "method": request.method,
+            "tenant_id": str(getattr(request.state, "tenant_id", "")),
+            "user_id": str(getattr(request.state, "user_id", "")),
+        },
     )
-else:
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=origins,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error"},
     )
 
 # Import and register routers
@@ -57,6 +79,7 @@ from backend.routers import (  # noqa: E402
     ztna as ztna_router,
     attack_path as attack_path_router,
     risk_quantification as risk_quant_router,
+    integrations as integrations_router,
 )
 
 app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
@@ -94,6 +117,8 @@ app.include_router(ai_security_router.router, prefix="/api/ai-security", tags=["
 app.include_router(ztna_router.router, prefix="/api/ztna", tags=["ZTNA"])
 app.include_router(attack_path_router.router, prefix="/api/attack-paths", tags=["Attack Path Prediction"])
 app.include_router(risk_quant_router.router, prefix="/api/risk-quantification", tags=["Cyber Risk Quantification"])
+# Jira connector — integrations health endpoint
+app.include_router(integrations_router.router, prefix="/api/integrations", tags=["Integrations"])
 
 # M12 (Codex MED-004) — Block dotfile / dotdir requests at the static-mount
 # layer.  StaticFiles will happily serve frontend/.vercel/project.json,
@@ -107,6 +132,59 @@ async def _block_dotfiles(request: Request, call_next):
     if any(p.startswith(".") and p not in ("", ".") for p in parts):
         return JSONResponse(status_code=404, content={"detail": "Not Found"})
     return await call_next(request)
+
+
+# Health probe endpoints — added per Kimi P1-B follow-up #5.
+# Lightweight, unauthenticated, used by load balancers / uptime monitors.
+# Both /healthz and /api/health are accepted to match common conventions.
+@app.get("/healthz", include_in_schema=False)
+@app.get("/api/health", include_in_schema=True, tags=["Ops"])
+async def health_check():
+    """Returns 200 if the process is alive. Does not check DB/Redis (use /api/ready for that)."""
+    return {"status": "ok", "service": "urip-backend", "version": "1.0"}
+
+
+@app.get("/api/ready", include_in_schema=True, tags=["Ops"])
+async def readiness_check():
+    """Returns 200 only if DB + Redis are reachable. For load balancer 'ready' probes."""
+    from backend.config import settings
+    import asyncpg, redis as redis_lib
+    checks = {"db": "unknown", "redis": "unknown"}
+    try:
+        sync_url = settings.DATABASE_URL_SYNC.replace("postgresql+asyncpg://", "postgresql://")
+        c = await asyncpg.connect(sync_url, timeout=2)
+        await c.fetchval("SELECT 1")
+        await c.close()
+        checks["db"] = "ok"
+    except Exception as e:
+        checks["db"] = f"fail: {type(e).__name__}"
+    try:
+        r = redis_lib.Redis.from_url(settings.REDIS_URL, socket_connect_timeout=2)
+        r.ping()
+        checks["redis"] = "ok"
+    except Exception as e:
+        checks["redis"] = f"fail: {type(e).__name__}"
+    healthy = checks["db"] == "ok" and checks["redis"] == "ok"
+    if not healthy:
+        return JSONResponse(status_code=503, content={"status": "degraded", "checks": checks})
+    return {"status": "ok", "checks": checks}
+
+
+# Add HTTP cache headers for static assets so the browser only re-downloads
+# CSS/JS/images on first load — makes navigation between pages feel instant.
+# HTML stays no-cache so content updates immediately after a deploy.
+@app.middleware("http")
+async def _static_cache_headers(request: Request, call_next):
+    response = await call_next(request)
+    path = request.url.path
+    if path.endswith((".css", ".js", ".png", ".jpg", ".jpeg", ".gif", ".svg",
+                      ".webp", ".ico", ".woff", ".woff2", ".ttf")):
+        # Static assets — cache for 1 day in dev, immutable in prod (Vercel handles prod)
+        response.headers["Cache-Control"] = "public, max-age=86400, must-revalidate"
+    elif path.endswith(".html") or path == "/" or path.rstrip("/").count(".") == 0:
+        # HTML / clean URLs — must revalidate so deploys are seen instantly
+        response.headers["Cache-Control"] = "public, max-age=0, must-revalidate"
+    return response
 
 
 # Serve frontend static files

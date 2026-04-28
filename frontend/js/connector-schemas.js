@@ -229,6 +229,42 @@
       ]
     },
     {
+      key: 'servicenow',
+      name: 'ServiceNow',
+      category: 'ITSM',
+      description: 'Bidirectional sync — push URIP risks as ServiceNow incidents and ingest security incidents back as risks.',
+      logoLetter: 'S',
+      logoColor: C.emerald,
+      logoUrl: 'https://www.vectorlogo.zone/logos/servicenow/servicenow-icon.svg',
+      docsUrl: 'https://developer.servicenow.com/dev.do#!/reference/api/utah/rest/c_TableAPI',
+      sourceType: 'servicenow',
+      poll: '15 min',
+      fields: [
+        { name: 'instance_url', label: 'Instance URL', type: 'url', required: true,
+          help: 'Full URL of your ServiceNow tenant — e.g. https://your-tenant.service-now.com.',
+          placeholder: 'https://your-tenant.service-now.com', pattern: URL_RX },
+        { name: 'auth_method', label: 'Auth Method', type: 'select', required: true,
+          help: 'Choose Basic Auth (username + password) or OAuth Bearer Token.',
+          options: [
+            { value: 'basic', label: 'Username + Password' },
+            { value: 'oauth', label: 'OAuth Bearer Token' }
+          ]},
+        { name: 'username', label: 'Username', type: 'text', required: false,
+          help: 'Required when Auth Method = Username + Password. Use a dedicated integration user.',
+          placeholder: 'urip_integration' },
+        { name: 'password', label: 'Password', type: 'password', required: false, secret: true,
+          help: 'Required when Auth Method = Username + Password.',
+          placeholder: '••••••••' },
+        { name: 'oauth_token', label: 'OAuth Bearer Token', type: 'password', required: false, secret: true,
+          help: 'Required when Auth Method = OAuth Bearer Token.',
+          placeholder: 'eyJ…' },
+        { name: 'risk_query', label: 'Risk Query', type: 'text', required: true,
+          help: 'ServiceNow encoded query selecting which incidents to ingest. State 7 = Closed.',
+          placeholder: 'category=security^state!=7',
+          default: 'category=security^active=true' }
+      ]
+    },
+    {
       key: 'me_endpoint_central',
       name: 'ManageEngine Endpoint Central',
       category: 'UEM',
@@ -321,6 +357,44 @@
         { name: 'organization_id', label: 'Organization ID', type: 'text', required: true,
           placeholder: 'org_abcd1234',
           help: 'CloudSEK organization ID (visible in URL when logged into the dashboard).' }
+      ]
+    },
+    {
+      key: 'jira',
+      name: 'Jira',
+      category: 'ITSM',
+      description: 'Bidirectional sync — push URIP risks as Jira issues, ingest security tickets back as risk records.',
+      logoLetter: 'J',
+      logoColor: C.cobalt,
+      logoUrl: 'https://wac-cdn.atlassian.com/dam/jcr:e7e22f25-bb2a-4d22-b9a9-bd38c1b86b48/Jira-Logo.png',
+      docsUrl: 'https://developer.atlassian.com/cloud/jira/platform/rest/v3/',
+      sourceType: 'jira',
+      poll: '15 min',
+      fields: [
+        { name: 'base_url', label: 'Jira Base URL', type: 'url', required: true,
+          placeholder: 'https://your-org.atlassian.net', pattern: URL_RX,
+          help: 'Cloud: https://your-org.atlassian.net. DC/Server: your internal Jira URL.' },
+        { name: 'auth_method', label: 'Auth Method', type: 'select', required: true,
+          help: 'Email + API Token for Jira Cloud; Personal Access Token for DC/Server.',
+          options: [
+            { value: 'basic',  label: 'Email + API Token (Cloud)' },
+            { value: 'bearer', label: 'Personal Access Token (DC/Server)' }
+          ]},
+        { name: 'email', label: 'Email', type: 'text', required: false,
+          placeholder: 'you@your-org.com',
+          help: 'Required for Cloud (basic auth). Atlassian account email.' },
+        { name: 'api_token', label: 'API Token', type: 'password', required: false, secret: true,
+          placeholder: 'ATATT3xFfGF0…',
+          help: 'Required for Cloud. Generate at id.atlassian.com → Security → API tokens.' },
+        { name: 'bearer_token', label: 'Personal Access Token', type: 'password', required: false, secret: true,
+          placeholder: 'NjI2NzYwMzU5NDU4Oj…',
+          help: 'Required for DC/Server. Profile → Personal Access Tokens.' },
+        { name: 'default_project_key', label: 'Default Project Key', type: 'text', required: true,
+          placeholder: 'SEC',
+          help: 'Project where URIP-pushed risks will land (e.g. SEC, OPS, CSEC).' },
+        { name: 'risk_jql', label: 'JQL Filter (security tickets to ingest)', type: 'text', required: true,
+          placeholder: 'project = SEC AND labels = "security"',
+          help: 'JQL expression selecting security tickets for URIP to ingest.' }
       ]
     }
   ];

@@ -220,8 +220,10 @@
     var prevBtn = document.createElement('button');
     prevBtn.className = 'pagination-btn';
     prevBtn.disabled = page <= 1;
+    prevBtn.setAttribute('aria-label', 'Previous page');
     var prevIcon = document.createElement('i');
     prevIcon.className = 'fas fa-chevron-left';
+    prevIcon.setAttribute('aria-hidden', 'true');
     prevBtn.appendChild(prevIcon);
     prevBtn.addEventListener('click', function () {
       if (page > 1) loadAuditLogs(page - 1, collectAuditFilters());
@@ -250,8 +252,10 @@
     var nextBtn = document.createElement('button');
     nextBtn.className = 'pagination-btn';
     nextBtn.disabled = page >= pages;
+    nextBtn.setAttribute('aria-label', 'Next page');
     var nextIcon = document.createElement('i');
     nextIcon.className = 'fas fa-chevron-right';
+    nextIcon.setAttribute('aria-hidden', 'true');
     nextBtn.appendChild(nextIcon);
     nextBtn.addEventListener('click', function () {
       if (page < pages) loadAuditLogs(page + 1, collectAuditFilters());

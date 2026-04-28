@@ -122,7 +122,7 @@
 
       var viewBtn = document.createElement('button');
       viewBtn.className = 'action-btn view';
-      viewBtn.title = 'Open tenant';
+      viewBtn.title = 'Open tenant'; viewBtn.setAttribute('aria-label', 'Open tenant');
       var viewIcon = document.createElement('i');
       viewIcon.className = 'fas fa-arrow-right';
       viewBtn.appendChild(viewIcon);

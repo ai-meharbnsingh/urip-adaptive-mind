@@ -146,7 +146,7 @@
       if (m.alwaysOn) {
         var lock = document.createElement('span');
         lock.className = 'module-locked';
-        lock.title = 'Core module — always on';
+        lock.title = 'Core module — always on'; lock.setAttribute('aria-label', 'Core module — always on');
         var lockIcon = document.createElement('i');
         lockIcon.className = 'fas fa-lock';
         lock.appendChild(lockIcon);

@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/app.css?v=20260435">
+  <link rel="stylesheet" href="css/app.css?v=20260436">
 </head>
 <body class="urip-app">
   <div id="app-shell" data-page="remediation">
@@ -77,11 +77,11 @@
         <div class="filter-bar">
           <div class="search-box">
             <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Search tasks...">
+            <input type="text" id="searchInput" placeholder="Search tasks..." aria-label="Search remediation tasks">
           </div>
 
           <div class="filter-group">
-            <label class="filter-label">Status:</label>
+            <label class="filter-label" for="statusFilter">Status:</label>
             <select class="filter-select" id="statusFilter">
               <option value="all">All Status</option>
               <option value="open">Open</option>
@@ -92,7 +92,7 @@
           </div>
 
           <div class="filter-group">
-            <label class="filter-label">Priority:</label>
+            <label class="filter-label" for="priorityFilter">Priority:</label>
             <select class="filter-select" id="priorityFilter">
               <option value="all">All Priorities</option>
               <option value="critical">Critical</option>
@@ -139,7 +139,7 @@
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/shell.js?v=20260435"></script>
+  <script src="js/shell.js?v=20260436"></script>
   <script>
     if (typeof checkAuth === 'function') checkAuth();
 

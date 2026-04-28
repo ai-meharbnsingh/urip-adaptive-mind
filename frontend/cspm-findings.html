@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/app.css?v=20260435">
+  <link rel="stylesheet" href="css/app.css?v=20260436">
 </head>
 <body class="urip-app">
   <div id="app-shell" data-page="cspm-dashboard">
@@ -26,20 +26,20 @@
     <div class="card">
       <div class="card-header">
         <div class="flex gap-2">
-          <select id="filterStatus" class="form-input" style="width:auto">
+          <select id="filterStatus" class="form-input" style="width:auto" aria-label="Filter by status">
             <option value="">All Statuses</option>
             <option value="fail">Fail</option>
             <option value="pass">Pass</option>
             <option value="inconclusive">Inconclusive</option>
           </select>
-          <select id="filterSeverity" class="form-input" style="width:auto">
+          <select id="filterSeverity" class="form-input" style="width:auto" aria-label="Filter by severity">
             <option value="">All Severities</option>
             <option value="critical">Critical</option>
             <option value="high">High</option>
             <option value="medium">Medium</option>
             <option value="low">Low</option>
           </select>
-          <select id="filterCloud" class="form-input" style="width:auto">
+          <select id="filterCloud" class="form-input" style="width:auto" aria-label="Filter by cloud provider">
             <option value="">All Clouds</option>
             <option value="aws">AWS</option>
             <option value="azure">Azure</option>
@@ -60,7 +60,7 @@
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/shell.js?v=20260435"></script>
+  <script src="js/shell.js?v=20260436"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       window.URIP.shell.mount({

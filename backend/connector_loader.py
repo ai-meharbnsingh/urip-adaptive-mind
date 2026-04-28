@@ -32,14 +32,51 @@ Design decisions
 
 from __future__ import annotations
 
-# ── Production connectors ───────────────────────────────────────────────────
+# ── Production connectors (all 30 with @register_connector) ────────────────
+# VM / EDR / EASM
 import connectors.tenable.connector  # noqa: F401
 import connectors.sentinelone.connector  # noqa: F401
+import connectors.crowdstrike.connector  # noqa: F401
+import connectors.easm.connector  # noqa: F401
+# CASB / SWG / DLP / Firewall
 import connectors.zscaler.connector  # noqa: F401
 import connectors.netskope.connector  # noqa: F401
+import connectors.fortiguard_fw.connector  # noqa: F401
+import connectors.gtb.connector  # noqa: F401
+# Identity / NAC / PAM
 import connectors.ms_entra.connector  # noqa: F401
+import connectors.forescout_nac.connector  # noqa: F401
+import connectors.cyberark_pam.connector  # noqa: F401
+# Cloud (CSPM)
+import connectors.aws_cspm.connector  # noqa: F401
+import connectors.azure_cspm.connector  # noqa: F401
+import connectors.gcp_cspm.connector  # noqa: F401
+# Endpoint / Mobile management
+import connectors.manageengine_ec.connector  # noqa: F401
+import connectors.manageengine_mdm.connector  # noqa: F401
 import connectors.manageengine_sdp.connector  # noqa: F401
+import connectors.servicenow.connector  # noqa: F401
+# Email / Collab
+import connectors.email_security.connector  # noqa: F401
+import connectors.m365_collab.connector  # noqa: F401
+# OT
+import connectors.armis_ot.connector  # noqa: F401
+# DAST
+import connectors.burp_enterprise.connector  # noqa: F401
+# SIEM / Advisory / Bug Bounty
+import connectors.siem.connector  # noqa: F401
+import connectors.cert_in.connector  # noqa: F401
+import connectors.bug_bounty.connector  # noqa: F401
+# External Threat / Dark Web
 import connectors.cloudsek.connector  # noqa: F401
+# LMS (security awareness)
+import connectors.knowbe4.connector  # noqa: F401
+import connectors.hoxhunt.connector  # noqa: F401
+# BGV (background verification)
+import connectors.authbridge.connector  # noqa: F401
+import connectors.ongrid.connector  # noqa: F401
+# ITSM — Jira Cloud + Data Center
+import connectors.jira.connector  # noqa: F401
 
 # ── Simulators (used for demos + the test-connection path) ──────────────────
 import connectors.simulator_connector  # noqa: F401
