@@ -92,8 +92,8 @@ services:
   # ──────────────────────────────────────────────────────────────────────
   compliance:
     build:
-      context: ./compliance/backend
-      dockerfile: Dockerfile
+      context: ./compliance
+      dockerfile: backend/Dockerfile
     restart: unless-stopped
     ports:
       - "8001:8001"

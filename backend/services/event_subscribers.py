@@ -192,9 +192,19 @@ _NOTIFICATION_BACKEND_ENV = (
     or os.environ.get("URIP_NOTIFICATION_BACKEND", "")
 ).lower()
 
+_USES_INPROCESS_OPT_IN = _NOTIFICATION_BACKEND_ENV == "memory"
+
+# Honest defaults: if REDIS_URL is set, USE Redis. Don't make operators
+# remember a separate URIP_NOTIFICATION_BACKEND=redis env var — if you have
+# Redis running, you want notifications durable. Operator can opt OUT via
+# URIP_NOTIFICATION_BACKEND=memory for tests / dev work where the volume of
+# Redis writes is undesirable.
 _use_redis = (
-    _NOTIFICATION_BACKEND_ENV == "redis"
-    or (_URIP_ENV in ("production", "prod", "staging") and bool(_REDIS_URL))
+    not _USES_INPROCESS_OPT_IN
+    and (
+        _NOTIFICATION_BACKEND_ENV == "redis"
+        or bool(_REDIS_URL)
+    )
 )
 
 if _use_redis:

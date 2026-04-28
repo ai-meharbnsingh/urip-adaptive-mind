@@ -168,4 +168,41 @@ celery_app = make_celery_app() if _CELERY_AVAILABLE else None
 app = celery_app  # alias for ``-A backend.services.celery_app`` convention
 
 
+# ---------------------------------------------------------------------------
+# Distributed event subscriber — wire workers into the cross-pod event bus
+# (Gemini round-D follow-up: Celery workers were not subscribed; events
+# published by FastAPI pods didn't reach worker handlers in multi-instance
+# deploys).  Spawned at worker_ready signal so it runs in the worker process
+# (not on the FastAPI side which already starts its own subscriber).  Gated
+# by URIP_DISTRIBUTED_EVENTS so it stays a no-op in single-instance dev.
+# ---------------------------------------------------------------------------
+if _CELERY_AVAILABLE and celery_app is not None:
+    from celery.signals import worker_ready  # type: ignore
+
+    @worker_ready.connect
+    def _start_redis_event_subscriber_in_worker(sender=None, **_kwargs):
+        if os.environ.get("URIP_DISTRIBUTED_EVENTS", "").lower() not in (
+            "1", "true", "yes",
+        ):
+            return
+        try:
+            import asyncio
+            from shared.events.bus import get_event_bus
+            from shared.events.redis_subscriber import (
+                start_redis_event_subscriber,
+            )
+            redis_url = settings.REDIS_URL or "redis://redis:6379/0"
+            asyncio.get_event_loop().run_until_complete(
+                start_redis_event_subscriber(get_event_bus(), redis_url)
+            )
+            logger.info(
+                "celery_app: redis event subscriber started in worker"
+            )
+        except Exception as exc:  # pragma: no cover — best-effort
+            logger.warning(
+                "celery_app: redis event subscriber failed in worker: %s",
+                exc,
+            )
+
+
 __all__ = ["celery_app", "app", "make_celery_app"]
