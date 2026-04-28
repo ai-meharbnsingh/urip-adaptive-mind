@@ -282,8 +282,11 @@ class TestListConnectorsMetadata:
     async def test_list_pagination_still_works(
         self, client, auth_headers, core_subscription,
     ):
+        # include_dev=true so the registry total covers all tiers (matches
+        # the count this assertion checks; default view filters non-live).
         resp = await client.get(
-            "/api/connectors?limit=3&offset=0", headers=auth_headers,
+            "/api/connectors?include_dev=true&limit=3&offset=0",
+            headers=auth_headers,
         )
         assert resp.status_code == 200
         body = resp.json()
@@ -341,7 +344,11 @@ class TestListConnectorsMetadata:
         db_session.add(cred)
         await db_session.commit()
 
-        resp = await client.get("/api/connectors", headers=auth_headers)
+        # include_dev=true so the simulator (dev-only) shows up alongside
+        # the live connectors this assertion also checks (e.g. tenable).
+        resp = await client.get(
+            "/api/connectors?include_dev=true", headers=auth_headers,
+        )
         items = {i["name"]: i for i in resp.json()["items"]}
         assert items["simulator"]["configured"] is True
         # All others remain unconfigured
@@ -381,8 +388,13 @@ class TestListConnectorsMetadata:
         )
         await db_session.commit()
 
+        # include_dev=true so the simulator (dev-only) is in the response
+        # for both tenants — this test exercises tenant isolation, not the
+        # production filter.
         # Tenant A sees configured=True + health
-        resp_a = await client.get("/api/connectors", headers=auth_headers)
+        resp_a = await client.get(
+            "/api/connectors?include_dev=true", headers=auth_headers,
+        )
         sim_a = next(
             i for i in resp_a.json()["items"] if i["name"] == "simulator"
         )
@@ -391,7 +403,7 @@ class TestListConnectorsMetadata:
 
         # Tenant B sees configured=False and no health
         resp_b = await client.get(
-            "/api/connectors", headers=second_tenant_headers,
+            "/api/connectors?include_dev=true", headers=second_tenant_headers,
         )
         assert resp_b.status_code == 200
         sim_b = next(
@@ -458,8 +470,11 @@ class TestCategoriesAggregate:
     async def test_categories_returns_distinct_with_counts(
         self, client, auth_headers, core_subscription,
     ):
+        # include_dev=true so the SIMULATOR category (dev-only) is included
+        # in the aggregate counts this test asserts on.
         resp = await client.get(
-            "/api/connectors/categories", headers=auth_headers,
+            "/api/connectors/categories?include_dev=true",
+            headers=auth_headers,
         )
         assert resp.status_code == 200, resp.text
         body = resp.json()
