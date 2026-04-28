@@ -36,11 +36,21 @@ import httpx
 
 logger = logging.getLogger(__name__)
 
-# ─── CONFIG (reads from env vars for GitHub Actions, falls back to defaults) ───
+# ─── CONFIG — strictly env-driven, no committed credentials. ─────────────────
+# Codex round-C finding (AUDIT_CODEX_TRI_C.md): the prior defaults pointed
+# at a stale Railway demo URL and shipped a hardcoded "Urip@2026" password
+# inside the production image. All three are required env vars now; the
+# simulator refuses to run with empty values so a CI/cron misconfiguration
+# can't silently push to a wrong endpoint.
 import os
-API_BASE = os.environ.get("URIP_API_BASE", "https://urip-backend-production.up.railway.app")
-LOGIN_EMAIL = os.environ.get("URIP_LOGIN_EMAIL", "ciso@royalenfield.com")
-LOGIN_PASSWORD = os.environ.get("URIP_LOGIN_PASSWORD", "Urip@2026")
+API_BASE = os.environ.get("URIP_API_BASE", "")
+LOGIN_EMAIL = os.environ.get("URIP_LOGIN_EMAIL", "")
+LOGIN_PASSWORD = os.environ.get("URIP_LOGIN_PASSWORD", "")
+if not (API_BASE and LOGIN_EMAIL and LOGIN_PASSWORD):
+    logger.warning(
+        "simulator config missing — set URIP_API_BASE, URIP_LOGIN_EMAIL, "
+        "URIP_LOGIN_PASSWORD before running this script (current values are blank)"
+    )
 INTERVAL_SECONDS = 900  # 15 minutes
 
 # L9 — Tag identifying this simulator's mode.  Findings produced by
