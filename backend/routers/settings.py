@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -34,6 +34,13 @@ _SCORING_WEIGHT_MAX = 100.0
 
 # ─── USER MANAGEMENT ─────────────────────────────────────────
 
+# Gemini round-D LOW: UserCreate previously accepted any string for role,
+# letting an admin store an arbitrary value that would never match any
+# role_required gate. Constrain to the known role hierarchy (matches
+# backend/middleware/scopes.py ROLE_SCOPES keys).
+_ALLOWED_ROLES = frozenset(("ciso", "it_team", "executive", "board"))
+
+
 class UserCreate(BaseModel):
     # M2 (Kimi MED-001) — EmailField rejects malformed emails at the API
     # boundary (no @, no TLD, etc).  Soft-form validator that still accepts
@@ -50,12 +57,34 @@ class UserCreate(BaseModel):
     role: str
     team: str | None = None
 
+    @field_validator("role")
+    @classmethod
+    def _validate_role(cls, v: str) -> str:
+        v_norm = (v or "").strip().lower()
+        if v_norm not in _ALLOWED_ROLES:
+            raise ValueError(
+                f"role must be one of {sorted(_ALLOWED_ROLES)}; got {v!r}"
+            )
+        return v_norm
+
 
 class UserUpdate(BaseModel):
     full_name: str | None = None
     role: str | None = None
     team: str | None = None
     is_active: bool | None = None
+
+    @field_validator("role")
+    @classmethod
+    def _validate_role(cls, v: str | None) -> str | None:
+        if v is None:
+            return v
+        v_norm = v.strip().lower()
+        if v_norm not in _ALLOWED_ROLES:
+            raise ValueError(
+                f"role must be one of {sorted(_ALLOWED_ROLES)}; got {v!r}"
+            )
+        return v_norm
 
 
 class UserRead(BaseModel):

@@ -174,9 +174,14 @@ async def health_check():
 
 @app.get("/api/ready", include_in_schema=True, tags=["Ops"])
 async def readiness_check():
-    """Returns 200 only if DB + Redis are reachable. For load balancer 'ready' probes."""
+    """Returns 200 only if DB + Redis are reachable. For load balancer 'ready' probes.
+
+    Both checks are fully async — Kimi round-D MED finding: the prior sync
+    `redis.Redis.ping()` blocked the event loop under probe load.
+    """
     from backend.config import settings
-    import asyncpg, redis as redis_lib
+    import asyncpg
+    import redis.asyncio as redis_async
     checks = {"db": "unknown", "redis": "unknown"}
     try:
         sync_url = settings.DATABASE_URL_SYNC.replace("postgresql+asyncpg://", "postgresql://")
@@ -187,8 +192,9 @@ async def readiness_check():
     except Exception as e:
         checks["db"] = f"fail: {type(e).__name__}"
     try:
-        r = redis_lib.Redis.from_url(settings.REDIS_URL, socket_connect_timeout=2)
-        r.ping()
+        r = redis_async.Redis.from_url(settings.REDIS_URL, socket_connect_timeout=2)
+        await r.ping()
+        await r.aclose()
         checks["redis"] = "ok"
     except Exception as e:
         checks["redis"] = f"fail: {type(e).__name__}"

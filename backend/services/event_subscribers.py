@@ -179,9 +179,18 @@ class _RedisNotificationStore:
 # ---------------------------------------------------------------------------
 # Backend selection (chosen once at import time)
 # ---------------------------------------------------------------------------
-_URIP_ENV = os.environ.get("URIP_ENV", "").lower()
-_REDIS_URL = os.environ.get("REDIS_URL", "")
-_NOTIFICATION_BACKEND_ENV = os.environ.get("URIP_NOTIFICATION_BACKEND", "").lower()
+# Gemini round-D MED finding: prior code read URIP_ENV / REDIS_URL /
+# URIP_NOTIFICATION_BACKEND directly from os.environ, bypassing settings
+# (and ignoring .env values when shell environment differs). Source via
+# settings so .env-loaded values + env vars stay in sync.
+from backend.config import settings as _settings
+
+_URIP_ENV = (getattr(_settings, "URIP_ENV", None) or os.environ.get("URIP_ENV", "")).lower()
+_REDIS_URL = getattr(_settings, "REDIS_URL", None) or os.environ.get("REDIS_URL", "")
+_NOTIFICATION_BACKEND_ENV = (
+    getattr(_settings, "URIP_NOTIFICATION_BACKEND", None)
+    or os.environ.get("URIP_NOTIFICATION_BACKEND", "")
+).lower()
 
 _use_redis = (
     _NOTIFICATION_BACKEND_ENV == "redis"

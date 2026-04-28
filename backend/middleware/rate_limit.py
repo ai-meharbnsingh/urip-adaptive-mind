@@ -113,12 +113,23 @@ def real_client_ip(request: Request) -> str:
 # in teardown — expose the dev default as a stable module attribute so test
 # fixtures can restore limiter state without coupling to private internals.
 _DEFAULT_STORAGE = "memory://"
-_RATE_LIMIT_STORAGE_URI = os.environ.get("RATE_LIMIT_STORAGE_URI", _DEFAULT_STORAGE)
+# Gemini round-D MED: read via settings (which loads .env) before falling
+# back to os.environ — prevents config drift when shell env differs from
+# the .env file the rest of the app uses.
+from backend.config import settings as _settings
+
+_RATE_LIMIT_STORAGE_URI = (
+    getattr(_settings, "RATE_LIMIT_STORAGE_URI", None)
+    or os.environ.get("RATE_LIMIT_STORAGE_URI", _DEFAULT_STORAGE)
+)
 
 # Emit a runtime warning when running in production-like conditions without
 # a durable rate-limit backend.  URIP_ENV=production triggers this guard.
 if _RATE_LIMIT_STORAGE_URI == "memory://":
-    _env = os.environ.get("URIP_ENV", "").lower()
+    _env = (
+        getattr(_settings, "URIP_ENV", None)
+        or os.environ.get("URIP_ENV", "")
+    ).lower()
     if _env in ("production", "prod", "staging"):
         logger.warning(
             "rate_limit: storage backend is 'memory://' in env=%s — "

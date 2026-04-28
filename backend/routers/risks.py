@@ -270,9 +270,25 @@ async def create_risk(
     # Publish risk.created event for cross-service consumers (compliance unified panel).
     await publish_risk_created(risk)
 
-    # If exploitability fields were not provided, fire async enrichment
+    # If exploitability fields were not provided, fire async enrichment.
+    # Gemini round-D LOW: previously orphaned the task, so any enrichment
+    # failure was silently swallowed. Done-callback now surfaces exceptions.
     if not has_exploitability:
-        asyncio.create_task(enrich_risk(risk.id, data.cve_id, data.cvss_score, data.severity.lower()))
+        bg = asyncio.create_task(
+            enrich_risk(risk.id, data.cve_id, data.cvss_score, data.severity.lower()),
+            name=f"enrich_risk:{risk.id}",
+        )
+
+        def _log_enrich_failure(t: asyncio.Task) -> None:
+            if t.cancelled():
+                return
+            exc = t.exception()
+            if exc is not None:
+                import logging
+                logging.getLogger(__name__).error(
+                    "enrich_risk failed for %s: %s", risk.id, exc, exc_info=exc,
+                )
+        bg.add_done_callback(_log_enrich_failure)
 
     return risk_to_read(risk)
 

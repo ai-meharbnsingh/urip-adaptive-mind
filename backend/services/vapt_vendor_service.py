@@ -404,12 +404,25 @@ class VaptVendorService:
 
         # 5. Fire async enrichment (EPSS + KEV) — exactly like /api/risks POST.
         # In a test harness without a running event loop we skip; caller
-        # opts out via schedule_enrichment=False.
+        # opts out via schedule_enrichment=False. Gemini round-D LOW: log
+        # failures via done-callback instead of orphaning the task.
         if schedule_enrichment and cve_id:
             try:
-                asyncio.create_task(
-                    enrich_risk(risk.id, cve_id, cvss, sev_lower)
+                bg = asyncio.create_task(
+                    enrich_risk(risk.id, cve_id, cvss, sev_lower),
+                    name=f"enrich_risk:vapt:{risk.id}",
                 )
+
+                def _log_enrich_failure(t: asyncio.Task, _rid=risk.id) -> None:
+                    if t.cancelled():
+                        return
+                    exc = t.exception()
+                    if exc is not None:
+                        logger.error(
+                            "vapt enrich_risk failed for %s: %s",
+                            _rid, exc, exc_info=exc,
+                        )
+                bg.add_done_callback(_log_enrich_failure)
             except RuntimeError:
                 # No running event loop (CLI, sync context). Safe to skip;
                 # data will be backfilled by backend/backfill_exploitability.py.

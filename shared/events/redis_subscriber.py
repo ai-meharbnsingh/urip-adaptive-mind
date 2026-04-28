@@ -101,51 +101,78 @@ async def _subscriber_loop(
     redis_url: str,
     channel_pattern: str,
 ) -> None:
-    """Background task: PSUBSCRIBE and dispatch inbound messages locally."""
+    """Background task: PSUBSCRIBE and dispatch inbound messages locally.
+
+    Gemini round-D LOW finding: prior version exited on Redis disconnect with
+    no retry. The loop now reconnects with exponential backoff (1s → 30s cap)
+    so distributed events resume automatically after a Redis restart instead
+    of stalling until the next pod restart.
+    """
     import redis.asyncio as aioredis  # type: ignore
 
-    try:
-        client = aioredis.from_url(redis_url, decode_responses=True)
-        pubsub = client.pubsub()
-        await pubsub.psubscribe(channel_pattern)
-        logger.info("redis_subscriber: PSUBSCRIBE %s — listening", channel_pattern)
+    backoff = 1.0
+    backoff_max = 30.0
+    while True:
+        try:
+            client = aioredis.from_url(redis_url, decode_responses=True)
+            pubsub = client.pubsub()
+            await pubsub.psubscribe(channel_pattern)
+            logger.info("redis_subscriber: PSUBSCRIBE %s — listening", channel_pattern)
+            backoff = 1.0  # reset on successful connect
 
-        async for message in pubsub.listen():
-            if message is None:
-                continue
-            if message.get("type") not in ("pmessage", "message"):
-                continue
-            channel: str = message.get("channel") or message.get("pattern") or ""
-            raw = message.get("data")
-            if not isinstance(raw, str):
-                continue
+            async for message in pubsub.listen():
+                if message is None:
+                    continue
+                if message.get("type") not in ("pmessage", "message"):
+                    continue
+                channel: str = message.get("channel") or message.get("pattern") or ""
+                raw = message.get("data")
+                if not isinstance(raw, str):
+                    continue
+                try:
+                    payload = json.loads(raw)
+                except json.JSONDecodeError as exc:
+                    logger.warning("redis_subscriber: bad JSON on %s: %s", channel, exc)
+                    continue
+
+                if ":" in channel:
+                    topic = channel.rsplit(":", 1)[-1]
+                else:
+                    topic = channel
+
+                _fanout_local(bus, topic, payload)
+
+        except asyncio.CancelledError:
+            logger.info("redis_subscriber: task cancelled — shutting down")
+            raise
+        except Exception as exc:
+            logger.warning(
+                "redis_subscriber: connection error (%s) — reconnecting in %.1fs: %s",
+                redis_url, backoff, exc,
+            )
             try:
-                payload = json.loads(raw)
-            except json.JSONDecodeError as exc:
-                logger.warning("redis_subscriber: bad JSON on %s: %s", channel, exc)
-                continue
+                await asyncio.sleep(backoff)
+            except asyncio.CancelledError:
+                raise
+            backoff = min(backoff * 2, backoff_max)
 
-            # Derive event topic from channel name.
-            # Convention: channel = "urip:events:{topic}" e.g. "urip:events:urip.risk.created"
-            # Fall back to using the full channel name if it doesn't match the pattern.
-            if ":" in channel:
-                topic = channel.rsplit(":", 1)[-1]
-            else:
-                topic = channel
 
-            # Fan out to local subscribers WITHOUT re-publishing to Redis.
-            _fanout_local(bus, topic, payload)
+def _log_task_result(task: asyncio.Task) -> None:
+    """Done-callback that surfaces silent task failures.
 
-    except asyncio.CancelledError:
-        logger.info("redis_subscriber: task cancelled — shutting down")
-        raise
-    except Exception as exc:
-        logger.warning(
-            "redis_subscriber: connection error (%s) — distributed events paused: %s",
-            redis_url, exc,
+    Gemini round-D MED finding: the prior code launched async handlers with
+    asyncio.create_task() and never awaited them, so handler crashes were
+    swallowed. This callback logs every non-Cancelled exception with full
+    traceback so operators see real bugs in their notifications/logs.
+    """
+    if task.cancelled():
+        return
+    exc = task.exception()
+    if exc is not None:
+        logger.error(
+            "redis_subscriber: background handler task %r raised — %s",
+            task.get_name() or "<unnamed>", exc, exc_info=exc,
         )
-        # Don't crash the process — just let the task exit.
-        # The startup hook may restart on next deploy/pod restart.
 
 
 def _fanout_local(bus: "InProcessEventBus", topic: str, payload: dict) -> None:
@@ -162,6 +189,7 @@ def _fanout_local(bus: "InProcessEventBus", topic: str, payload: dict) -> None:
         try:
             result = cb(payload)
             if asyncio.iscoroutine(result):
-                asyncio.create_task(result)
+                bg = asyncio.create_task(result, name=f"redis_subscriber:{topic}")
+                bg.add_done_callback(_log_task_result)
         except Exception as exc:
             logger.exception("redis_subscriber: local handler for %s raised: %s", topic, exc)

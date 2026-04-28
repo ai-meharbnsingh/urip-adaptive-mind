@@ -26,6 +26,18 @@ from typing import Any, Awaitable, Callable
 logger = logging.getLogger(__name__)
 
 
+def _log_task_result(task: asyncio.Task) -> None:
+    """Done-callback surfacing silent task failures (Gemini round-D MED)."""
+    if task.cancelled():
+        return
+    exc = task.exception()
+    if exc is not None:
+        logger.error(
+            "event_bus: background subscriber task %r raised — %s",
+            task.get_name() or "<unnamed>", exc, exc_info=exc,
+        )
+
+
 # A subscriber may be sync or async.  We coerce both to a coroutine for unified
 # scheduling.
 SubscriberCallback = Callable[[dict[str, Any]], Any | Awaitable[Any]]
@@ -75,13 +87,17 @@ class InProcessEventBus:
                 logger.warning("Redis mirror publish failed for %s: %s", topic, exc)
 
         # 3. Fan-out to in-process subscribers.
+        # Gemini round-D MED: async callbacks were create_task'd and orphaned,
+        # so handler crashes were silently swallowed. Add a done-callback that
+        # surfaces exceptions to logs.
         callbacks = list(self._subscribers.get(topic, ()))
         fired = 0
         for cb in callbacks:
             try:
                 result = cb(payload)
                 if asyncio.iscoroutine(result):
-                    asyncio.create_task(result)
+                    bg = asyncio.create_task(result, name=f"event_bus:{topic}")
+                    bg.add_done_callback(_log_task_result)
                 fired += 1
             except Exception as exc:
                 logger.exception("Subscriber for %s raised: %s", topic, exc)
