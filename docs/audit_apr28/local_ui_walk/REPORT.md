@@ -2,7 +2,7 @@
 
 **Date:** 2026-04-28
 **Stack:** localhost:8088 (URIP backend + frontend, uvicorn) + localhost:8001 (Compliance dev) + Postgres :5433 + Redis :6379
-**Auth:** admin@adaptive-mind.com / Urip@2026 (role=ciso, tenant=adaptive-demo)
+**Auth:** the seeded admin user (role=`ciso`, tenant=`adaptive-demo`). Email and password live in `.env` / the operator's password vault — they are **NOT** reproduced here. If you re-run this walk on a different machine, source the credentials from the same vault.
 **Method:** Playwright navigate → capture console errors + `/api/*` network failures per page
 
 ## Headline
@@ -52,16 +52,18 @@ The unterminated string `('` … `')` causes the JS parser to bail on the entire
 
 **Fix:** implement the endpoint OR redirect frontend to the compliance service on `:8001`.
 
-### B-4 — `domain-workflow.html` calls 3 endpoints that don't exist
+### B-4 — `domain-workflow.html` 3 × 404 — only one was a missing route; two were a stale uvicorn
 
-**Severity:** high (workflow automation page is feature-empty)
+**Severity:** high (workflow automation page is feature-empty until resolved)
 **Console:** 3 × 404
 **Failed requests:**
-- `GET /api/auto-remediation/runs?per_page=20 → 404`
-- `GET /api/integrations/jira/health → 404`
-- `GET /api/integrations/servicenow/health → 404`
+- `GET /api/auto-remediation/runs?per_page=20 → 404` — **route truly missing** (the existing router only had `/executions`).
+- `GET /api/integrations/jira/health → 404` — **route was already registered** at `backend/routers/integrations.py:52` (`/{tool_name}/health`). The local uvicorn was started before that module landed and never reloaded.
+- `GET /api/integrations/servicenow/health → 404` — same root cause as the jira one: stale uvicorn, route already exists.
 
-**Fix:** implement the 3 backend routes (auto-remediation runs list, jira/servicenow health probes).
+**Fix:**
+1. Restart uvicorn (or run with `--reload`) so the integrations router is actually loaded — resolves the jira/servicenow 404s with zero code change.
+2. Add `/api/auto-remediation/runs` alongside the existing `/executions` (UI-shaped column names: `run_id`, `action`, `asset`, `result`, `created_at`).
 
 ---
 

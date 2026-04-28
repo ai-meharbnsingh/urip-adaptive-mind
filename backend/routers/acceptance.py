@@ -115,7 +115,7 @@ async def list_acceptance_requests(
 @router.get("/stats")
 async def acceptance_stats(
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(role_required("ciso")),
 ):
     """Aggregate counts for the acceptance dashboard cards.
 
@@ -152,7 +152,7 @@ async def acceptance_stats(
 @router.get("/pending")
 async def acceptance_pending(
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(role_required("ciso")),
 ):
     """Pending acceptance requests in the shape acceptance-workflow.html expects.
 
@@ -201,7 +201,7 @@ async def acceptance_pending(
 async def acceptance_recent(
     limit: int = Query(default=10, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(role_required("ciso")),
 ):
     """Recently approved acceptance requests for the dashboard table."""
     query = apply_tenant_filter(
@@ -312,6 +312,48 @@ async def create_acceptance_request(
     await db.commit()
     await db.refresh(ar)
     return acceptance_to_read(ar)
+
+
+@router.get("/{acceptance_id}")
+async def acceptance_detail(
+    acceptance_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(role_required("ciso")),
+):
+    """Single-acceptance detail for the right-pane review UI.
+
+    Returns the acceptance row plus the human-readable risk fields the
+    frontend renders (risk_id, severity, title, description, justification).
+    Tenant-scoped — cross-tenant fetches return 404, never expose data.
+    """
+    result = await db.execute(
+        select(AcceptanceRequest).where(
+            AcceptanceRequest.id == parse_uuid(acceptance_id, "acceptance_id"),
+            AcceptanceRequest.tenant_id == TenantContext.get(),
+        )
+    )
+    ar = result.scalar_one_or_none()
+    if not ar:
+        raise HTTPException(status_code=404, detail="Acceptance request not found")
+
+    risk_q = select(Risk).where(Risk.id == ar.risk_id)
+    if hasattr(Risk, "tenant_id"):
+        risk_q = risk_q.where(Risk.tenant_id == TenantContext.get())
+    risk = (await db.execute(risk_q)).scalar_one_or_none()
+
+    return {
+        "id": str(ar.id),
+        "risk_id": risk.risk_id if risk else None,
+        "severity": risk.severity if risk else None,
+        "title": risk.finding if risk else None,
+        "description": risk.finding if risk else None,
+        "justification": ar.justification,
+        "compensating_controls": ar.compensating_controls,
+        "residual_risk": ar.residual_risk,
+        "recommendation": ar.recommendation,
+        "status": ar.status,
+        "created_at": ar.created_at.isoformat() if ar.created_at else None,
+    }
 
 
 @router.post("/{acceptance_id}/approve", response_model=AcceptanceActionResponse)

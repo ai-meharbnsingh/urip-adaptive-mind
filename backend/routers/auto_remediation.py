@@ -14,7 +14,7 @@ import uuid
 from datetime import datetime
 from typing import Any, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -208,7 +208,7 @@ async def list_executions_endpoint(
 # --------------------------------------------------------------------------- #
 @router.get("/runs")
 async def list_runs_endpoint(
-    per_page: int = 20,
+    per_page: int = Query(default=20, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
 ) -> dict[str, Any]:
