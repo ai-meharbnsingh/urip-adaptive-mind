@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Policies | Adverb Compliance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+    <main class="main-content">
+      <header class="topbar"></header>
+      <div class="content-area">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Policies</h1>
+            <p class="page-subtitle">Templates + custom policies, version-controlled with employee acknowledgments.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-primary" id="btnNewPolicy">
+              <i class="fas fa-plus"></i> New policy
+            </button>
+          </div>
+        </div>
+
+        <!-- Pending acks (current user) -->
+        <div class="card mb-6" id="pendingCard">
+          <div class="card-header">
+            <span class="card-title">
+              <i class="fas fa-bell" style="color:var(--inconclusive-amber);margin-right:.5rem"></i>
+              Your pending acknowledgments
+            </span>
+            <span class="text-xs text-gray" id="pendingMeta">—</span>
+          </div>
+          <div class="card-body" id="pendingBody"></div>
+        </div>
+
+        <!-- Expiring soon -->
+        <div class="card mb-6" id="expiringCard" style="display:none">
+          <div class="card-header">
+            <span class="card-title">
+              <i class="fas fa-clock" style="color:var(--fail-red);margin-right:.5rem"></i>
+              Expiring soon (admin)
+            </span>
+          </div>
+          <div class="card-body" id="expiringBody"></div>
+        </div>
+
+        <!-- All policies -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">All policies</span>
+            <span class="text-xs text-gray" id="allMeta">—</span>
+          </div>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Owner</th>
+                  <th>Current version</th>
+                  <th>Expires</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="allBody">
+                <tr><td colspan="6"><div class="skeleton skeleton-row"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/theming.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      checkAuth();
+      var C = window.COMPLIANCE;
+
+      async function loadPending() {
+        var body = document.getElementById('pendingBody');
+        var meta = document.getElementById('pendingMeta');
+        body.innerHTML = '<div class="skeleton skeleton-row"></div>';
+        try {
+          var pending = await C.apiFetch('/policies/pending', { silent: true });
+          pending = pending || [];
+          meta.textContent = pending.length + ' policy(ies) awaiting your signature';
+          if (!pending.length) {
+            body.innerHTML = '';
+            var ok = document.createElement('div');
+            ok.style.cssText = 'display:flex;align-items:center;gap:.625rem;padding:.5rem 0;color:var(--pass-green)';
+            ok.innerHTML = '<i class="fas fa-check-circle"></i> You\'re all caught up.';
+            body.appendChild(ok);
+            return;
+          }
+          body.innerHTML = '';
+          pending.forEach(function (p) {
+            var row = document.createElement('div');
+            row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:.625rem 0;border-bottom:1px solid var(--gray-100)';
+            row.innerHTML =
+              '<div>' +
+                '<div style="font-weight:500">' + C.escapeHtml(p.name) + '</div>' +
+                '<div class="text-xs text-gray">Created ' + C.relativeTime(p.created_at) + (p.expires_at ? ' · expires ' + C.formatDateOnly(p.expires_at) : '') + '</div>' +
+              '</div>';
+            var ackBtn = document.createElement('button');
+            ackBtn.className = 'btn btn-primary btn-sm';
+            ackBtn.innerHTML = '<i class="fas fa-signature"></i> Acknowledge';
+            ackBtn.addEventListener('click', function () { promptAck(p); });
+            row.appendChild(ackBtn);
+            body.appendChild(row);
+          });
+        } catch (e) {
+          C.renderEmptyState(body, 'fa-triangle-exclamation', 'Failed to load', e.message || '');
+        }
+      }
+
+      function promptAck(p) {
+        var inner = document.createElement('div');
+        inner.innerHTML =
+          '<p class="text-sm text-gray mb-4">By acknowledging, you confirm you have read and agree to comply with <strong>' +
+          C.escapeHtml(p.name) + '</strong>.</p>' +
+          '<div class="form-group"><label class="form-label">Type your full name to sign</label>' +
+          '<input class="form-input" id="ackSig" autocomplete="off" placeholder="Your full name" /></div>';
+        var cancel = document.createElement('button');
+        cancel.className = 'btn btn-secondary'; cancel.textContent = 'Cancel';
+        var sign = document.createElement('button');
+        sign.className = 'btn btn-primary'; sign.innerHTML = '<i class="fas fa-signature"></i> Sign';
+        var modal = C.openModal({ title: 'Acknowledge policy', body: inner, footer: [cancel, sign] });
+        cancel.addEventListener('click', modal.close);
+        sign.addEventListener('click', async function () {
+          var sig = document.getElementById('ackSig').value.trim();
+          if (!sig) { C.showNotification('Validation', 'Please type your full name.', 'error'); return; }
+          sign.disabled = true; sign.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing…';
+          try {
+            await C.apiFetch('/policies/' + p.id + '/acknowledge', { method: 'POST', body: { signature: sig } });
+            C.showNotification('Signed', 'Acknowledgment recorded.', 'success');
+            modal.close();
+            loadPending();
+            loadAll();
+          } catch (e) {
+            C.showNotification('Failed', e.message || 'Could not record signature', 'error');
+            sign.disabled = false; sign.innerHTML = '<i class="fas fa-signature"></i> Sign';
+          }
+        });
+      }
+
+      async function loadExpiring() {
+        try {
+          var exp = await C.apiFetch('/policies/expiring', { silent: true });
+          if (!exp || !exp.length) return;
+          var card = document.getElementById('expiringCard');
+          var body = document.getElementById('expiringBody');
+          card.style.display = '';
+          body.innerHTML = '';
+          exp.forEach(function (p) {
+            var row = document.createElement('div');
+            row.style.cssText = 'display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--gray-100)';
+            row.innerHTML =
+              '<div><strong>' + C.escapeHtml(p.name) + '</strong>' +
+              '<div class="text-xs text-gray">Expires ' + C.formatDateOnly(p.expires_at) + '</div></div>';
+            var b = document.createElement('button');
+            b.className = 'btn btn-sm btn-outline';
+            b.innerHTML = '<i class="fas fa-rotate"></i> Republish';
+            b.addEventListener('click', function () { promptRepublish(p); });
+            row.appendChild(b);
+            body.appendChild(row);
+          });
+        } catch (_) { /* expiring is admin-only — ignore 403 */ }
+      }
+
+      async function loadAll() {
+        var body = document.getElementById('allBody');
+        try {
+          var policies = await C.apiFetch('/policies', { silent: true });
+          policies = policies || [];
+          document.getElementById('allMeta').textContent = policies.length + ' policy(ies)';
+          body.innerHTML = '';
+          if (!policies.length) {
+            var tr = document.createElement('tr');
+            var td = document.createElement('td'); td.colSpan = 6; td.style.padding = 0;
+            var w = document.createElement('div');
+            C.renderEmptyState(w, 'fa-file-signature', 'No policies yet', 'Create one with the New policy button.');
+            td.appendChild(w); tr.appendChild(td); body.appendChild(tr);
+            return;
+          }
+          policies.forEach(function (p) {
+            var tr = document.createElement('tr');
+            tr.innerHTML =
+              '<td><strong>' + C.escapeHtml(p.name) + '</strong></td>' +
+              '<td style="font-size:.8125rem">' + C.escapeHtml(p.owner_user_id || '—') + '</td>' +
+              '<td>' + (p.current_version_id ? '<span class="badge badge-info">Active</span>' : '<span class="badge badge-warn">Draft</span>') + '</td>' +
+              '<td style="font-size:.8125rem">' + (p.expires_at ? C.formatDateOnly(p.expires_at) : '—') + '</td>' +
+              '<td>' + (p.is_active ? '<span class="status-pill status-pass">Active</span>' : '<span class="status-pill status-not_evaluated">Inactive</span>') + '</td>' +
+              '<td>' +
+                '<button class="btn btn-sm btn-ghost" data-action="versions" data-id="' + p.id + '" title="Versions"><i class="fas fa-history"></i></button>' +
+                '<button class="btn btn-sm btn-ghost" data-action="republish" data-id="' + p.id + '" data-name="' + C.escapeHtml(p.name) + '" title="Republish"><i class="fas fa-rotate"></i></button>' +
+              '</td>';
+            body.appendChild(tr);
+          });
+          body.querySelectorAll('[data-action="versions"]').forEach(function (b) {
+            b.addEventListener('click', function () { showVersions(b.getAttribute('data-id')); });
+          });
+          body.querySelectorAll('[data-action="republish"]').forEach(function (b) {
+            b.addEventListener('click', function () {
+              promptRepublish({ id: b.getAttribute('data-id'), name: b.getAttribute('data-name') });
+            });
+          });
+        } catch (e) {
+          C.renderEmptyState(body, 'fa-triangle-exclamation', 'Failed to load policies', e.message || '');
+        }
+      }
+
+      async function showVersions(policyId) {
+        var inner = document.createElement('div');
+        inner.innerHTML = '<div class="skeleton skeleton-row"></div>';
+        var modal = C.openModal({ title: 'Version history', body: inner });
+        try {
+          var versions = await C.apiFetch('/policies/' + policyId + '/versions', { silent: true });
+          inner.innerHTML = '';
+          if (!versions || !versions.length) {
+            C.renderEmptyState(inner, 'fa-clock-rotate-left', 'No versions yet', 'Publish a version to start tracking.');
+            return;
+          }
+          versions.forEach(function (v) {
+            var row = document.createElement('div');
+            row.style.cssText = 'padding:.625rem 0;border-bottom:1px solid var(--gray-100)';
+            row.innerHTML =
+              '<div style="display:flex;justify-content:space-between;align-items:center">' +
+                '<div><strong>v' + v.version_number + '</strong> ' +
+                  '<span class="text-xs text-gray">— ' + C.relativeTime(v.published_at) + '</span></div>' +
+                '<span class="text-xs text-gray">by ' + C.escapeHtml(v.published_by_user_id || '—') + '</span>' +
+              '</div>' +
+              (v.change_summary ? '<div class="text-sm text-gray mt-2">' + C.escapeHtml(v.change_summary) + '</div>' : '');
+            inner.appendChild(row);
+          });
+        } catch (e) {
+          C.renderEmptyState(inner, 'fa-triangle-exclamation', 'Failed to load versions', e.message || '');
+        }
+      }
+
+      function promptRepublish(p) {
+        var inner = document.createElement('div');
+        inner.innerHTML =
+          '<p class="text-sm mb-4">Publish a new version of <strong>' + C.escapeHtml(p.name) + '</strong>.</p>' +
+          '<div class="form-group"><label class="form-label">Change summary</label>' +
+          '<input class="form-input" id="rpSummary" placeholder="What changed?" /></div>' +
+          '<div class="form-group"><label class="form-label">New content (markdown)</label>' +
+          '<textarea class="form-textarea" id="rpContent" placeholder="# Section 1\n…"></textarea></div>';
+        var cancel = document.createElement('button'); cancel.className = 'btn btn-secondary'; cancel.textContent = 'Cancel';
+        var go = document.createElement('button'); go.className = 'btn btn-primary'; go.innerHTML = '<i class="fas fa-rotate"></i> Publish';
+        var modal = C.openModal({ title: 'Republish policy', body: inner, footer: [cancel, go] });
+        cancel.addEventListener('click', modal.close);
+        go.addEventListener('click', async function () {
+          var content = document.getElementById('rpContent').value.trim();
+          var summary = document.getElementById('rpSummary').value.trim();
+          if (!content || !summary) { C.showNotification('Validation', 'Both fields required.', 'error'); return; }
+          go.disabled = true; go.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing…';
+          try {
+            await C.apiFetch('/policies/' + p.id + '/versions', {
+              method: 'POST', body: { content: content, change_summary: summary }
+            });
+            C.showNotification('Published', 'New version published.', 'success');
+            modal.close();
+            loadAll(); loadPending();
+          } catch (e) {
+            C.showNotification('Failed', e.message || 'Admin role required?', 'error');
+            go.disabled = false; go.innerHTML = '<i class="fas fa-rotate"></i> Publish';
+          }
+        });
+      }
+
+      function promptNew() {
+        var inner = document.createElement('div');
+        inner.innerHTML =
+          '<div class="form-group"><label class="form-label">Policy name</label>' +
+          '<input class="form-input" id="npName" placeholder="e.g. Acceptable Use Policy" /></div>' +
+          '<div class="form-group"><label class="form-label">Content (markdown)</label>' +
+          '<textarea class="form-textarea" id="npContent" rows="6" placeholder="# Section 1…"></textarea></div>' +
+          '<div class="form-group"><label class="form-label">Expires (optional, ISO date)</label>' +
+          '<input class="form-input" id="npExpires" placeholder="2027-04-01T00:00:00" /></div>';
+        var cancel = document.createElement('button'); cancel.className = 'btn btn-secondary'; cancel.textContent = 'Cancel';
+        var go = document.createElement('button'); go.className = 'btn btn-primary'; go.innerHTML = '<i class="fas fa-plus"></i> Create';
+        var modal = C.openModal({ title: 'New policy', body: inner, footer: [cancel, go] });
+        cancel.addEventListener('click', modal.close);
+        go.addEventListener('click', async function () {
+          var name = document.getElementById('npName').value.trim();
+          var content = document.getElementById('npContent').value.trim();
+          var expires = document.getElementById('npExpires').value.trim() || null;
+          if (!name || !content) { C.showNotification('Validation', 'Name & content required.', 'error'); return; }
+          go.disabled = true; go.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating…';
+          try {
+            await C.apiFetch('/policies', {
+              method: 'POST', body: { name: name, content: content, expires_at: expires }
+            });
+            C.showNotification('Created', 'Policy created.', 'success');
+            modal.close();
+            loadAll();
+          } catch (e) {
+            C.showNotification('Failed', e.message || 'Admin role required?', 'error');
+            go.disabled = false; go.innerHTML = '<i class="fas fa-plus"></i> Create';
+          }
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        renderSidebar('policies');
+        document.getElementById('btnNewPolicy').addEventListener('click', promptNew);
+        loadPending();
+        loadExpiring();
+        loadAll();
+      });
+    })();
+  </script>
+</body>
+</html>

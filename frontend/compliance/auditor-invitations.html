@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auditor Invitations | Adverb Compliance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+    <main class="main-content">
+      <header class="topbar"></header>
+      <div class="content-area">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Auditor Invitations</h1>
+            <p class="page-subtitle">Time-bounded, framework-scoped, read-only access for external auditors.</p>
+          </div>
+        </div>
+
+        <div class="split-3">
+          <div>
+            <div class="card mb-6">
+              <div class="card-header"><span class="card-title">Active invitations</span></div>
+              <div class="table-container">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Auditor</th>
+                      <th>Framework</th>
+                      <th>Audit period</th>
+                      <th>Expires</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="activeBody">
+                    <tr><td colspan="6"><div class="skeleton skeleton-row"></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header"><span class="card-title">Past audits</span></div>
+              <div class="table-container">
+                <table class="table">
+                  <thead>
+                    <tr><th>Auditor</th><th>Framework</th><th>Period</th><th>Outcome</th></tr>
+                  </thead>
+                  <tbody id="pastBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <aside>
+            <div class="card">
+              <div class="card-header"><span class="card-title">New invitation</span></div>
+              <div class="card-body">
+                <form id="inviteForm">
+                  <div class="form-group">
+                    <label class="form-label">Auditor email</label>
+                    <input type="email" class="form-input" id="iEmail" placeholder="auditor@firm.com" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Framework</label>
+                    <select class="form-select" id="iFramework" required>
+                      <option value="">Loading…</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Audit period start</label>
+                    <input type="date" class="form-input" id="iStart" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Audit period end</label>
+                    <input type="date" class="form-input" id="iEnd" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Invitation expires</label>
+                    <input type="date" class="form-input" id="iExpires" required />
+                    <p class="form-help">After this date, the auditor link no longer works.</p>
+                  </div>
+                  <button type="submit" class="btn btn-primary w-full" id="iSubmit">
+                    <i class="fas fa-paper-plane"></i> Send invitation
+                  </button>
+                </form>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/theming.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      checkAuth();
+      var C = window.COMPLIANCE;
+
+      var frameworkLookup = {}; // id → name + short_code
+
+      async function loadFrameworks() {
+        try {
+          var fws = await C.apiFetch('/frameworks');
+          var sel = document.getElementById('iFramework');
+          sel.innerHTML = '<option value="">Select framework…</option>';
+          (fws || []).forEach(function (f) {
+            frameworkLookup[f.id] = f;
+            var o = document.createElement('option');
+            o.value = f.id;
+            o.textContent = f.name + ' (' + f.short_code + ')';
+            sel.appendChild(o);
+          });
+        } catch (e) {
+          C.showNotification('Frameworks load failed', e.message, 'error');
+        }
+      }
+
+      async function loadInvitations() {
+        var body = document.getElementById('activeBody');
+        var pastBody = document.getElementById('pastBody');
+        body.innerHTML = '<tr><td colspan="6"><div class="skeleton skeleton-row"></div></td></tr>';
+        pastBody.innerHTML = '';
+        try {
+          var rows = await C.apiFetch('/auditor-invitations');
+          rows = rows || [];
+          var now = new Date();
+          var active = rows.filter(function (r) {
+            return !r.is_revoked && new Date(r.expires_at) > now;
+          });
+          var past = rows.filter(function (r) {
+            return r.is_revoked || new Date(r.expires_at) <= now;
+          });
+
+          body.innerHTML = '';
+          if (!active.length) {
+            var tr = document.createElement('tr');
+            var td = document.createElement('td'); td.colSpan = 6; td.style.padding = 0;
+            var w = document.createElement('div');
+            C.renderEmptyState(w, 'fa-user-tie', 'No active invitations', 'Invite an auditor using the form on the right.');
+            td.appendChild(w); tr.appendChild(td); body.appendChild(tr);
+          } else {
+            active.forEach(function (r) { renderRow(body, r, true); });
+          }
+
+          if (!past.length) {
+            pastBody.innerHTML = '<tr><td colspan="4"><div style="padding:1rem;text-align:center;color:var(--gray-500);font-size:.875rem">No past audits yet.</div></td></tr>';
+          } else {
+            past.forEach(function (r) { renderRow(pastBody, r, false); });
+          }
+        } catch (e) {
+          C.renderEmptyState(body, 'fa-triangle-exclamation', 'Failed to load', e.message || '');
+        }
+      }
+
+      function renderRow(body, r, isActive) {
+        var tr = document.createElement('tr');
+        var fwName = frameworkLookup[r.framework_id]
+          ? frameworkLookup[r.framework_id].short_code
+          : r.framework_id.slice(0, 8);
+        if (isActive) {
+          tr.innerHTML =
+            '<td><strong>' + C.escapeHtml(r.auditor_email) + '</strong>' +
+            (r.accepted_at ? '<div class="text-xs text-pass">Accepted ' + C.relativeTime(r.accepted_at) + '</div>' : '<div class="text-xs text-gray">Awaiting acceptance</div>') + '</td>' +
+            '<td><span class="framework-logo" style="font-size:.625rem">' + C.escapeHtml(fwName) + '</span></td>' +
+            '<td style="font-size:.8125rem">' + C.formatDateOnly(r.audit_period_start) + ' — ' + C.formatDateOnly(r.audit_period_end) + '</td>' +
+            '<td style="font-size:.8125rem">' + C.formatDateOnly(r.expires_at) + '</td>' +
+            '<td><span class="status-pill status-pass">Active</span></td>' +
+            '<td><button class="btn btn-sm btn-danger" data-id="' + r.id + '"><i class="fas fa-ban"></i> Revoke</button></td>';
+        } else {
+          tr.innerHTML =
+            '<td><strong>' + C.escapeHtml(r.auditor_email) + '</strong></td>' +
+            '<td><span class="framework-logo" style="font-size:.625rem">' + C.escapeHtml(fwName) + '</span></td>' +
+            '<td style="font-size:.8125rem">' + C.formatDateOnly(r.audit_period_start) + ' — ' + C.formatDateOnly(r.audit_period_end) + '</td>' +
+            '<td>' + (r.is_revoked
+              ? '<span class="status-pill status-fail">Revoked</span>'
+              : '<span class="status-pill status-not_evaluated">Expired</span>') + '</td>';
+        }
+        body.appendChild(tr);
+        if (isActive) {
+          tr.querySelector('[data-id]').addEventListener('click', function () {
+            var id = this.getAttribute('data-id');
+            if (!confirm('Revoke this invitation? The auditor will lose access immediately.')) return;
+            C.apiFetch('/auditor-invitations/' + id, { method: 'DELETE' })
+              .then(function () { C.showNotification('Revoked', 'Invitation revoked.', 'success'); loadInvitations(); })
+              .catch(function (e) { C.showNotification('Failed', e.message, 'error'); });
+          });
+        }
+      }
+
+      function wireForm() {
+        var form = document.getElementById('inviteForm');
+        // Defaults — period = current quarter, expires = +90 days
+        var today = new Date();
+        var qStart = new Date(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3, 1);
+        var qEnd = new Date(qStart.getFullYear(), qStart.getMonth() + 3, 0);
+        var expires = new Date(today); expires.setDate(today.getDate() + 90);
+        document.getElementById('iStart').value = qStart.toISOString().slice(0, 10);
+        document.getElementById('iEnd').value = qEnd.toISOString().slice(0, 10);
+        document.getElementById('iExpires').value = expires.toISOString().slice(0, 10);
+
+        form.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          var btn = document.getElementById('iSubmit');
+          btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending…';
+          try {
+            var resp = await C.apiFetch('/auditor-invitations', {
+              method: 'POST',
+              body: {
+                auditor_email: document.getElementById('iEmail').value.trim(),
+                framework_id: document.getElementById('iFramework').value,
+                audit_period_start: document.getElementById('iStart').value + 'T00:00:00',
+                audit_period_end: document.getElementById('iEnd').value + 'T23:59:59',
+                expires_at: document.getElementById('iExpires').value + 'T23:59:59'
+              }
+            });
+            // Show the redemption URL — only available on create response
+            var box = document.createElement('div');
+            box.innerHTML =
+              '<p class="text-sm mb-4">Send this link to <strong>' + C.escapeHtml(resp.auditor_email) + '</strong>. It will not be shown again.</p>' +
+              '<div class="form-group">' +
+                '<input class="form-input" readonly value="' + C.escapeHtml(resp.invitation_url || '(no URL — backend response)') + '" />' +
+              '</div>' +
+              '<button class="btn btn-outline" id="copyLink"><i class="fas fa-copy"></i> Copy link</button>';
+            var ok = document.createElement('button'); ok.className = 'btn btn-primary'; ok.textContent = 'Done';
+            var modal = C.openModal({ title: 'Invitation sent', body: box, footer: [ok] });
+            ok.addEventListener('click', modal.close);
+            box.querySelector('#copyLink').addEventListener('click', function () {
+              navigator.clipboard.writeText(resp.invitation_url || '').then(function () {
+                C.showNotification('Copied', 'Invitation URL on clipboard.', 'success');
+              });
+            });
+            form.reset();
+            loadInvitations();
+          } catch (err) {
+            C.showNotification('Failed', err.message || '', 'error');
+          } finally {
+            btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send invitation';
+          }
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        renderSidebar('auditor-invitations');
+        loadFrameworks().then(loadInvitations);
+        wireForm();
+      });
+    })();
+  </script>
+</body>
+</html>

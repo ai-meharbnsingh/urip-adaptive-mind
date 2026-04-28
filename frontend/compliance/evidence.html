@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evidence | Adverb Compliance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+    <main class="main-content">
+      <header class="topbar"></header>
+      <div class="content-area">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Evidence</h1>
+            <p class="page-subtitle">All captured evidence — auto-collected from connectors plus manual uploads. Files stay on your network.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-outline" id="btnExportBundle">
+              <i class="fas fa-file-zipper"></i> Export bundle
+            </button>
+          </div>
+        </div>
+
+        <div class="split-3">
+          <div>
+            <div class="filter-bar">
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="filterText" placeholder="Filter by control, framework, period…" />
+              </div>
+              <div class="filter-group">
+                <span class="filter-label">Type:</span>
+                <select class="form-select" id="filterType" style="width:auto">
+                  <option value="">All</option>
+                  <option value="screenshot">Screenshot</option>
+                  <option value="config">Config</option>
+                  <option value="log">Log</option>
+                  <option value="ticket">Ticket</option>
+                  <option value="document">Document</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <span class="filter-label">Period:</span>
+                <input type="text" id="filterPeriod" placeholder="e.g. 2026-Q2" class="form-input" style="width:150px" />
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title" id="evMeta">Loading…</span>
+              </div>
+              <div class="table-container">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Type</th>
+                      <th>Control</th>
+                      <th>Period</th>
+                      <th>Captured</th>
+                      <th>By</th>
+                      <th>Integrity</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="evBody">
+                    <tr><td colspan="7"><div class="skeleton skeleton-row"></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <aside>
+            <div class="card mb-6">
+              <div class="card-header">
+                <span class="card-title">Manual upload</span>
+              </div>
+              <div class="card-body">
+                <form id="uploadForm">
+                  <div class="form-group">
+                    <label class="form-label">Control ID</label>
+                    <input type="text" class="form-input" id="upControl" placeholder="control_id (UUID)" required />
+                    <p class="form-help">Find on Controls → drill-down.</p>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Type</label>
+                    <select class="form-select" id="upType" required>
+                      <option value="screenshot">Screenshot</option>
+                      <option value="config">Config</option>
+                      <option value="log">Log</option>
+                      <option value="ticket">Ticket</option>
+                      <option value="document">Document</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Audit period</label>
+                    <input type="text" class="form-input" id="upPeriod" placeholder="e.g. 2026-Q2" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">File</label>
+                    <div class="dropzone" id="dropzone">
+                      <div class="dropzone-icon"><i class="fas fa-cloud-arrow-up"></i></div>
+                      <p>Drag & drop a file here<br><strong>or click to browse</strong></p>
+                      <p style="margin-top:.375rem;font-size:.75rem" id="dzFile"></p>
+                      <input type="file" id="upFile" hidden />
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-primary w-full" id="upSubmit">
+                    <i class="fas fa-upload"></i> Upload evidence
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title">About evidence integrity</span>
+              </div>
+              <div class="card-body">
+                <p class="text-sm text-gray">
+                  Every uploaded file is hashed with SHA-256. The hash is recorded server-side and
+                  returned via the <code>X-Evidence-Hash</code> header on download — auditors can
+                  independently verify that what they download matches what was captured.
+                </p>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/theming.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      checkAuth();
+      var C = window.COMPLIANCE;
+      var allEvidence = [];
+
+      async function loadEvidence() {
+        var body = document.getElementById('evBody');
+        body.innerHTML = '<tr><td colspan="7"><div class="skeleton skeleton-row"></div></td></tr>';
+        try {
+          var resp = await C.apiFetch('/evidence?limit=200');
+          allEvidence = (resp && resp.items) || [];
+          applyFilters();
+        } catch (e) {
+          C.renderEmptyState(body, 'fa-triangle-exclamation', 'Failed to load evidence', e.message || '');
+        }
+      }
+
+      function applyFilters() {
+        var text = document.getElementById('filterText').value.toLowerCase();
+        var typeF = document.getElementById('filterType').value;
+        var periodF = document.getElementById('filterPeriod').value.toLowerCase();
+        var rows = allEvidence.filter(function (e) {
+          if (typeF && e.type !== typeF) return false;
+          if (periodF && (e.audit_period || '').toLowerCase().indexOf(periodF) === -1) return false;
+          if (text) {
+            var hay = (e.control_id + ' ' + (e.framework_id || '') + ' ' + (e.audit_period || '')).toLowerCase();
+            if (hay.indexOf(text) === -1) return false;
+          }
+          return true;
+        });
+        document.getElementById('evMeta').textContent = rows.length + ' evidence item(s)';
+
+        var body = document.getElementById('evBody');
+        body.innerHTML = '';
+        if (!rows.length) {
+          var tr = document.createElement('tr');
+          var td = document.createElement('td'); td.colSpan = 7; td.style.padding = 0;
+          var w = document.createElement('div');
+          C.renderEmptyState(w, 'fa-folder-open', 'No evidence found', 'Upload manually or wait for the auto-collection cycle.');
+          td.appendChild(w); tr.appendChild(td); body.appendChild(tr);
+          return;
+        }
+
+        rows.forEach(function (e) {
+          var tr = document.createElement('tr');
+          var typeIcon = ({
+            screenshot: 'fa-camera', config: 'fa-cog', log: 'fa-file-lines',
+            ticket: 'fa-ticket', document: 'fa-file-pdf'
+          })[e.type] || 'fa-file';
+          tr.innerHTML =
+            '<td><i class="fas ' + typeIcon + '" style="color:var(--teal-accent);margin-right:.5rem"></i><span class="badge badge-info">' + C.escapeHtml(e.type) + '</span></td>' +
+            '<td style="font-family:\'SF Mono\',monospace;font-size:.75rem">' + C.escapeHtml((e.control_id || '').slice(0, 12)) + '…</td>' +
+            '<td>' + C.escapeHtml(e.audit_period || '—') + '</td>' +
+            '<td style="font-size:.8125rem;color:var(--gray-600)">' + C.relativeTime(e.captured_at) + '</td>' +
+            '<td style="font-size:.8125rem;color:var(--gray-600)">' + C.escapeHtml(e.captured_by || '—') + '</td>' +
+            '<td><span class="badge badge-verified"><i class="fas fa-shield-check"></i> Verified</span></td>' +
+            '<td>' +
+              '<a href="' + C.API_BASE + '/evidence/' + encodeURIComponent(e.id) + '" target="_blank" class="btn btn-sm btn-ghost" title="Download">' +
+                '<i class="fas fa-download"></i></a>' +
+              ' <button class="btn btn-sm btn-ghost" data-meta=\'' + JSON.stringify(e).replace(/'/g, '&apos;') + '\' title="View metadata">' +
+                '<i class="fas fa-info-circle"></i></button>' +
+            '</td>';
+          body.appendChild(tr);
+        });
+
+        // Wire metadata buttons
+        body.querySelectorAll('[data-meta]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var ev = JSON.parse(btn.getAttribute('data-meta').replace(/&apos;/g, "'"));
+            var pre = document.createElement('pre');
+            pre.style.cssText = 'font-family:"SF Mono",monospace;font-size:.75rem;background:var(--gray-50);padding:1rem;border-radius:var(--radius-md);overflow-x:auto';
+            pre.textContent = JSON.stringify(ev, null, 2);
+            C.openModal({ title: 'Evidence metadata', body: pre, footer: [(function () {
+              var b = document.createElement('button'); b.className = 'btn btn-secondary'; b.textContent = 'Close';
+              b.addEventListener('click', function () { document.querySelector('.modal-overlay').click(); });
+              return b;
+            })()] });
+          });
+        });
+      }
+
+      function wireDropzone() {
+        var dz = document.getElementById('dropzone');
+        var input = document.getElementById('upFile');
+        var label = document.getElementById('dzFile');
+        dz.addEventListener('click', function () { input.click(); });
+        dz.addEventListener('dragover', function (e) { e.preventDefault(); dz.classList.add('dragover'); });
+        dz.addEventListener('dragleave', function () { dz.classList.remove('dragover'); });
+        dz.addEventListener('drop', function (e) {
+          e.preventDefault(); dz.classList.remove('dragover');
+          if (e.dataTransfer.files && e.dataTransfer.files.length) {
+            input.files = e.dataTransfer.files;
+            label.textContent = e.dataTransfer.files[0].name;
+          }
+        });
+        input.addEventListener('change', function () {
+          if (input.files.length) label.textContent = input.files[0].name;
+        });
+      }
+
+      function wireUpload() {
+        document.getElementById('uploadForm').addEventListener('submit', async function (e) {
+          e.preventDefault();
+          var control = document.getElementById('upControl').value.trim();
+          var type = document.getElementById('upType').value;
+          var period = document.getElementById('upPeriod').value.trim();
+          var file = document.getElementById('upFile').files[0];
+          if (!control || !file) {
+            C.showNotification('Validation', 'Control ID and file are required.', 'error');
+            return;
+          }
+          var btn = document.getElementById('upSubmit');
+          btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading…';
+          var fd = new FormData();
+          fd.append('file', file);
+          fd.append('control_id', control);
+          fd.append('evidence_type', type);
+          if (period) fd.append('audit_period', period);
+          try {
+            await C.apiFetch('/evidence', { method: 'POST', body: fd });
+            C.showNotification('Uploaded', 'Evidence uploaded successfully.', 'success');
+            document.getElementById('uploadForm').reset();
+            document.getElementById('dzFile').textContent = '';
+            loadEvidence();
+          } catch (err) {
+            C.showNotification('Upload failed', err.message || 'Try again.', 'error');
+          } finally {
+            btn.disabled = false; btn.innerHTML = '<i class="fas fa-upload"></i> Upload evidence';
+          }
+        });
+      }
+
+      function wireExportBundle() {
+        document.getElementById('btnExportBundle').addEventListener('click', function () {
+          var token = C.getToken();
+          if (!token) {
+            C.showNotification('Auth required', 'Sign in to download the bundle.', 'error');
+            return;
+          }
+          // Browser cannot pass Authorization header on a direct link; use fetch
+          C.showNotification('Preparing bundle', 'This may take a few seconds…', 'info');
+          fetch(C.API_BASE + '/evidence/bundle', {
+            headers: { 'Authorization': 'Bearer ' + token }
+          }).then(function (r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.blob();
+          }).then(function (blob) {
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'evidence_bundle.zip';
+            document.body.appendChild(a); a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            C.showNotification('Bundle ready', 'Download started.', 'success');
+          }).catch(function (e) {
+            C.showNotification('Bundle failed', e.message || 'Try again.', 'error');
+          });
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        renderSidebar('evidence');
+        document.getElementById('filterText').addEventListener('input', applyFilters);
+        document.getElementById('filterType').addEventListener('change', applyFilters);
+        document.getElementById('filterPeriod').addEventListener('input', applyFilters);
+        wireDropzone();
+        wireUpload();
+        wireExportBundle();
+        loadEvidence();
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auditor Activity | Adverb Compliance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+  <style>
+    /* ─── Activity Heatmap ──────────────────────────── */
+    .heatmap-card { padding: 16px 20px; }
+    .heatmap-card h3 {
+      font-size: 13px; text-transform: uppercase; letter-spacing: .04em;
+      color: var(--gray-600, #6c757d); margin: 0 0 12px;
+    }
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: repeat(15, 1fr);
+      gap: 4px;
+    }
+    @media (max-width: 700px) { .heatmap-grid { grid-template-columns: repeat(10, 1fr); } }
+    .heatmap-cell {
+      aspect-ratio: 1 / 1;
+      border-radius: 3px;
+      background: #ebedf0;
+      cursor: pointer;
+      transition: transform .12s ease;
+    }
+    .heatmap-cell:hover { transform: scale(1.15); outline: 1px solid #2c3e50; }
+    .heatmap-cell.l1 { background: #c6e48b; }
+    .heatmap-cell.l2 { background: #7bc96f; }
+    .heatmap-cell.l3 { background: #239a3b; }
+    .heatmap-cell.l4 { background: #196127; }
+    .heatmap-meta { font-size: 12px; color: var(--gray-500, #888); margin-top: 8px; }
+    .heatmap-legend { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--gray-500, #888); }
+    .heatmap-legend .lbox { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+    <main class="main-content">
+      <header class="topbar"></header>
+      <div class="content-area">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Auditor Activity</h1>
+            <p class="page-subtitle">Every action your external auditors take is logged here. Tenant admins only.</p>
+          </div>
+        </div>
+
+        <!-- Activity heatmap (last 30 days) -->
+        <div class="card heatmap-card" id="heatmap-card" style="margin-bottom:18px">
+          <h3>Activity Heatmap — Last 30 Days</h3>
+          <div class="heatmap-grid" id="heatmap-grid"></div>
+          <div class="heatmap-meta" id="heatmap-meta">Loading…</div>
+          <div class="heatmap-legend" style="margin-top:8px">
+            Less
+            <span class="lbox" style="background:#ebedf0"></span>
+            <span class="lbox" style="background:#c6e48b"></span>
+            <span class="lbox" style="background:#7bc96f"></span>
+            <span class="lbox" style="background:#239a3b"></span>
+            <span class="lbox" style="background:#196127"></span>
+            More
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="filterText" placeholder="Filter by email, action, target…" />
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Action:</span>
+            <select class="form-select" id="filterAction" style="width:auto">
+              <option value="">All</option>
+              <option value="list_controls">List controls</option>
+              <option value="view_control">View control</option>
+              <option value="list_evidence">List evidence</option>
+              <option value="download_evidence">Download evidence</option>
+              <option value="list_policies">List policies</option>
+              <option value="view_policy">View policy</option>
+              <option value="request_evidence">Request evidence</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title" id="meta">Loading…</span></div>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>When</th>
+                  <th>Auditor</th>
+                  <th>Action</th>
+                  <th>Target</th>
+                  <th>IP</th>
+                </tr>
+              </thead>
+              <tbody id="body">
+                <tr><td colspan="5"><div class="skeleton skeleton-row"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/theming.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      checkAuth();
+      var C = window.COMPLIANCE;
+      var rows = [];
+
+      async function load() {
+        var body = document.getElementById('body');
+        body.innerHTML = '<tr><td colspan="5"><div class="skeleton skeleton-row"></div></td></tr>';
+        try {
+          var resp = await C.apiFetch('/admin/auditor-activity?limit=200');
+          rows = resp || [];
+          apply();
+        } catch (e) {
+          C.renderEmptyState(body, 'fa-triangle-exclamation', 'Failed to load', e.message || 'Admin role required.');
+        }
+      }
+
+      function apply() {
+        var text = document.getElementById('filterText').value.toLowerCase();
+        var actionF = document.getElementById('filterAction').value;
+        var filtered = rows.filter(function (r) {
+          if (actionF && r.action !== actionF) return false;
+          if (text) {
+            var hay = (r.auditor_email + ' ' + r.action + ' ' + (r.target_type || '') + ' ' + (r.target_id || '')).toLowerCase();
+            if (hay.indexOf(text) === -1) return false;
+          }
+          return true;
+        });
+        document.getElementById('meta').textContent = filtered.length + ' event(s)';
+
+        var body = document.getElementById('body');
+        body.innerHTML = '';
+        if (!filtered.length) {
+          var tr = document.createElement('tr');
+          var td = document.createElement('td'); td.colSpan = 5; td.style.padding = 0;
+          var w = document.createElement('div');
+          C.renderEmptyState(w, 'fa-inbox', 'No activity yet', 'Auditor actions will appear here as they browse.');
+          td.appendChild(w); tr.appendChild(td); body.appendChild(tr);
+          return;
+        }
+        filtered.forEach(function (r) {
+          var tr = document.createElement('tr');
+          tr.innerHTML =
+            '<td style="font-size:.8125rem;white-space:nowrap">' + C.formatDate(r.accessed_at) + '</td>' +
+            '<td><strong>' + C.escapeHtml(r.auditor_email) + '</strong></td>' +
+            '<td><span class="badge badge-info">' + C.escapeHtml(r.action.replace(/_/g, ' ')) + '</span></td>' +
+            '<td style="font-size:.8125rem;color:var(--gray-600)">' +
+              (r.target_type ? C.escapeHtml(r.target_type) + (r.target_id ? ' / ' + r.target_id.slice(0, 12) + '…' : '') : '—') +
+            '</td>' +
+            '<td style="font-family:\'SF Mono\',monospace;font-size:.75rem">' + C.escapeHtml(r.ip_address || '—') + '</td>';
+          body.appendChild(tr);
+        });
+      }
+
+      // ─── Heatmap renderer ─────────────────────────────────────
+      async function loadHeatmap() {
+        var grid = document.getElementById('heatmap-grid');
+        var meta = document.getElementById('heatmap-meta');
+        if (!grid || !meta) return;
+        try {
+          var data = await C.apiFetch('/admin/auditor-activity/heatmap?days=30');
+          if (!data || !data.days) {
+            meta.textContent = 'No heatmap data available.';
+            return;
+          }
+          var max = data.days.reduce(function (m, d) { return Math.max(m, d.count); }, 0);
+          grid.innerHTML = '';
+          data.days.forEach(function (d) {
+            var cell = document.createElement('div');
+            cell.className = 'heatmap-cell';
+            if (max > 0 && d.count > 0) {
+              var ratio = d.count / max;
+              if (ratio > 0.75) cell.className += ' l4';
+              else if (ratio > 0.5) cell.className += ' l3';
+              else if (ratio > 0.25) cell.className += ' l2';
+              else cell.className += ' l1';
+            }
+            var actions = d.actions || {};
+            var topActions = Object.keys(actions).sort(function (a, b) { return actions[b] - actions[a]; }).slice(0, 4);
+            var tooltip = d.date + ' — ' + d.count + ' action(s)';
+            if (topActions.length) {
+              tooltip += '\n' + topActions.map(function (k) { return k + ': ' + actions[k]; }).join('\n');
+            }
+            cell.title = tooltip;
+            grid.appendChild(cell);
+          });
+          meta.textContent = data.total_actions + ' total action(s) across ' + data.days_window + ' days';
+        } catch (e) {
+          meta.textContent = 'Could not load heatmap: ' + (e.message || 'unknown error');
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        renderSidebar('auditor-activity');
+        document.getElementById('filterText').addEventListener('input', apply);
+        document.getElementById('filterAction').addEventListener('change', apply);
+        load();
+        loadHeatmap();
+      });
+    })();
+  </script>
+</body>
+</html>

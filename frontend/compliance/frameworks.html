@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frameworks | Adverb Compliance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+    <main class="main-content">
+      <header class="topbar"></header>
+      <div class="content-area">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title" id="pageTitle">Frameworks</h1>
+            <p class="page-subtitle" id="pageSubtitle">All seven supported frameworks with current score and control coverage</p>
+          </div>
+          <div class="page-actions">
+            <a href="index.html" class="btn btn-outline" id="btnBack" style="display:none">
+              <i class="fas fa-arrow-left"></i> Back
+            </a>
+          </div>
+        </div>
+
+        <!-- LIST VIEW -->
+        <div id="listView">
+          <div id="frameworkGrid" class="framework-grid"></div>
+        </div>
+
+        <!-- DETAIL VIEW -->
+        <div id="detailView" class="hidden">
+          <div class="card mb-6">
+            <div class="card-body">
+              <div class="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                  <div class="flex items-center gap-3 mb-2">
+                    <span class="framework-logo" id="dCode">—</span>
+                    <span class="badge badge-info" id="dCategory">—</span>
+                    <span class="badge badge-default" id="dVersion">—</span>
+                  </div>
+                  <h2 id="dName" style="margin-bottom:.375rem">—</h2>
+                  <p class="text-sm text-gray" id="dDescription"></p>
+                </div>
+                <div style="text-align:right">
+                  <div class="framework-score" id="dScore">—%</div>
+                  <div class="text-xs text-gray" id="dScoreMeta">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-bar">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" id="filterText" placeholder="Filter controls by code, category, title…" />
+            </div>
+            <div class="filter-group">
+              <span class="filter-label">Status:</span>
+              <select class="form-select" id="filterStatus" style="width:auto">
+                <option value="">All</option>
+                <option value="pass">Pass</option>
+                <option value="fail">Fail</option>
+                <option value="inconclusive">Inconclusive</option>
+                <option value="not_evaluated">Never run</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Controls</span>
+              <span class="text-xs text-gray" id="dControlMeta">—</span>
+            </div>
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Category</th>
+                    <th>Title / Description</th>
+                    <th>Status</th>
+                    <th>Last run</th>
+                  </tr>
+                </thead>
+                <tbody id="controlsBody">
+                  <tr><td colspan="5"><div class="skeleton skeleton-row"></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/theming.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      checkAuth();
+      var C = window.COMPLIANCE;
+
+      function getQueryParam(name) {
+        var match = location.search.match(new RegExp('[?&]' + name + '=([^&]+)'));
+        return match ? decodeURIComponent(match[1]) : null;
+      }
+
+      function scoreClass(score) {
+        if (score >= 85) return 'high';
+        if (score >= 65) return 'medium';
+        return 'low';
+      }
+
+      var FRAMEWORK_META = [
+        { code: 'SOC2',     name: 'SOC 2 (TSC 2022)' },
+        { code: 'ISO27001', name: 'ISO 27001:2022' },
+        { code: 'GDPR',     name: 'GDPR' },
+        { code: 'HIPAA',    name: 'HIPAA' },
+        { code: 'PCIDSS',   name: 'PCI DSS v4.0' },
+        { code: 'DPDP',     name: 'India DPDP Act 2023' },
+        { code: 'NIST',     name: 'NIST CSF 2.0' }
+      ];
+
+      function renderListCard(meta, score) {
+        var card = document.createElement('div');
+        card.className = 'framework-card';
+        card.tabIndex = 0;
+        card.addEventListener('click', function () {
+          window.location.search = '?code=' + meta.code;
+        });
+        card.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') card.click();
+        });
+
+        var hdr = document.createElement('div'); hdr.className = 'framework-card-header';
+        var logo = document.createElement('div'); logo.className = 'framework-logo'; logo.textContent = meta.code;
+        hdr.appendChild(logo);
+        card.appendChild(hdr);
+
+        var name = document.createElement('div'); name.className = 'framework-name'; name.textContent = meta.name;
+        card.appendChild(name);
+
+        var scoreRow = document.createElement('div'); scoreRow.className = 'framework-score-row';
+        var sv = document.createElement('div');
+        if (score && score.score !== undefined) {
+          var rounded = Math.round(score.score);
+          sv.className = 'framework-score score-' + scoreClass(rounded);
+          sv.textContent = rounded + '%';
+        } else {
+          sv.className = 'framework-score';
+          sv.style.color = 'var(--gray-400)';
+          sv.textContent = '—';
+        }
+        scoreRow.appendChild(sv);
+        if (score) {
+          var ctrls = document.createElement('div'); ctrls.className = 'framework-controls';
+          ctrls.textContent = score.pass_count + ' / ' + score.total_applicable + ' controls';
+          scoreRow.appendChild(ctrls);
+        }
+        card.appendChild(scoreRow);
+
+        if (score && score.score !== undefined) {
+          var bar = document.createElement('div'); bar.className = 'score-bar';
+          var fill = document.createElement('div');
+          fill.className = 'score-bar-fill fill-' + scoreClass(score.score);
+          fill.style.width = Math.max(2, Math.round(score.score)) + '%';
+          bar.appendChild(fill);
+          card.appendChild(bar);
+        }
+        return card;
+      }
+
+      async function showList() {
+        document.getElementById('listView').classList.remove('hidden');
+        document.getElementById('detailView').classList.add('hidden');
+        document.getElementById('btnBack').style.display = 'none';
+        document.getElementById('pageTitle').textContent = 'Frameworks';
+        document.getElementById('pageSubtitle').textContent = 'All seven supported frameworks with current score and control coverage';
+
+        var grid = document.getElementById('frameworkGrid');
+        grid.innerHTML = '';
+        FRAMEWORK_META.forEach(function () {
+          var sk = document.createElement('div'); sk.className = 'skeleton skeleton-card';
+          grid.appendChild(sk);
+        });
+
+        var scores = {};
+        try { scores = await C.apiFetch('/compliance-score', { silent: true }) || {}; } catch (_) {}
+
+        grid.innerHTML = '';
+        FRAMEWORK_META.forEach(function (m) {
+          grid.appendChild(renderListCard(m, scores[m.code] || null));
+        });
+      }
+
+      var detailControls = []; // Stored for filter
+
+      function applyFilters() {
+        var text = document.getElementById('filterText').value.toLowerCase();
+        var statusFilter = document.getElementById('filterStatus').value;
+        var tbody = document.getElementById('controlsBody');
+        var rows = detailControls.filter(function (c) {
+          if (statusFilter && c.status !== statusFilter) return false;
+          if (text) {
+            var hay = (c.control_code + ' ' + (c.title || '') + ' ' + (c.description || '') + ' ' + c.category).toLowerCase();
+            if (hay.indexOf(text) === -1) return false;
+          }
+          return true;
+        });
+        tbody.innerHTML = '';
+        if (rows.length === 0) {
+          var tr = document.createElement('tr');
+          var td = document.createElement('td'); td.colSpan = 5; td.style.padding = '0';
+          var d = document.createElement('div');
+          C.renderEmptyState(d, 'fa-filter-circle-xmark', 'No controls match', 'Try clearing the filters.');
+          td.appendChild(d); tr.appendChild(td); tbody.appendChild(tr);
+          return;
+        }
+        rows.forEach(function (c) {
+          var tr = document.createElement('tr');
+          tr.className = 'row-clickable';
+          tr.addEventListener('click', function () {
+            window.location.href = 'controls.html?id=' + encodeURIComponent(c.id);
+          });
+
+          var tdCode = document.createElement('td');
+          tdCode.innerHTML = '<strong>' + C.escapeHtml(c.control_code) + '</strong>';
+          tr.appendChild(tdCode);
+
+          var tdCat = document.createElement('td'); tdCat.textContent = c.category || '—';
+          tr.appendChild(tdCat);
+
+          var tdTitle = document.createElement('td');
+          tdTitle.innerHTML =
+            (c.title ? '<div style="font-weight:500">' + C.escapeHtml(c.title) + '</div>' : '') +
+            '<div style="font-size:.8125rem;color:var(--gray-500);max-width:520px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' +
+            C.escapeHtml(c.description || '') + '</div>';
+          tr.appendChild(tdTitle);
+
+          var tdStatus = document.createElement('td');
+          var pill = document.createElement('span');
+          pill.className = 'status-pill status-' + (c.status || 'not_evaluated');
+          pill.textContent = (c.status || 'never run').replace(/_/g, ' ');
+          tdStatus.appendChild(pill);
+          tr.appendChild(tdStatus);
+
+          var tdRun = document.createElement('td');
+          tdRun.style.color = 'var(--gray-500)';
+          tdRun.style.fontSize = '.8125rem';
+          tdRun.textContent = c.last_run_at ? C.relativeTime(c.last_run_at) : '—';
+          tr.appendChild(tdRun);
+
+          tbody.appendChild(tr);
+        });
+      }
+
+      async function showDetail(code) {
+        document.getElementById('listView').classList.add('hidden');
+        document.getElementById('detailView').classList.remove('hidden');
+        document.getElementById('btnBack').style.display = '';
+        document.getElementById('btnBack').onclick = function (e) { e.preventDefault(); showList(); window.history.replaceState({}, '', 'frameworks.html'); };
+        document.getElementById('pageTitle').textContent = 'Framework Detail';
+        document.getElementById('pageSubtitle').textContent = 'Drill-down on controls grouped by category, with current pass / fail / inconclusive status.';
+
+        // Fetch framework metadata + score in parallel
+        try {
+          var [fw, scoreDetail, controlsResp] = await Promise.all([
+            C.apiFetch('/frameworks/' + code, { silent: true }),
+            C.apiFetch('/compliance-score/' + code, { silent: true }).catch(function () { return null; }),
+            C.apiFetch('/frameworks/' + code + '/controls?limit=200', { silent: true })
+          ]);
+
+          document.getElementById('dCode').textContent = fw.short_code || code;
+          document.getElementById('dCategory').textContent = fw.category || '—';
+          document.getElementById('dVersion').textContent = fw.current_version ? ('v' + fw.current_version.version) : '—';
+          document.getElementById('dName').textContent = fw.name;
+          document.getElementById('dDescription').textContent = fw.description || '';
+
+          if (scoreDetail && scoreDetail.summary) {
+            var s = scoreDetail.summary;
+            var sv = document.getElementById('dScore');
+            sv.className = 'framework-score score-' + scoreClass(s.score);
+            sv.textContent = Math.round(s.score) + '%';
+            document.getElementById('dScoreMeta').textContent =
+              s.pass_count + ' pass · ' + s.fail_count + ' fail · ' + s.inconclusive_count + ' inconcl. · ' + s.total_applicable + ' total';
+          }
+
+          // Map controls to status (best effort — get latest run per control)
+          // For perf we'll fetch /controls/runs limited; if not available, status = not_evaluated
+          var runsResp = await C.apiFetch('/controls/runs?limit=200', { silent: true }).catch(function () { return { items: [] }; });
+          var latestByControl = {};
+          ((runsResp && runsResp.items) || []).forEach(function (r) {
+            if (!latestByControl[r.control_id] ||
+                new Date(r.run_at) > new Date(latestByControl[r.control_id].run_at)) {
+              latestByControl[r.control_id] = r;
+            }
+          });
+
+          detailControls = (controlsResp.items || []).map(function (c) {
+            var run = latestByControl[c.id];
+            return {
+              id: c.id,
+              control_code: c.control_code,
+              category: c.category,
+              title: c.title,
+              description: c.description,
+              status: run ? run.status : 'not_evaluated',
+              last_run_at: run ? run.run_at : null
+            };
+          });
+
+          document.getElementById('dControlMeta').textContent = detailControls.length + ' control(s)';
+          applyFilters();
+        } catch (e) {
+          C.showNotification('Error', e.message || 'Failed to load framework', 'error');
+          showList();
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        renderSidebar('frameworks');
+        document.getElementById('filterText').addEventListener('input', applyFilters);
+        document.getElementById('filterStatus').addEventListener('change', applyFilters);
+        var code = getQueryParam('code');
+        if (code) showDetail(code.toUpperCase()); else showList();
+      });
+    })();
+  </script>
+</body>
+</html>
