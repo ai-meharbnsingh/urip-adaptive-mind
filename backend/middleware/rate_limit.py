@@ -98,14 +98,34 @@ def real_client_ip(request: Request) -> str:
 # Limiter
 # ---------------------------------------------------------------------------
 
-# Configurable in-memory storage for tests.  Production deployments should set
-# ``RATE_LIMIT_STORAGE_URI`` (e.g. ``redis://...``) so the limiter survives
-# multi-worker / multi-pod fan-out.
-_DEFAULT_STORAGE = os.environ.get("RATE_LIMIT_STORAGE_URI", "memory://")
+# Configurable storage backend.
+#
+# Dev/test default: "memory://" — rate-limit state is process-local and resets
+# on every restart.  This is intentional for local development.
+#
+# PRODUCTION REQUIREMENT: set RATE_LIMIT_STORAGE_URI=redis://redis:6379/1 in
+# your .env.prod file (see .env.prod.template in the project root).  Without
+# Redis the limiter resets on every pod restart — an attacker can brute-force
+# /api/auth/login by simply waiting for a deploy.
+#
+# Gemini MEDIUM finding (AUDIT_GEMINI_TRI_A.md:65): ensure prod uses Redis.
+_RATE_LIMIT_STORAGE_URI = os.environ.get("RATE_LIMIT_STORAGE_URI", "memory://")
+
+# Emit a runtime warning when running in production-like conditions without
+# a durable rate-limit backend.  URIP_ENV=production triggers this guard.
+if _RATE_LIMIT_STORAGE_URI == "memory://":
+    _env = os.environ.get("URIP_ENV", "").lower()
+    if _env in ("production", "prod", "staging"):
+        logger.warning(
+            "rate_limit: storage backend is 'memory://' in env=%s — "
+            "rate limits will reset on every restart. "
+            "Set RATE_LIMIT_STORAGE_URI=redis://redis:6379/1 in .env.prod.",
+            _env,
+        )
 
 limiter = Limiter(
     key_func=real_client_ip,
-    storage_uri=_DEFAULT_STORAGE,
+    storage_uri=_RATE_LIMIT_STORAGE_URI,
     default_limits=[],  # no implicit global limit; explicit per-path
     headers_enabled=True,
 )
@@ -118,6 +138,8 @@ limiter = Limiter(
 # (method_or_*, path_prefix, limit_string) — first match wins.
 _PATH_POLICIES: list[tuple[str, str, str]] = [
     ("POST", "/api/auth/login", "5/minute"),
+    ("POST", "/api/auth/register", "3/minute"),
+    ("POST", "/api/auth/forgot-password", "3/minute"),
     ("GET",  "/api/auth/me",    "60/minute"),
     # Generic write cap — applied to any POST/PUT/PATCH/DELETE under /api/
     ("POST",   "/api/", "60/minute"),

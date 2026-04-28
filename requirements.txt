@@ -25,6 +25,8 @@ alembic==1.14.1
 # maintained, identical HS256 API surface).
 PyJWT>=2.9,<3
 passlib[bcrypt]==1.7.4
+# MFA (TOTP)
+pyotp>=2.9,<3
 
 # Encryption
 # Used by backend/routers/agent_ingest.py (HKDF key derivation) and the
@@ -63,5 +65,20 @@ aiosqlite==0.21.0
 # bug_bounty, sentinelone, manageengine_mdm, zscaler, etc.).
 respx>=0.21.0,<0.24
 
+# Email
+# aiosmtplib — async SMTP client used by shared/email_service.py for outbound
+# transactional email (welcome, password reset, auditor invitation).  When
+# SMTP_HOST env var is unset the email service falls back to console-print
+# mode, so this dependency is required at runtime even in dev for import.
+aiosmtplib>=3.0.0,<4
+
+# Observability — /metrics endpoint (Prometheus text format)
+# Gemini MAJOR finding (AUDIT_GEMINI_TRI_A.md): add Prometheus instrumentation.
+# Exposes per-route request count, latency histograms, and in-flight gauges.
+prometheus-fastapi-instrumentator>=7.0,<8
+
 # Utilities
 python-dateutil==2.9.0
+beautifulsoup4>=4.12,<5
+lxml>=5.0,<6
+email-validator>=2.0,<3

@@ -12,9 +12,29 @@ Publishes:
     urip.risk.created   — fired by `publish_risk_created`
     urip.risk.resolved  — fired by `publish_risk_resolved`
 
-Notifications are kept in a process-local list keyed by tenant_id.  In a
-production HA deployment they would land in Redis or Postgres; for the
-in-process bus this is the simplest correct shape.
+IN-MEMORY NOTIFICATION STORE — DESIGN NOTE
+-------------------------------------------
+``_NOTIFICATIONS`` is an in-process dict keyed by tenant_id.  This is the
+correct design for single-instance deployments and local development.
+
+Gemini CRITICAL finding (AUDIT_GEMINI_TRI_A.md:44):
+    In a multi-instance (HA / Kubernetes) deployment this store has two problems:
+    1. Each pod maintains its own copy — a request hitting pod B won't see
+       notifications written by pod A.
+    2. A pod restart wipes all unseen notifications.
+
+Migration path (deferred to separate sprint — see docs/SCALING.md):
+    Replace ``_NOTIFICATIONS`` with Redis-backed storage:
+        LPUSH urip:notif:{tenant_id} <json_payload>
+        LRANGE urip:notif:{tenant_id} 0 -1  (read all)
+        DEL    urip:notif:{tenant_id}        (clear)
+    Use ``redis.asyncio`` (already in requirements.txt via celery[redis]).
+    Set a TTL (e.g. 7 days) to prevent unbounded growth.
+    Alternatively land notifications in the Postgres `audit_log` table so they
+    survive Redis restarts and are queryable.
+
+A startup warning is emitted when ``URIP_ENV=production`` to make this gap
+explicitly visible in logs.
 
 Idempotency
 -----------
@@ -24,6 +44,7 @@ registrations are short-circuited via a sentinel attribute on the bus.
 from __future__ import annotations
 
 import logging
+import os
 import uuid
 from collections import defaultdict
 from datetime import datetime, timezone
@@ -51,8 +72,26 @@ from shared.events.topics import (
 
 logger = logging.getLogger(__name__)
 
+# ---------------------------------------------------------------------------
+# In-memory notification store — single-instance only (see module docstring)
+# ---------------------------------------------------------------------------
 
-# In-process notification store.  Tenant_id → list of {topic, payload, recv_at}.
+# Gemini CRITICAL finding (AUDIT_GEMINI_TRI_A.md:44): this store is in-process.
+# Emit a structured warning at import time in production environments so the gap
+# is visible in logs and monitoring.  Full Redis migration is tracked as a
+# separate sprint (see docs/SCALING.md).
+_URIP_ENV = os.environ.get("URIP_ENV", "").lower()
+if _URIP_ENV in ("production", "prod", "staging"):
+    logger.warning(
+        "event_subscribers: _NOTIFICATIONS is an in-memory store — "
+        "notifications will be lost on pod restart and are NOT shared across "
+        "multiple instances (URIP_ENV=%s). "
+        "Migrate to Redis pub/sub before scaling horizontally. "
+        "See docs/SCALING.md for the migration path.",
+        _URIP_ENV,
+    )
+
+# Tenant_id → list of {topic, payload, recv_at}.
 _NOTIFICATIONS: dict[str, list[dict[str, Any]]] = defaultdict(list)
 # Bound at import time to a sentinel so we can no-op double-register.
 _REGISTERED_SENTINEL = "_urip_subscribers_registered"

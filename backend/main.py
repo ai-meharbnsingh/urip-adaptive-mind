@@ -3,6 +3,7 @@ import logging
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from backend.config import settings
 from backend.middleware.cors import install_cors
@@ -29,6 +30,13 @@ app = FastAPI(
 # (uvicorn --reload, test runs that import backend.main) are safe.
 install_json_logging()
 logger = logging.getLogger("backend.main")
+
+# Gemini MAJOR finding — Prometheus metrics endpoint.
+# Instruments every route with request count + latency histograms.
+# /metrics is unauthenticated by design (Prometheus scrapes it from internal
+# network); restrict at the nginx / firewall layer for external deployments.
+# INV-1 satisfied: Instrumentator().instrument(app) is called here (not just imported).
+Instrumentator().instrument(app).expose(app, endpoint="/metrics", include_in_schema=False)
 
 # HIGH-009 — install rate limiter BEFORE other middlewares so it sees every
 # request before they get a chance to short-circuit / mutate the path.
