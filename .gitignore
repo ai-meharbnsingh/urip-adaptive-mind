@@ -10,6 +10,7 @@ venv/
 # Environment
 .env
 .env.credentials*
+*.credentials.*
 .env.local
 .env.production
 

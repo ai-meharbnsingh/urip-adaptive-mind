@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OT Security | URIP - Unified Risk Intelligence Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/domain-page.css">
+  <link rel="stylesheet" href="css/module-tools.css">
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+    <main class="main-content">
+      <header class="topbar"></header>
+      <div class="content-area">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title"><i class="fas fa-industry" style="color:var(--teal-accent);margin-right:.5rem"></i>OT Security</h1>
+            <p class="page-subtitle">PLC / HMI / SCADA inventory, OT-specific CVE scoring, segmentation health, Tier-1 production-line risks.</p>
+          </div>
+          <div class="flex gap-2">
+            <a class="btn btn-outline" id="btnManageConnectors" href="tool-catalog.html?category=OT">
+              <i class="fas fa-puzzle-piece"></i> Manage Connectors
+            </a>
+            <button class="btn btn-primary" id="btnRunScan" type="button">
+              <i class="fas fa-play"></i> Run Scan
+            </button>
+          </div>
+        </div>
+
+        <!-- Available integrations for this module -->
+        <div id="moduleTools" data-modules="OT"></div>
+
+        <div class="domain-kpi-strip four">
+          <div class="kpi-card"><div class="kpi-icon" style="background:rgba(99,102,241,0.1);color:#6366F1"><i class="fas fa-list"></i></div><div class="kpi-content"><div class="kpi-value"><span id="kpiTotalRisks">--</span></div><div class="kpi-label">Total Risks</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon critical"><i class="fas fa-fire"></i></div><div class="kpi-content"><div class="kpi-value" style="color:#E74C3C"><span id="kpiCriticalCount">--</span></div><div class="kpi-label">Critical</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon medium"><i class="fas fa-gauge-high"></i></div><div class="kpi-content"><div class="kpi-value"><span id="kpiMeanScore">--</span></div><div class="kpi-label">Mean Score</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon" style="background:rgba(39,174,96,0.1);color:#27AE60"><i class="fas fa-plug-circle-check"></i></div><div class="kpi-content"><div class="kpi-value"><span id="kpiConnectorsConfigured">--</span></div><div class="kpi-label">Connectors Configured</div></div></div>
+        </div>
+
+        <div class="widget-row">
+          <div class="widget-stat">
+            <div class="stat-icon info"><i class="fas fa-cogs"></i></div>
+            <div><div class="stat-value" id="otAssetCount">--</div><div class="stat-label">OT Asset Inventory</div></div>
+          </div>
+          <div class="widget-stat">
+            <div class="stat-icon critical"><i class="fas fa-network-wired"></i></div>
+            <div><div class="stat-value" id="otProtocolViolations">--</div><div class="stat-label">Industrial Protocol Violations</div></div>
+          </div>
+          <div class="widget-stat">
+            <div class="stat-icon warn"><i class="fas fa-bug"></i></div>
+            <div><div class="stat-value" id="otCveCount">--</div><div class="stat-label">OT-Specific CVEs</div></div>
+          </div>
+        </div>
+
+        <!-- OT specialty: by-protocol breakdown -->
+        <div class="section-row">
+          <h2>Protocol Distribution</h2>
+        </div>
+        <div class="card" style="padding:1rem;margin-bottom:1.5rem">
+          <div id="protocolBreakdown" style="display:flex;flex-wrap:wrap;gap:0.75rem;font-size:13px;color:var(--gray-600)">
+            <span style="color:var(--gray-500)">No OT data yet — connect Armis OT to populate Modbus / DNP3 / S7 / OPC-UA breakdowns.</span>
+          </div>
+        </div>
+
+        <div class="section-row">
+          <h2>Connectors in this domain</h2>
+          <a class="btn btn-sm btn-outline" href="tool-catalog.html?category=OT"><i class="fas fa-plus"></i> Add</a>
+        </div>
+        <div id="connectorGrid" class="connector-grid"></div>
+
+        <div class="section-row">
+          <h2>Top Risks (last 30 days)</h2>
+          <a class="btn btn-sm btn-outline" href="risk-register.html?source=armis_ot">View All <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div id="riskFallbackBanner" class="fallback-banner" style="display:none">
+          <i class="fas fa-circle-info"></i> Showing risks via source filter — Risk.domain field empty.
+        </div>
+        <div class="risk-table-card">
+          <table>
+            <thead><tr><th>ID</th><th>Finding</th><th>Source</th><th>Score</th><th>Severity</th></tr></thead>
+            <tbody id="topRisksBody"><tr><td colspan="5" style="padding:2rem;text-align:center;color:#94A3B8">Loading…</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="section-row"><h2>Activity Timeline (last 7 days)</h2></div>
+        <div id="activityTimeline" class="activity-timeline">
+          <div class="activity-item">
+            <span class="time">—</span>
+            <span>OT event timeline (asset discovery, segment changes, anomalies) not yet populated.</span>
+            <span class="actor">system</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/domain-page.js"></script>
+  <script src="js/module-tools.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      loadModuleTools(['OT'], 'moduleTools', {
+        title: 'Available integrations for OT Security',
+        subtitle: 'Connect OT discovery tools (Armis, Claroty, Nozomi) to inventory PLC/HMI/SCADA assets and detect anomalies.',
+        manageHref: 'tool-catalog.html?category=OT'
+      });
+    });
+    DomainPage.init({
+      domainSlug: 'domain-ot',
+      connectors: ['armis_ot'],
+      sources: ['armis_ot'],
+      domainField: 'ot',
+      catalogCategory: 'OT',
+      onSpecialWidgets: async function () {
+        var apiFetch = window.URIP && window.URIP.apiFetch;
+        if (!apiFetch) return;
+        try {
+          var resp = await apiFetch('/risks?source=armis_ot&per_page=100', { silent: true })
+            .catch(function () { return { items: [] }; });
+          var items = (resp && resp.items) || [];
+
+          // Asset count = unique assets
+          var assets = {};
+          items.forEach(function (r) { if (r.asset) assets[r.asset] = true; });
+          document.getElementById('otAssetCount').textContent = String(Object.keys(assets).length);
+
+          var proto = items.filter(function (x) {
+            var f = (x.finding || '').toLowerCase();
+            return f.indexOf('protocol') >= 0 || f.indexOf('modbus') >= 0 ||
+                   f.indexOf('dnp3') >= 0 || f.indexOf('opc') >= 0 || f.indexOf('s7') >= 0;
+          }).length;
+          document.getElementById('otProtocolViolations').textContent = String(proto);
+
+          var cves = items.filter(function (x) {
+            return x.cve_id || (x.finding || '').toUpperCase().indexOf('CVE-') >= 0;
+          }).length;
+          document.getElementById('otCveCount').textContent = String(cves);
+
+          // Protocol breakdown
+          var protocols = { Modbus: 0, 'DNP3': 0, 'OPC-UA': 0, 'S7': 0, 'BACnet': 0, Other: 0 };
+          items.forEach(function (r) {
+            var f = (r.finding || '').toLowerCase();
+            if (f.indexOf('modbus') >= 0) protocols.Modbus++;
+            else if (f.indexOf('dnp3') >= 0) protocols.DNP3++;
+            else if (f.indexOf('opc') >= 0) protocols['OPC-UA']++;
+            else if (f.indexOf('s7') >= 0) protocols.S7++;
+            else if (f.indexOf('bacnet') >= 0) protocols.BACnet++;
+            else protocols.Other++;
+          });
+          var box = document.getElementById('protocolBreakdown');
+          if (items.length > 0) {
+            box.textContent = '';
+            Object.keys(protocols).forEach(function (p) {
+              if (!protocols[p]) return;
+              var chip = document.createElement('span');
+              chip.style.cssText = 'background:rgba(26,188,156,0.12);color:#16A085;padding:4px 10px;border-radius:999px;font-weight:600;font-size:12px';
+              chip.textContent = p + ': ' + protocols[p];
+              box.appendChild(chip);
+            });
+            if (!box.children.length) {
+              box.textContent = 'No protocol-specific findings detected.';
+            }
+          }
+        } catch (e) { console.error(e); }
+      },
+    });
+  </script>
+</body>
+</html>

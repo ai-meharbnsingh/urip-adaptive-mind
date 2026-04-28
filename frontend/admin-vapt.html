@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VAPT Vendors | URIP Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body class="urip-app">
+  <div id="app-shell" data-page="admin-vapt">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">VAPT Vendor Portal</h1>
+            <p class="page-subtitle">
+              Invite VAPT vendors, see their submissions, and request re-tests.
+              Each submission auto-creates a URIP risk record with EPSS + KEV
+              enrichment.
+            </p>
+          </div>
+          <button id="inviteBtn" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Invite vendor
+          </button>
+        </div>
+
+        <section class="card" style="margin-bottom: 1.5rem">
+          <div class="card-header">
+            <h2 class="card-title">Vendors</h2>
+          </div>
+          <div id="vendorsLoading" class="empty-state">
+            <i class="fas fa-spinner fa-spin"></i> Loading vendors…
+          </div>
+          <table id="vendorsTable" class="data-table" style="display:none">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Status</th>
+                <th>Submissions</th>
+                <th>Invited</th>
+                <th>Last login</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="vendorsBody"></tbody>
+          </table>
+          <div id="vendorsEmpty" class="empty-state" style="display:none">
+            <div class="empty-state-icon"><i class="fas fa-user-shield"></i></div>
+            <div class="empty-state-title">No vendors yet</div>
+            <p>Click "Invite vendor" to send your first invitation.</p>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">All submissions</h2>
+            <select id="subStatusFilter" class="form-select" style="max-width:200px">
+              <option value="">All statuses</option>
+              <option value="submitted">Submitted</option>
+              <option value="triaged">Triaged</option>
+              <option value="in_progress">In progress</option>
+              <option value="fixed">Fixed</option>
+              <option value="retest_requested">Re-test requested</option>
+              <option value="retest_pass">Re-test pass</option>
+              <option value="retest_fail">Re-test fail</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+          <div id="subsLoading" class="empty-state">
+            <i class="fas fa-spinner fa-spin"></i> Loading…
+          </div>
+          <table id="subsTable" class="data-table" style="display:none">
+            <thead>
+              <tr>
+                <th>Finding</th>
+                <th>Vendor</th>
+                <th>CVE</th>
+                <th>CVSS</th>
+                <th>Severity</th>
+                <th>Status</th>
+                <th>URIP Risk</th>
+                <th>Submitted</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="subsBody"></tbody>
+          </table>
+          <div id="subsEmpty" class="empty-state" style="display:none">
+            <div class="empty-state-icon"><i class="fas fa-inbox"></i></div>
+            <div class="empty-state-title">No submissions yet</div>
+            <p>Submissions appear here as soon as your vendors send them.</p>
+          </div>
+        </section>
+  </div>
+
+  <!-- Invite modal -->
+  <div id="inviteModal" class="modal-backdrop" style="display:none">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>Invite VAPT vendor</h3>
+        <button class="modal-close" id="inviteClose">&times;</button>
+      </div>
+      <form id="inviteForm" class="modal-body">
+        <div class="form-row">
+          <label>Name</label>
+          <input type="text" name="name" required maxlength="255" placeholder="Acme Pentesters" />
+        </div>
+        <div class="form-row">
+          <label>Contact email</label>
+          <input type="email" name="contact_email" required maxlength="255" placeholder="lead@acme.example.com" />
+        </div>
+        <div class="form-row">
+          <label>Contact name</label>
+          <input type="text" name="contact_name" maxlength="255" placeholder="Alice Lead" />
+        </div>
+        <div class="form-row">
+          <label>Organization</label>
+          <input type="text" name="organization" maxlength="255" placeholder="Acme Pvt Ltd" />
+        </div>
+        <div class="form-row">
+          <label>Validity (days)</label>
+          <input type="number" name="ttl_days" value="14" min="1" max="90" />
+        </div>
+        <div id="inviteError" class="alert alert-danger" style="display:none"></div>
+        <div id="inviteResult" style="display:none">
+          <div class="alert alert-success">
+            Vendor invited. Send them this one-time link:
+          </div>
+          <textarea readonly id="inviteUrl" rows="3" style="width:100%"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="inviteCancel" class="btn btn-outline">Close</button>
+          <button type="submit" id="inviteSend" class="btn btn-primary">
+            <i class="fas fa-paper-plane"></i> Send invitation
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    if (typeof checkAuth === 'function') checkAuth();
+    document.addEventListener('DOMContentLoaded', function () {
+      window.URIP.shell.mount({
+        page: 'admin-vapt',
+        title: 'VAPT Vendor Portal',
+        breadcrumb: 'Administration / VAPT Vendors'
+      });
+    });
+  </script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      function api(method, path, body, isMultipart) {
+        var token = localStorage.getItem('urip_token');
+        var headers = { 'Accept': 'application/json' };
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+        var init = { method: method, headers: headers };
+        if (body !== undefined) {
+          if (!isMultipart) {
+            headers['Content-Type'] = 'application/json';
+            init.body = JSON.stringify(body);
+          } else {
+            init.body = body;
+          }
+        }
+        return fetch('/api' + path, init).then(function (resp) {
+          if (resp.status === 204) return null;
+          return resp.text().then(function (txt) {
+            if (!resp.ok) {
+              var msg = 'Request failed (' + resp.status + ')';
+              try {
+                var b = JSON.parse(txt);
+                if (b && b.detail) msg = typeof b.detail === 'string' ? b.detail : JSON.stringify(b.detail);
+              } catch (_e) {}
+              throw new Error(msg);
+            }
+            try { return JSON.parse(txt); } catch (_e) { return null; }
+          });
+        });
+      }
+
+      var vendorsLoading = document.getElementById('vendorsLoading');
+      var vendorsTable = document.getElementById('vendorsTable');
+      var vendorsBody = document.getElementById('vendorsBody');
+      var vendorsEmpty = document.getElementById('vendorsEmpty');
+
+      var subsLoading = document.getElementById('subsLoading');
+      var subsTable = document.getElementById('subsTable');
+      var subsBody = document.getElementById('subsBody');
+      var subsEmpty = document.getElementById('subsEmpty');
+      var subStatusFilter = document.getElementById('subStatusFilter');
+
+      function loadVendors() {
+        vendorsLoading.style.display = '';
+        vendorsTable.style.display = 'none';
+        vendorsEmpty.style.display = 'none';
+
+        api('GET', '/vapt-vendors')
+          .then(function (resp) {
+            vendorsLoading.style.display = 'none';
+            vendorsBody.textContent = '';
+            if (!resp || !resp.items || resp.items.length === 0) {
+              vendorsEmpty.style.display = '';
+              return;
+            }
+            vendorsTable.style.display = '';
+            resp.items.forEach(function (v) {
+              var tr = document.createElement('tr');
+              tr.appendChild(td(v.name));
+              tr.appendChild(td(v.contact_email));
+              tr.appendChild(td(v.status));
+              tr.appendChild(td(String(v.submission_count || 0)));
+              tr.appendChild(td(fmt(v.invited_at)));
+              tr.appendChild(td(fmt(v.last_login_at)));
+
+              var actions = document.createElement('td');
+              if (v.status === 'active') {
+                var btn = document.createElement('button');
+                btn.className = 'btn btn-outline btn-sm';
+                btn.textContent = 'Revoke';
+                btn.addEventListener('click', function () {
+                  if (!confirm('Revoke vendor "' + v.name + '"? Their JWT will fail on next request.')) return;
+                  api('DELETE', '/vapt-vendors/' + encodeURIComponent(v.id))
+                    .then(loadVendors)
+                    .catch(function (e) { alert(e.message); });
+                });
+                actions.appendChild(btn);
+              }
+              tr.appendChild(actions);
+              vendorsBody.appendChild(tr);
+            });
+          })
+          .catch(function (err) {
+            vendorsLoading.style.display = 'none';
+            vendorsEmpty.style.display = '';
+            vendorsEmpty.querySelector('.empty-state-title').textContent =
+                'Could not load vendors: ' + err.message;
+          });
+      }
+
+      function loadSubmissions() {
+        subsLoading.style.display = '';
+        subsTable.style.display = 'none';
+        subsEmpty.style.display = 'none';
+
+        var path = '/vapt-submissions';
+        if (subStatusFilter.value) path += '?sub_status=' + encodeURIComponent(subStatusFilter.value);
+
+        api('GET', path)
+          .then(function (resp) {
+            subsLoading.style.display = 'none';
+            subsBody.textContent = '';
+            if (!resp || !resp.items || resp.items.length === 0) {
+              subsEmpty.style.display = '';
+              return;
+            }
+            subsTable.style.display = '';
+            resp.items.forEach(function (s) {
+              var tr = document.createElement('tr');
+              tr.appendChild(td(s.finding_title));
+              tr.appendChild(td(s.vapt_vendor_id.slice(0, 8) + '…'));
+              tr.appendChild(td(s.cve_id || '—'));
+              tr.appendChild(td(String(s.cvss_score)));
+              tr.appendChild(td(s.severity));
+              tr.appendChild(td(s.status.replace(/_/g, ' ')));
+              tr.appendChild(td(s.risk_id_label || '—'));
+              tr.appendChild(td(fmt(s.submitted_at)));
+
+              var actions = document.createElement('td');
+              if (['submitted', 'triaged', 'in_progress', 'fixed'].indexOf(s.status) !== -1) {
+                var btn = document.createElement('button');
+                btn.className = 'btn btn-outline btn-sm';
+                btn.textContent = 'Request re-test';
+                btn.addEventListener('click', function () {
+                  if (!confirm('Mark as fixed and ask vendor to verify?')) return;
+                  api('POST', '/vapt-submissions/' + encodeURIComponent(s.id) + '/request-retest', {})
+                    .then(loadSubmissions)
+                    .catch(function (e) { alert(e.message); });
+                });
+                actions.appendChild(btn);
+              }
+              tr.appendChild(actions);
+              subsBody.appendChild(tr);
+            });
+          })
+          .catch(function (err) {
+            subsLoading.style.display = 'none';
+            subsEmpty.style.display = '';
+            subsEmpty.querySelector('.empty-state-title').textContent =
+                'Could not load submissions: ' + err.message;
+          });
+      }
+
+      function td(text) { var t = document.createElement('td'); t.textContent = text; return t; }
+      function fmt(iso) {
+        if (!iso) return '—';
+        try { return new Date(iso).toLocaleString(); } catch (_e) { return iso; }
+      }
+
+      // Invite modal wiring
+      var inviteModal = document.getElementById('inviteModal');
+      var inviteForm = document.getElementById('inviteForm');
+      document.getElementById('inviteBtn').addEventListener('click', function () {
+        inviteForm.reset();
+        document.getElementById('inviteResult').style.display = 'none';
+        document.getElementById('inviteError').style.display = 'none';
+        document.getElementById('inviteSend').disabled = false;
+        inviteModal.style.display = '';
+      });
+      function closeModal() { inviteModal.style.display = 'none'; }
+      document.getElementById('inviteClose').addEventListener('click', closeModal);
+      document.getElementById('inviteCancel').addEventListener('click', closeModal);
+
+      inviteForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var fd = new FormData(inviteForm);
+        var body = {};
+        fd.forEach(function (v, k) { if (v !== '') body[k] = v; });
+        if (body.ttl_days) body.ttl_days = parseInt(body.ttl_days, 10);
+
+        document.getElementById('inviteError').style.display = 'none';
+        document.getElementById('inviteSend').disabled = true;
+        api('POST', '/vapt-vendors', body)
+          .then(function (resp) {
+            document.getElementById('inviteUrl').value = resp.invitation_url || '';
+            document.getElementById('inviteResult').style.display = '';
+            loadVendors();
+          })
+          .catch(function (err) {
+            document.getElementById('inviteError').textContent = err.message;
+            document.getElementById('inviteError').style.display = '';
+            document.getElementById('inviteSend').disabled = false;
+          });
+      });
+
+      subStatusFilter.addEventListener('change', loadSubmissions);
+      loadVendors();
+      loadSubmissions();
+    })();
+  </script>
+
+  <style>
+    body.urip-app .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000;
+    }
+    body.urip-app .modal-backdrop > .modal {
+      background: var(--u-card); border: 1px solid var(--u-border); border-radius: var(--u-radius);
+      width: 90%; max-width: 460px;
+      box-shadow: var(--u-shadow-lg);
+      color: var(--u-fg);
+    }
+    body.urip-app .modal-head { display: flex; justify-content: space-between; align-items: center;
+                  padding: 0.875rem 1rem; border-bottom: 1px solid var(--u-border); }
+    body.urip-app .modal-head h3 { margin: 0; font-size: 14px; color: var(--u-fg); }
+    body.urip-app .modal-close { background: none; border: 0; font-size: 1.25rem; cursor: pointer; color: var(--u-fg-2); }
+    body.urip-app .modal-body { padding: 1rem; }
+    body.urip-app .form-row { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.75rem; }
+    body.urip-app .form-row label { font-size: 12px; font-weight: 500; color: var(--u-fg-2); }
+    body.urip-app .form-row input { padding: 0.5rem; border: 1px solid var(--u-border); border-radius: var(--u-radius-sm); background: var(--u-bg-elev); color: var(--u-fg); font: inherit; }
+    body.urip-app .modal-footer { display: flex; justify-content: flex-end; gap: 0.5rem;
+                    padding-top: 0.75rem; border-top: 1px solid var(--u-border); }
+  </style>
+</body>
+</html>

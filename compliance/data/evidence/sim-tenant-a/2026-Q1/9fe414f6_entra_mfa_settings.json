@@ -1,0 +1,13 @@
+{
+  "tenant_id": "adverb.in",
+  "mfa_enabled": true,
+  "mfa_enforcement": "all_users",
+  "exempted_users": [],
+  "factors_required": [
+    "sms_otp",
+    "totp",
+    "fido2"
+  ],
+  "minimum_factors": 2,
+  "captured_at": "2026-04-27T13:24:25.011765"
+}

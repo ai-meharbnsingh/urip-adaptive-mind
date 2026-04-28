@@ -1,0 +1,40 @@
+    class Settings(BaseSettings):
+
+backend/config.py:157
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/config.py:157: RuntimeWarning: [URIP CONFIG WARNING] JWT_SECRET_KEY is using the dev default (urip-dev-secret-change-in-production). This is acceptable in dev ONLY. You MUST rotate this secret before any prod / staging deployment (set URIP_ENV=production and a real JWT_SECRET_KEY).
+    _enforce_jwt_secret_policy(settings)
+
+backend/schemas/acceptance.py:17
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/schemas/acceptance.py:17: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class AcceptanceRead(BaseModel):
+
+backend/schemas/auth.py:44
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/schemas/auth.py:44: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class UserProfile(BaseModel):
+
+backend/schemas/dashboard.py:41
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/schemas/dashboard.py:41: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class AlertItem(BaseModel):
+
+backend/schemas/remediation.py:23
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/schemas/remediation.py:23: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class RemediationRead(BaseModel):
+
+backend/schemas/report.py:25
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/schemas/report.py:25: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class CertInAdvisory(BaseModel):
+
+backend/schemas/risk.py:30
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/schemas/risk.py:30: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class RiskRead(BaseModel):
+
+tests/test_audit_low/test_low_fixes.py::test_l2_evidence_out_does_not_expose_storage_uri
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/compliance/backend/compliance_backend/config.py:201: RuntimeWarning: [COMPLIANCE CONFIG WARNING] COMPLIANCE_JWT_SECRET and URIP_JWT_SECRET is using a default / empty value. Acceptable in dev ONLY. You MUST rotate before any prod / staging deployment (set COMPLIANCE_ENV=production and supply real secrets).
+    _enforce_jwt_secret_policy(s)
+
+tests/test_audit_low/test_low_fixes.py::test_l8_php_with_png_content_type_rejected
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/tests/test_audit_low/test_low_fixes.py:252: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    await read_and_validate_upload(_Fake(php))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 22 passed, 10 warnings in 0.06s ========================

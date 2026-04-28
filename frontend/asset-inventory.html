@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asset Inventory | URIP - Unified Risk Intelligence Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/domain-page.css">
+</head>
+<body class="urip-app">
+  <div id="app-shell" data-page="asset-inventory">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title"><i class="fas fa-server" style="color:var(--teal-accent);margin-right:.5rem"></i>Asset Inventory</h1>
+            <p class="page-subtitle">Cross-domain inventory of every asset discovered across all connectors. Click a row for risk timeline.</p>
+          </div>
+          <div class="flex gap-2">
+            <a class="btn btn-outline" href="tool-catalog.html">
+              <i class="fas fa-puzzle-piece"></i> Connectors
+            </a>
+            <button class="btn btn-primary" id="btnExportAssets" type="button">
+              <i class="fas fa-download"></i> Export CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="asset-filter-bar">
+          <input class="form-input" id="filterSearch" type="search" placeholder="Search hostname, IP, owner…" aria-label="Search assets">
+          <select class="form-input" id="filterCategory" aria-label="Asset category">
+            <option value="">All Categories</option>
+            <option value="device">Devices</option>
+            <option value="internet-facing">Internet-Facing</option>
+            <option value="account">Accounts</option>
+            <option value="application">Applications</option>
+            <option value="cloud">Cloud Assets</option>
+            <option value="api">API Collections</option>
+          </select>
+          <select class="form-input" id="filterStarred" aria-label="Critical filter">
+            <option value="">All Assets</option>
+            <option value="starred">Critical (starred) only</option>
+          </select>
+          <button class="btn btn-ghost btn-sm" id="filterReset" type="button"><i class="fas fa-rotate-left"></i> Reset</button>
+        </div>
+
+        <!-- KPI strip -->
+        <div class="domain-kpi-strip four">
+          <div class="kpi-card"><div class="kpi-icon" style="background:rgba(99,102,241,0.1);color:#6366F1"><i class="fas fa-database"></i></div><div class="kpi-content"><div class="kpi-value"><span id="kpiAssetCount">--</span></div><div class="kpi-label">Total Assets</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon critical"><i class="fas fa-fire"></i></div><div class="kpi-content"><div class="kpi-value" style="color:#E74C3C"><span id="kpiHighRiskAssets">--</span></div><div class="kpi-label">High-Risk Assets</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon" style="background:rgba(241,196,15,0.18);color:#B7791F"><i class="fas fa-star"></i></div><div class="kpi-content"><div class="kpi-value"><span id="kpiStarred">--</span></div><div class="kpi-label">Critical (starred)</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon" style="background:rgba(39,174,96,0.1);color:#27AE60"><i class="fas fa-user-tie"></i></div><div class="kpi-content"><div class="kpi-value"><span id="kpiOwnerCoverage">--</span></div><div class="kpi-label">Owner Coverage</div></div></div>
+        </div>
+
+        <!-- Asset table -->
+        <div class="risk-table-card">
+          <table class="asset-table">
+            <thead>
+              <tr>
+                <th style="width:36px"></th>
+                <th>Asset</th>
+                <th>Category</th>
+                <th>OS / Type</th>
+                <th>Last Seen</th>
+                <th>Risk Score</th>
+                <th>Open Risks</th>
+                <th>Owner</th>
+                <th>Tags</th>
+              </tr>
+            </thead>
+            <tbody id="assetTableBody">
+              <tr><td colspan="9" style="padding:2rem;text-align:center;color:#94A3B8">Loading assets…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="assetEmptyState" style="display:none">
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="fas fa-database"></i></div>
+            <div class="empty-state-title">No assets discovered yet</div>
+            <div class="empty-state-text">Configure a connector and run a scan to populate the inventory.</div>
+            <div style="margin-top:0.75rem">
+              <a class="btn btn-primary" href="tool-catalog.html"><i class="fas fa-arrow-right"></i> Open the catalog</a>
+            </div>
+          </div>
+        </div>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    if (typeof checkAuth === 'function') checkAuth();
+    document.addEventListener('DOMContentLoaded', function () {
+      window.URIP.shell.mount({
+        page: 'asset-inventory',
+        title: 'Asset Inventory',
+        breadcrumb: 'Operations / Asset Inventory'
+      });
+    });
+  </script>
+  <script src="js/domain-page.js"></script>
+  <script src="js/asset-inventory.js"></script>
+</body>
+</html>

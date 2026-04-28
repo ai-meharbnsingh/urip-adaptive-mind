@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submission detail | VAPT Vendor Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/vapt-portal.css" />
+</head>
+<body>
+  <div class="vapt-shell">
+    <header class="vapt-topbar">
+      <div class="vapt-brand">
+        <span class="vapt-brand-icon"><i class="fas fa-bug"></i></span>
+        <span>URIP — VAPT Vendor Portal</span>
+      </div>
+      <nav class="vapt-tabs">
+        <a href="vapt-portal-dashboard.html" class="vapt-tab">My submissions</a>
+        <a href="vapt-portal-submit.html" class="vapt-tab">New submission</a>
+      </nav>
+      <div class="vapt-user">
+        <span id="vendorName">…</span>
+        <button id="logoutBtn" class="vapt-btn vapt-btn-ghost">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="vapt-content">
+      <a href="vapt-portal-dashboard.html" class="vapt-back-link">
+        <i class="fas fa-arrow-left"></i> Back to submissions
+      </a>
+
+      <div id="newBanner" class="vapt-alert vapt-alert-success" style="display:none">
+        <i class="fas fa-check-circle"></i>
+        Submission received. URIP is enriching it with EPSS / KEV data —
+        the customer's IT team will see it within seconds.
+      </div>
+
+      <div id="loading" class="vapt-loading">
+        <i class="fas fa-spinner fa-spin"></i> Loading submission…
+      </div>
+
+      <div id="errBox" class="vapt-alert vapt-alert-danger" style="display:none"></div>
+
+      <article id="detail" style="display:none">
+        <header class="vapt-detail-head">
+          <h1 id="title"></h1>
+          <div class="vapt-detail-meta">
+            <span id="statusBadge" class="vapt-badge"></span>
+            <span id="severityBadge" class="vapt-badge"></span>
+            <span id="riskLabel" class="vapt-detail-risk"></span>
+          </div>
+        </header>
+
+        <section class="vapt-detail-grid">
+          <div class="vapt-detail-card">
+            <div class="vapt-card-label">CVE</div>
+            <div class="vapt-card-value" id="cve">—</div>
+          </div>
+          <div class="vapt-detail-card">
+            <div class="vapt-card-label">CVSS</div>
+            <div class="vapt-card-value" id="cvss">—</div>
+          </div>
+          <div class="vapt-detail-card">
+            <div class="vapt-card-label">Exploit maturity</div>
+            <div class="vapt-card-value" id="exploit">—</div>
+          </div>
+          <div class="vapt-detail-card">
+            <div class="vapt-card-label">Submitted</div>
+            <div class="vapt-card-value" id="submitted">—</div>
+          </div>
+          <div class="vapt-detail-card">
+            <div class="vapt-card-label">Affected host</div>
+            <div class="vapt-card-value" id="host">—</div>
+          </div>
+          <div class="vapt-detail-card">
+            <div class="vapt-card-label">Affected IP</div>
+            <div class="vapt-card-value" id="ip">—</div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Description</h2>
+          <pre class="vapt-text-block" id="description"></pre>
+        </section>
+
+        <section>
+          <h2>Remediation recommendation</h2>
+          <pre class="vapt-text-block" id="remediation"></pre>
+        </section>
+
+        <section id="evidenceSec">
+          <h2>Evidence</h2>
+          <div id="evidenceLine">No evidence file attached.</div>
+        </section>
+
+        <section id="retestRequestedBox" class="vapt-retest-prompt" style="display:none">
+          <div class="vapt-retest-head">
+            <i class="fas fa-circle-exclamation"></i>
+            <h2>Re-test requested</h2>
+          </div>
+          <p>The customer's IT team marked this finding fixed and is asking you
+          to re-test. Submit your verification result below.</p>
+
+          <form id="retestForm" class="vapt-form" enctype="multipart/form-data">
+            <label class="vapt-field">
+              <span>Result <span class="vapt-req">*</span></span>
+              <select name="result" required>
+                <option value="">Choose…</option>
+                <option value="pass">Pass — fix verified</option>
+                <option value="fail">Fail — still exploitable</option>
+              </select>
+            </label>
+
+            <label class="vapt-field vapt-field-wide">
+              <span>Notes</span>
+              <textarea name="notes" rows="4"
+                        placeholder="Steps you used to verify, any caveats, etc."></textarea>
+            </label>
+
+            <label class="vapt-field vapt-field-wide">
+              <span>Re-test evidence file (optional)</span>
+              <input type="file" name="evidence" id="retestEvidence"
+                     accept=".pdf,.png,.jpg,.jpeg,.gif,.webp,.bmp,.zip,.json,.csv,.txt" />
+            </label>
+
+            <div id="retestError" class="vapt-alert vapt-alert-danger" style="display:none"></div>
+
+            <div class="vapt-form-actions">
+              <button id="retestBtn" type="submit" class="vapt-btn vapt-btn-primary">
+                <i class="fas fa-paper-plane"></i> Submit re-test response
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section id="retestDoneBox" class="vapt-retest-done" style="display:none">
+          <h2>Re-test complete</h2>
+          <p id="retestResultLine">—</p>
+        </section>
+      </article>
+    </main>
+  </div>
+
+  <script src="js/vapt-portal-api.js"></script>
+  <script src="js/vapt-portal.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      VaptPortal.requireSession();
+      VaptPortal.setupChrome();
+
+      var params = new URLSearchParams(window.location.search);
+      var subId = params.get('id');
+      if (params.get('new') === '1') {
+        document.getElementById('newBanner').style.display = '';
+      }
+      if (!subId) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('errBox').textContent = 'Missing submission id.';
+        document.getElementById('errBox').style.display = '';
+        return;
+      }
+
+      function setText(id, val) {
+        document.getElementById(id).textContent = val || '—';
+      }
+
+      function render(s) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('detail').style.display = '';
+
+        document.getElementById('title').textContent = s.finding_title;
+
+        var statusBadge = document.getElementById('statusBadge');
+        statusBadge.className = 'vapt-badge vapt-status-' + s.status;
+        statusBadge.textContent = s.status.replace(/_/g, ' ');
+
+        var sevBadge = document.getElementById('severityBadge');
+        sevBadge.className = 'vapt-badge vapt-badge-' + s.severity;
+        sevBadge.textContent = s.severity;
+
+        document.getElementById('riskLabel').textContent =
+            s.risk_id_label ? ('Linked URIP risk: ' + s.risk_id_label) : '';
+
+        setText('cve', s.cve_id);
+        setText('cvss', s.cvss_score);
+        setText('exploit', s.exploit_maturity);
+        setText('submitted', VaptPortal.fmtDate(s.submitted_at));
+        setText('host', s.affected_asset_hostname);
+        setText('ip', s.affected_asset_ip);
+        setText('description', s.description);
+        setText('remediation', s.remediation_recommendation);
+
+        if (s.evidence_filename) {
+          document.getElementById('evidenceLine').textContent =
+              'Filename: ' + s.evidence_filename + ' (stored server-side)';
+        }
+
+        if (s.status === 'retest_requested') {
+          document.getElementById('retestRequestedBox').style.display = '';
+        }
+        if (s.retest_completed_at) {
+          document.getElementById('retestDoneBox').style.display = '';
+          document.getElementById('retestResultLine').textContent =
+              'Result: ' + (s.retest_result || '—') +
+              ' · Completed ' + VaptPortal.fmtDate(s.retest_completed_at);
+        }
+      }
+
+      VaptPortalApi.getSubmission(subId)
+        .then(render)
+        .catch(function (err) {
+          document.getElementById('loading').style.display = 'none';
+          var box = document.getElementById('errBox');
+          box.textContent = err.message || 'Could not load submission.';
+          box.style.display = '';
+        });
+
+      // Re-test response handler
+      var rf = document.getElementById('retestForm');
+      rf.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var btn = document.getElementById('retestBtn');
+        var err = document.getElementById('retestError');
+        err.style.display = 'none';
+        btn.disabled = true;
+
+        var fd = new FormData(rf);
+        VaptPortalApi.submitRetestResponse(subId, fd)
+          .then(function () {
+            window.location.reload();
+          })
+          .catch(function (ex) {
+            err.textContent = ex.message || 'Re-test submission failed.';
+            err.style.display = '';
+            btn.disabled = false;
+          });
+      });
+    })();
+  </script>
+</body>
+</html>

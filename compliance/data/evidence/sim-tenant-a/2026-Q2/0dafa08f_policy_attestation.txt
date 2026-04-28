@@ -1,0 +1,15 @@
+ADVERB TECHNOLOGIES — Policy Attestation Document
+==================================================
+
+Policy: Data Classification
+Version: 2.0
+Effective Date: 2026-01-20
+Owner: CISO Office
+
+This document attests that the above policy has been reviewed and approved
+by senior leadership for the current audit period. The policy is published
+in the corporate handbook and acknowledged by all employees as part of
+annual security training.
+
+Approver: Vikram Mehta (CISO)
+Approval Date: 2026-04-03T13:25:36.620906

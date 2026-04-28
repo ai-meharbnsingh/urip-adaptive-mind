@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connector Status | URIP</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="urip-app">
+  <div id="app-shell" data-page="connector-status">
+
+    <!-- KPIs -->
+    <div class="tc-kpi-strip">
+      <div class="tc-kpi"><div class="tc-kpi-val" id="csTotal">—</div><div class="tc-kpi-lbl">Configured</div></div>
+      <div class="tc-kpi"><div class="tc-kpi-val" id="csOk">—</div><div class="tc-kpi-lbl">Healthy</div></div>
+      <div class="tc-kpi"><div class="tc-kpi-val" id="csDeg">—</div><div class="tc-kpi-lbl">Degraded</div></div>
+      <div class="tc-kpi"><div class="tc-kpi-val" id="csErr">—</div><div class="tc-kpi-lbl">Errors (24h)</div></div>
+    </div>
+
+    <div class="rr-toolbar">
+      <input id="csSearch" type="search" placeholder="Filter connectors…" aria-label="Search">
+      <select id="csHealth" aria-label="Health">
+        <option value="">All health</option>
+        <option value="ok">Healthy</option>
+        <option value="degraded">Degraded</option>
+        <option value="error">Error</option>
+      </select>
+      <button class="u-btn is-ghost is-sm" id="csReset"><i class="fas fa-rotate-left"></i> Reset</button>
+    </div>
+
+    <div class="u-card">
+      <div class="u-card-h"><h3>Connector Health</h3></div>
+      <div class="u-card-b tight">
+        <div class="rr-table-wrap" style="border:none;border-radius:0">
+          <table class="u-table">
+            <thead>
+              <tr>
+                <th>Connector</th>
+                <th>Category</th>
+                <th>Lifecycle</th>
+                <th>Health</th>
+                <th>Last Poll</th>
+                <th>Errors (24h)</th>
+                <th style="text-align:right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="csBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shell.js"></script>
+  <script src="js/connector-status.js"></script>
+</body>
+</html>

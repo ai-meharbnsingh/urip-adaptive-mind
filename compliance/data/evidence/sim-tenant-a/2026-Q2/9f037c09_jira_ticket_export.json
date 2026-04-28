@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:24:24.549427",
+  "tickets": [
+    {
+      "id": "ADV-OPS-2816",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "To Do",
+      "assignee": "user-639@adverb.in",
+      "created": "2026-03-04T13:24:24.549431",
+      "resolved": "2026-04-20T13:24:24.549433"
+    },
+    {
+      "id": "ADV-OPS-1897",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "Done",
+      "assignee": "user-408@adverb.in",
+      "created": "2026-03-16T13:24:24.549436",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-5186",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "In Progress",
+      "assignee": "user-222@adverb.in",
+      "created": "2026-04-12T13:24:24.549439",
+      "resolved": "2026-04-20T13:24:24.549441"
+    },
+    {
+      "id": "ADV-OPS-3878",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "To Do",
+      "assignee": "user-645@adverb.in",
+      "created": "2026-03-14T13:24:24.549444",
+      "resolved": "2026-04-13T13:24:24.549446"
+    },
+    {
+      "id": "ADV-OPS-6802",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "To Do",
+      "assignee": "user-982@adverb.in",
+      "created": "2026-04-07T13:24:24.549448",
+      "resolved": "2026-04-19T13:24:24.549450"
+    },
+    {
+      "id": "ADV-OPS-2275",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "To Do",
+      "assignee": "user-687@adverb.in",
+      "created": "2026-02-20T13:24:24.549453",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-7843",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-514@adverb.in",
+      "created": "2026-04-10T13:24:24.549456",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-3815",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "To Do",
+      "assignee": "user-951@adverb.in",
+      "created": "2026-02-25T13:24:24.549459",
+      "resolved": "2026-04-13T13:24:24.549461"
+    }
+  ]
+}

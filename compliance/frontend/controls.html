@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Controls | Adverb Compliance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+    <main class="main-content">
+      <header class="topbar"></header>
+      <div class="content-area">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title" id="pageTitle">Controls</h1>
+            <p class="page-subtitle" id="pageSubtitle">All controls across frameworks with current status, last run, and evidence.</p>
+          </div>
+          <div class="page-actions">
+            <a href="frameworks.html" class="btn btn-outline" id="btnBack" style="display:none">
+              <i class="fas fa-arrow-left"></i> Back to list
+            </a>
+          </div>
+        </div>
+
+        <!-- LIST view -->
+        <div id="listView">
+          <div class="filter-bar">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" id="filterText" placeholder="Filter by code, title, framework…" />
+            </div>
+            <div class="filter-group">
+              <span class="filter-label">Framework:</span>
+              <select class="form-select" id="filterFramework" style="width:auto">
+                <option value="">All</option>
+                <option value="SOC2">SOC 2</option>
+                <option value="ISO27001">ISO 27001</option>
+                <option value="GDPR">GDPR</option>
+                <option value="HIPAA">HIPAA</option>
+                <option value="PCIDSS">PCI DSS</option>
+                <option value="DPDP">India DPDP</option>
+                <option value="NIST">NIST CSF</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <span class="filter-label">Status:</span>
+              <select class="form-select" id="filterStatus" style="width:auto">
+                <option value="">All</option>
+                <option value="pass">Pass</option>
+                <option value="fail">Fail</option>
+                <option value="inconclusive">Inconclusive</option>
+                <option value="not_evaluated">Never run</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title" id="listMeta">Loading…</span>
+            </div>
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Framework</th>
+                    <th>Category</th>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Last run</th>
+                    <th>Evidence</th>
+                  </tr>
+                </thead>
+                <tbody id="listBody">
+                  <tr><td colspan="7"><div class="skeleton skeleton-row"></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- DETAIL view -->
+        <div id="detailView" class="hidden">
+          <div class="split-3">
+            <div>
+              <div class="card mb-6">
+                <div class="card-body">
+                  <div class="flex items-center gap-3 mb-3 flex-wrap">
+                    <span class="framework-logo" id="dCode">—</span>
+                    <span class="badge badge-info" id="dCat">—</span>
+                    <span class="status-pill" id="dStatusPill">never run</span>
+                  </div>
+                  <h2 id="dTitle" style="margin-bottom:.5rem">—</h2>
+                  <p class="text-sm text-gray" id="dDesc"></p>
+                </div>
+              </div>
+
+              <div class="card mb-6">
+                <div class="card-header">
+                  <span class="card-title">Rule logic</span>
+                </div>
+                <div class="card-body">
+                  <code id="dRule" style="display:block;background:var(--gray-50);padding:.875rem 1rem;border-radius:var(--radius-md);font-family:'SF Mono','Menlo',monospace;font-size:.8125rem;color:var(--gray-700);word-break:break-all">—</code>
+                  <p class="text-xs text-gray mt-2">The rule executes server-side using TenantConfig + ConnectorPull tables. The caller cannot influence rule inputs (CRIT-006).</p>
+                </div>
+              </div>
+
+              <div class="card mb-6">
+                <div class="card-header">
+                  <span class="card-title">Recent runs</span>
+                </div>
+                <div class="table-container">
+                  <table class="table">
+                    <thead>
+                      <tr><th>Run at</th><th>Status</th><th>Failure reason</th><th>Evidence</th></tr>
+                    </thead>
+                    <tbody id="dRunsBody">
+                      <tr><td colspan="4"><div class="skeleton skeleton-row"></div></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <span class="card-title">Evidence captured</span>
+                  <span class="text-xs text-gray" id="dEvCount">—</span>
+                </div>
+                <div class="card-body" id="dEvList"></div>
+              </div>
+            </div>
+
+            <aside>
+              <div class="card mb-6">
+                <div class="card-header">
+                  <span class="card-title">Actions</span>
+                </div>
+                <div class="card-body" style="display:flex;flex-direction:column;gap:.5rem">
+                  <button class="btn btn-primary w-full" id="btnRunNow">
+                    <i class="fas fa-play"></i> Run now
+                  </button>
+                  <a class="btn btn-outline w-full" href="evidence.html" id="btnUpload">
+                    <i class="fas fa-upload"></i> Upload evidence
+                  </a>
+                  <button class="btn btn-outline w-full" id="btnReqEv">
+                    <i class="fas fa-comment-dots"></i> Discuss with auditor
+                  </button>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <span class="card-title">Related risks</span>
+                </div>
+                <div class="card-body">
+                  <p class="text-xs text-gray" id="dRelatedRisks">
+                    Risk → Control linkage is only available when the URIP module is also subscribed
+                    (integrated mode). Failing controls would trace back to underlying CVEs / threats here.
+                  </p>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/theming.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      checkAuth();
+      var C = window.COMPLIANCE;
+      function getQueryParam(name) {
+        var match = location.search.match(new RegExp('[?&]' + name + '=([^&]+)'));
+        return match ? decodeURIComponent(match[1]) : null;
+      }
+
+      var FRAMEWORK_CODES = ['SOC2','ISO27001','GDPR','HIPAA','PCIDSS','DPDP','NIST'];
+
+      // Cached data
+      var allControls = [];        // {id, code, frameworkCode, category, title, description, status, last_run_at, evidence_count}
+      var evidenceCountByControl = {};
+
+      async function loadList() {
+        var preselectStatus = getQueryParam('status');
+        var preselectFw = getQueryParam('framework');
+        if (preselectStatus) document.getElementById('filterStatus').value = preselectStatus;
+        if (preselectFw) document.getElementById('filterFramework').value = preselectFw;
+
+        document.getElementById('listMeta').textContent = 'Loading controls…';
+
+        // Pull controls per framework — parallel
+        var byFw = await Promise.all(FRAMEWORK_CODES.map(function (code) {
+          return C.apiFetch('/frameworks/' + code + '/controls?limit=200', { silent: true })
+            .then(function (resp) { return { code: code, items: (resp && resp.items) || [] }; })
+            .catch(function () { return { code: code, items: [] }; });
+        }));
+
+        // Latest run per control
+        var runsResp = await C.apiFetch('/controls/runs?limit=500', { silent: true }).catch(function () { return { items: [] }; });
+        var latestByControl = {};
+        ((runsResp && runsResp.items) || []).forEach(function (r) {
+          if (!latestByControl[r.control_id] ||
+              new Date(r.run_at) > new Date(latestByControl[r.control_id].run_at)) {
+            latestByControl[r.control_id] = r;
+          }
+        });
+
+        // Evidence counts (best-effort)
+        try {
+          var evResp = await C.apiFetch('/evidence?limit=500', { silent: true });
+          ((evResp && evResp.items) || []).forEach(function (e) {
+            evidenceCountByControl[e.control_id] = (evidenceCountByControl[e.control_id] || 0) + 1;
+          });
+        } catch (_) { /* tenant might not have evidence yet */ }
+
+        allControls = [];
+        byFw.forEach(function (g) {
+          g.items.forEach(function (c) {
+            var run = latestByControl[c.id];
+            allControls.push({
+              id: c.id,
+              control_code: c.control_code,
+              frameworkCode: g.code,
+              category: c.category || '—',
+              title: c.title || '',
+              description: c.description || '',
+              status: run ? run.status : 'not_evaluated',
+              last_run_at: run ? run.run_at : null,
+              evidence_count: evidenceCountByControl[c.id] || 0
+            });
+          });
+        });
+
+        applyFilters();
+      }
+
+      function applyFilters() {
+        var text = document.getElementById('filterText').value.toLowerCase();
+        var statusF = document.getElementById('filterStatus').value;
+        var fwF = document.getElementById('filterFramework').value;
+        var rows = allControls.filter(function (c) {
+          if (statusF && c.status !== statusF) return false;
+          if (fwF && c.frameworkCode !== fwF) return false;
+          if (text) {
+            var hay = (c.control_code + ' ' + c.title + ' ' + c.description + ' ' + c.frameworkCode).toLowerCase();
+            if (hay.indexOf(text) === -1) return false;
+          }
+          return true;
+        });
+        document.getElementById('listMeta').textContent = rows.length + ' control(s)';
+
+        var tbody = document.getElementById('listBody');
+        tbody.innerHTML = '';
+        if (!rows.length) {
+          var tr = document.createElement('tr');
+          var td = document.createElement('td'); td.colSpan = 7; td.style.padding = 0;
+          var w = document.createElement('div');
+          C.renderEmptyState(w, 'fa-list-check', 'No controls match', 'Adjust filters to see more.');
+          td.appendChild(w); tr.appendChild(td); tbody.appendChild(tr);
+          return;
+        }
+        rows.forEach(function (c) {
+          var tr = document.createElement('tr'); tr.className = 'row-clickable';
+          tr.addEventListener('click', function () { window.location.search = '?id=' + c.id; });
+          tr.innerHTML =
+            '<td><strong>' + C.escapeHtml(c.control_code) + '</strong></td>' +
+            '<td><span class="framework-logo" style="font-size:.625rem;padding:.1875rem .375rem">' + C.escapeHtml(c.frameworkCode) + '</span></td>' +
+            '<td>' + C.escapeHtml(c.category) + '</td>' +
+            '<td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + C.escapeHtml(c.title || c.description) + '</td>' +
+            '<td><span class="status-pill status-' + c.status + '">' + c.status.replace(/_/g, ' ') + '</span></td>' +
+            '<td style="color:var(--gray-500);font-size:.8125rem">' + (c.last_run_at ? C.relativeTime(c.last_run_at) : '—') + '</td>' +
+            '<td><span class="badge badge-default">' + c.evidence_count + '</span></td>';
+          tbody.appendChild(tr);
+        });
+      }
+
+      async function loadDetail(controlId) {
+        document.getElementById('listView').classList.add('hidden');
+        document.getElementById('detailView').classList.remove('hidden');
+        document.getElementById('btnBack').style.display = '';
+        document.getElementById('btnBack').onclick = function (e) { e.preventDefault(); window.history.back(); };
+        document.getElementById('pageTitle').textContent = 'Control Detail';
+        document.getElementById('pageSubtitle').textContent = 'Rule logic, run history, and captured evidence.';
+
+        // We don't have a /controls/{id} GET — use /controls/runs filtered by control_id for runs,
+        // and /evidence?control_id= for evidence. For control metadata, search across allControls (cached).
+        // If allControls empty (deep-link), fetch from each framework.
+        var meta = allControls.find(function (c) { return c.id === controlId; });
+        if (!meta) {
+          // Deep link: fetch all frameworks (best effort)
+          for (var i = 0; i < FRAMEWORK_CODES.length && !meta; i++) {
+            try {
+              var resp = await C.apiFetch('/frameworks/' + FRAMEWORK_CODES[i] + '/controls?limit=200', { silent: true });
+              var found = (resp.items || []).find(function (c) { return c.id === controlId; });
+              if (found) {
+                meta = {
+                  id: found.id,
+                  control_code: found.control_code,
+                  frameworkCode: FRAMEWORK_CODES[i],
+                  category: found.category || '—',
+                  title: found.title || '',
+                  description: found.description || '',
+                  rule_function: found.rule_function
+                };
+              }
+            } catch (_) {}
+          }
+        }
+        if (!meta) {
+          C.showNotification('Not found', 'Control ' + controlId + ' could not be loaded.', 'error');
+          window.history.replaceState({}, '', 'controls.html');
+          showList();
+          return;
+        }
+
+        document.getElementById('dCode').textContent = meta.control_code;
+        document.getElementById('dCat').textContent = meta.category;
+        document.getElementById('dTitle').textContent = meta.title || meta.control_code;
+        document.getElementById('dDesc').textContent = meta.description;
+        document.getElementById('dRule').textContent = meta.rule_function || '(server-defined rule — no rule_function declared)';
+
+        // Runs
+        var runsResp = await C.apiFetch('/controls/runs?control_id=' + controlId + '&limit=10', { silent: true })
+          .catch(function () { return { items: [] }; });
+        var runs = (runsResp && runsResp.items) || [];
+        var runsBody = document.getElementById('dRunsBody');
+        runsBody.innerHTML = '';
+        if (!runs.length) {
+          var tr = document.createElement('tr');
+          var td = document.createElement('td'); td.colSpan = 4; td.style.padding = 0;
+          var w = document.createElement('div');
+          C.renderEmptyState(w, 'fa-clock-rotate-left', 'Never run', 'Click Run now to execute this control.');
+          td.appendChild(w); tr.appendChild(td); runsBody.appendChild(tr);
+          document.getElementById('dStatusPill').className = 'status-pill status-not_evaluated';
+          document.getElementById('dStatusPill').textContent = 'never run';
+        } else {
+          var latest = runs[0];
+          document.getElementById('dStatusPill').className = 'status-pill status-' + latest.status;
+          document.getElementById('dStatusPill').textContent = latest.status.replace(/_/g, ' ');
+          runs.forEach(function (r) {
+            var tr = document.createElement('tr');
+            tr.innerHTML =
+              '<td>' + C.formatDate(r.run_at) + '</td>' +
+              '<td><span class="status-pill status-' + r.status + '">' + r.status + '</span></td>' +
+              '<td style="color:var(--gray-500);font-size:.8125rem">' + C.escapeHtml(r.failure_reason || '—') + '</td>' +
+              '<td>' + (r.evidence_ids ? r.evidence_ids.length : 0) + '</td>';
+            runsBody.appendChild(tr);
+          });
+        }
+
+        // Evidence
+        var evList = document.getElementById('dEvList');
+        var evResp = await C.apiFetch('/evidence?control_id=' + controlId + '&limit=50', { silent: true })
+          .catch(function () { return { items: [] }; });
+        var evidence = (evResp && evResp.items) || [];
+        document.getElementById('dEvCount').textContent = evidence.length + ' item(s)';
+        evList.innerHTML = '';
+        if (!evidence.length) {
+          C.renderEmptyState(evList, 'fa-folder-open', 'No evidence captured yet', 'Upload from the Evidence page or wait for the next auto-collection cycle.');
+        } else {
+          evidence.forEach(function (e) {
+            var item = document.createElement('div');
+            item.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:.625rem 0;border-bottom:1px solid var(--gray-100)';
+            item.innerHTML =
+              '<div>' +
+                '<div style="font-weight:500">' + C.escapeHtml(e.type) + ' · ' + C.escapeHtml(e.audit_period || '—') + '</div>' +
+                '<div class="text-xs text-gray">Captured ' + C.relativeTime(e.captured_at) + ' by ' + C.escapeHtml(e.captured_by) + '</div>' +
+              '</div>' +
+              '<a href="' + C.API_BASE + '/evidence/' + encodeURIComponent(e.id) + '" target="_blank" class="btn btn-sm btn-ghost">' +
+                '<i class="fas fa-download"></i> Download</a>';
+            evList.appendChild(item);
+          });
+        }
+
+        document.getElementById('btnRunNow').onclick = async function () {
+          var btn = this;
+          btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running…';
+          try {
+            await C.apiFetch('/controls/' + controlId + '/run', { method: 'POST', body: {} });
+            C.showNotification('Run triggered', 'Control executed. Reloading…', 'success');
+            setTimeout(function () { window.location.reload(); }, 800);
+          } catch (e) {
+            C.showNotification('Run failed', e.message || 'Could not trigger run', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-play"></i> Run now';
+          }
+        };
+
+        document.getElementById('btnReqEv').onclick = function () {
+          C.showNotification('Auditor portal', 'Use the auditor portal to send evidence requests.', 'info');
+        };
+      }
+
+      function showList() {
+        document.getElementById('listView').classList.remove('hidden');
+        document.getElementById('detailView').classList.add('hidden');
+        document.getElementById('btnBack').style.display = 'none';
+        document.getElementById('pageTitle').textContent = 'Controls';
+        document.getElementById('pageSubtitle').textContent = 'All controls across frameworks with current status, last run, and evidence.';
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        renderSidebar('controls');
+        document.getElementById('filterText').addEventListener('input', applyFilters);
+        document.getElementById('filterStatus').addEventListener('change', applyFilters);
+        document.getElementById('filterFramework').addEventListener('change', applyFilters);
+        var id = getQueryParam('id');
+        loadList().then(function () {
+          if (id) loadDetail(id);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -21,6 +21,7 @@ class User(Base):
     role: Mapped[str] = mapped_column(String(20), nullable=False)  # ciso, it_team, executive, board
     team: Mapped[str | None] = mapped_column(String(100), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_super_admin: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="false")
     # Multi-tenant FK — nullable for backward-compat during migration; backfill sets it NOT NULL via alembic
     tenant_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True),

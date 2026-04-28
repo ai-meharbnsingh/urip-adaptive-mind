@@ -1,0 +1,66 @@
+# URIP Hybrid-SaaS On-Premise Agent — docker-compose
+#
+# THIS FILE RUNS ON THE CUSTOMER'S SERVER, NOT OURS.
+#
+# Quick start (Adverb's IT team):
+#   1. Copy `.env.example` → `.env`, fill in:
+#        AGENT_TENANT_SLUG, AGENT_LICENSE_KEY, CLOUD_PORTAL_URL, FERNET_KEY
+#   2. `docker compose -f agent/docker-compose.agent.yml up -d`
+#   3. Watch logs:  `docker compose -f agent/docker-compose.agent.yml logs -f agent`
+#   4. Configure connectors via the cloud portal at $CLOUD_PORTAL_URL.
+#
+# What this stack contains:
+#   - postgres  : LOCAL Postgres holding raw vulnerability records (NEVER leaves
+#                 your network).  You can replace this with your own Postgres
+#                 by removing this service and pointing LOCAL_DB_URL at your
+#                 instance.
+#   - agent     : The URIP agent — runs the connector scheduler, encrypted
+#                 reporter, heartbeat loop, and drilldown responder.
+
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: urip-agent-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: urip
+      POSTGRES_PASSWORD: ${LOCAL_POSTGRES_PASSWORD:-urip_dev}
+      POSTGRES_DB: urip_agent
+    volumes:
+      - urip_agent_pgdata:/var/lib/postgresql/data
+    ports:
+      # Bound to localhost only — never expose this to the internet
+      - "127.0.0.1:5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U urip -d urip_agent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  agent:
+    build:
+      context: ..
+      dockerfile: agent/Dockerfile
+    image: semanticgravity/urip-agent:0.1.0
+    container_name: urip-agent
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      AGENT_TENANT_SLUG: ${AGENT_TENANT_SLUG}
+      AGENT_LICENSE_KEY: ${AGENT_LICENSE_KEY}
+      CLOUD_PORTAL_URL: ${CLOUD_PORTAL_URL}
+      LOCAL_DB_URL: postgresql+asyncpg://urip:${LOCAL_POSTGRES_PASSWORD:-urip_dev}@postgres:5432/urip_agent
+      FERNET_KEY: ${FERNET_KEY}
+      AGENT_LOG_LEVEL: ${AGENT_LOG_LEVEL:-INFO}
+    volumes:
+      - urip_agent_secret:/var/lib/urip-agent
+
+volumes:
+  urip_agent_pgdata:
+    name: urip_agent_pgdata
+  urip_agent_secret:
+    name: urip_agent_secret

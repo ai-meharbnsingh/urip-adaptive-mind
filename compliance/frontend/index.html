@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compliance Dashboard | Adverb</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+
+    <main class="main-content">
+      <header class="topbar"></header>
+
+      <div class="content-area">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Compliance Dashboard</h1>
+            <p class="page-subtitle">Real-time audit-readiness across all your frameworks</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-outline" id="btnRefresh">
+              <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <a href="auditor-invitations.html" class="btn btn-primary">
+              <i class="fas fa-user-plus"></i> Invite Auditor
+            </a>
+          </div>
+        </div>
+
+        <!-- Action items panel -->
+        <div class="action-panel">
+          <div class="flex items-center justify-between">
+            <h3 class="card-title">Action items before next audit</h3>
+            <span class="text-xs text-gray">Synthesised from failing controls, missing evidence, unacked policies, expiring vendor docs</span>
+          </div>
+          <div class="action-row" id="actionRow">
+            <div class="action-tile">
+              <div class="action-tile-icon icon-fail"><i class="fas fa-times-circle"></i></div>
+              <div class="action-tile-content">
+                <span class="action-tile-value" id="aFailing">—</span>
+                <span class="action-tile-label">Failing controls</span>
+              </div>
+            </div>
+            <div class="action-tile">
+              <div class="action-tile-icon icon-warn"><i class="fas fa-file-signature"></i></div>
+              <div class="action-tile-content">
+                <span class="action-tile-value" id="aPending">—</span>
+                <span class="action-tile-label">Policies need ack</span>
+              </div>
+            </div>
+            <div class="action-tile">
+              <div class="action-tile-icon icon-warn"><i class="fas fa-handshake"></i></div>
+              <div class="action-tile-content">
+                <span class="action-tile-value" id="aExpiring">—</span>
+                <span class="action-tile-label">Vendor docs expiring</span>
+              </div>
+            </div>
+            <div class="action-tile">
+              <div class="action-tile-icon icon-info"><i class="fas fa-inbox"></i></div>
+              <div class="action-tile-content">
+                <span class="action-tile-value" id="aRequests">—</span>
+                <span class="action-tile-label">Open evidence requests</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Framework score widgets -->
+        <h2 style="font-size:1.125rem; margin-bottom: 0.875rem; color: var(--gray-700);">
+          <i class="fas fa-layer-group" style="margin-right:.5rem;color:var(--teal-accent)"></i>
+          Per-Framework Score
+        </h2>
+        <div id="frameworkGrid" class="framework-grid"></div>
+
+        <!-- Recent activity -->
+        <div class="split-3">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title"><i class="fas fa-stream" style="color:var(--teal-accent);margin-right:.5rem"></i>Recent activity</span>
+              <a href="auditor-activity.html" class="btn btn-sm btn-ghost">View all <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="card-body">
+              <div id="activityFeed" class="activity-feed"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title"><i class="fas fa-bolt" style="color:var(--teal-accent);margin-right:.5rem"></i>Quick links</span>
+            </div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:.625rem">
+              <a href="controls.html?status=fail" class="btn btn-outline w-full" style="justify-content:flex-start">
+                <i class="fas fa-list-check"></i> Review failing controls
+              </a>
+              <a href="evidence.html" class="btn btn-outline w-full" style="justify-content:flex-start">
+                <i class="fas fa-folder-open"></i> Upload evidence
+              </a>
+              <a href="policies.html" class="btn btn-outline w-full" style="justify-content:flex-start">
+                <i class="fas fa-file-signature"></i> Manage policies
+              </a>
+              <a href="vendors.html" class="btn btn-outline w-full" style="justify-content:flex-start">
+                <i class="fas fa-handshake"></i> Vendor inventory
+              </a>
+              <a href="reports.html" class="btn btn-outline w-full" style="justify-content:flex-start">
+                <i class="fas fa-file-pdf"></i> Generate reports
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/theming.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      checkAuth();
+      var C = window.COMPLIANCE;
+      var FRAMEWORK_META = [
+        { code: 'SOC2',     name: 'SOC 2 (TSC 2022)',     fa: 'fa-shield-halved' },
+        { code: 'ISO27001', name: 'ISO 27001:2022',       fa: 'fa-certificate' },
+        { code: 'GDPR',     name: 'GDPR',                 fa: 'fa-globe-europe' },
+        { code: 'HIPAA',    name: 'HIPAA',                fa: 'fa-heart-pulse' },
+        { code: 'PCIDSS',   name: 'PCI DSS v4.0',         fa: 'fa-credit-card' },
+        { code: 'DPDP',     name: 'India DPDP Act 2023',  fa: 'fa-flag' },
+        { code: 'NIST',     name: 'NIST CSF 2.0',         fa: 'fa-landmark' }
+      ];
+
+      function scoreClass(score) {
+        if (score >= 85) return 'high';
+        if (score >= 65) return 'medium';
+        return 'low';
+      }
+
+      function trendArrow(current, prior) {
+        var diff = (current || 0) - (prior || 0);
+        if (Math.abs(diff) < 0.5) return { cls: 'trend-flat', icon: 'fa-equals', text: 'Stable' };
+        if (diff > 0) return { cls: 'trend-up', icon: 'fa-arrow-up', text: '+' + diff.toFixed(1) + '%' };
+        return { cls: 'trend-down', icon: 'fa-arrow-down', text: diff.toFixed(1) + '%' };
+      }
+
+      function renderFrameworkCard(meta, score, priorScore) {
+        var card = document.createElement('div');
+        card.className = 'framework-card';
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', meta.name + ' framework details');
+        card.addEventListener('click', function () {
+          window.location.href = 'frameworks.html?code=' + encodeURIComponent(meta.code);
+        });
+        card.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+        });
+
+        var hdr = document.createElement('div');
+        hdr.className = 'framework-card-header';
+        var logo = document.createElement('div');
+        logo.className = 'framework-logo';
+        logo.textContent = meta.code;
+        hdr.appendChild(logo);
+
+        if (score && score.score !== undefined) {
+          var t = trendArrow(score.score, priorScore);
+          var tr = document.createElement('div');
+          tr.className = 'framework-trend ' + t.cls;
+          var ti = document.createElement('i'); ti.className = 'fas ' + t.icon; tr.appendChild(ti);
+          tr.appendChild(document.createTextNode(' ' + t.text));
+          hdr.appendChild(tr);
+        }
+        card.appendChild(hdr);
+
+        var name = document.createElement('div');
+        name.className = 'framework-name';
+        name.textContent = meta.name;
+        card.appendChild(name);
+
+        var scoreRow = document.createElement('div');
+        scoreRow.className = 'framework-score-row';
+        var scoreVal = document.createElement('div');
+        if (!score || score.score === undefined) {
+          scoreVal.className = 'framework-score';
+          scoreVal.style.color = 'var(--gray-400)';
+          scoreVal.textContent = '—';
+          scoreRow.appendChild(scoreVal);
+        } else {
+          var rounded = Math.round(score.score);
+          scoreVal.className = 'framework-score score-' + scoreClass(rounded);
+          var bigSpan = document.createElement('span'); bigSpan.textContent = rounded;
+          var pctSpan = document.createElement('span');
+          pctSpan.style.cssText = 'font-size:1.125rem;color:inherit;opacity:.75;margin-left:.125rem';
+          pctSpan.textContent = '%';
+          scoreVal.appendChild(bigSpan);
+          scoreVal.appendChild(pctSpan);
+          scoreRow.appendChild(scoreVal);
+
+          var ctrls = document.createElement('div');
+          ctrls.className = 'framework-controls';
+          ctrls.textContent = score.pass_count + ' / ' + score.total_applicable + ' controls';
+          scoreRow.appendChild(ctrls);
+        }
+        card.appendChild(scoreRow);
+
+        // progress bar
+        if (score && score.score !== undefined) {
+          var bar = document.createElement('div'); bar.className = 'score-bar';
+          var fill = document.createElement('div');
+          fill.className = 'score-bar-fill fill-' + scoreClass(score.score);
+          fill.style.width = Math.max(2, Math.round(score.score)) + '%';
+          bar.appendChild(fill);
+          card.appendChild(bar);
+        }
+
+        // counts
+        var counts = document.createElement('div');
+        counts.className = 'framework-counts';
+        function chip(cls, label, val) {
+          var c = document.createElement('span'); c.className = 'count-chip';
+          var d = document.createElement('span'); d.className = 'dot ' + cls; c.appendChild(d);
+          c.appendChild(document.createTextNode(label + ': ' + (val == null ? '—' : val)));
+          return c;
+        }
+        if (score) {
+          counts.appendChild(chip('pass-dot', 'Pass', score.pass_count));
+          counts.appendChild(chip('fail-dot', 'Fail', score.fail_count));
+          counts.appendChild(chip('incl-dot', 'Inconcl.', score.inconclusive_count));
+        } else {
+          counts.appendChild(chip('pass-dot', 'Pass', '—'));
+          counts.appendChild(chip('fail-dot', 'Fail', '—'));
+          counts.appendChild(chip('incl-dot', 'Inconcl.', '—'));
+        }
+        card.appendChild(counts);
+        return card;
+      }
+
+      async function loadFrameworkScores() {
+        var grid = document.getElementById('frameworkGrid');
+        // Skeletons
+        grid.innerHTML = '';
+        FRAMEWORK_META.forEach(function () {
+          var sk = document.createElement('div');
+          sk.className = 'skeleton skeleton-card';
+          grid.appendChild(sk);
+        });
+
+        var scores = {};
+        try {
+          scores = await C.apiFetch('/compliance-score', { silent: true }) || {};
+        } catch (_) { /* render empty */ }
+
+        // Trend lookup (best effort) — call /trend?days=7 in parallel for each framework
+        var trendPromises = FRAMEWORK_META.map(function (m) {
+          return C.apiFetch('/compliance-score/' + m.code + '/trend?days=7', { silent: true })
+            .then(function (data) {
+              if (!data || !Array.isArray(data.points) || data.points.length === 0) return null;
+              return data.points[0].score; // earliest in window
+            })
+            .catch(function () { return null; });
+        });
+        var priorScores = await Promise.all(trendPromises);
+
+        grid.innerHTML = '';
+        FRAMEWORK_META.forEach(function (m, i) {
+          var score = scores[m.code] || null;
+          grid.appendChild(renderFrameworkCard(m, score, priorScores[i]));
+        });
+      }
+
+      async function loadActionItems() {
+        // Failing controls — count via /controls/runs?status=fail
+        try {
+          var failing = await C.apiFetch('/controls/runs?status=fail&limit=1', { silent: true });
+          document.getElementById('aFailing').textContent = (failing && failing.total != null) ? failing.total : 0;
+        } catch (_) { document.getElementById('aFailing').textContent = '—'; }
+        // Pending policies for current user
+        try {
+          var pending = await C.apiFetch('/policies/pending', { silent: true });
+          document.getElementById('aPending').textContent = (pending && pending.length != null) ? pending.length : 0;
+        } catch (_) { document.getElementById('aPending').textContent = '—'; }
+        // Expiring vendor docs
+        try {
+          var expiring = await C.apiFetch('/vendors/expiring-documents?days=60', { silent: true });
+          document.getElementById('aExpiring').textContent = (expiring && expiring.length != null) ? expiring.length : 0;
+        } catch (_) { document.getElementById('aExpiring').textContent = '—'; }
+        // Open evidence requests
+        try {
+          var reqs = await C.apiFetch('/admin/evidence-requests?fulfilled=false', { silent: true });
+          document.getElementById('aRequests').textContent = (reqs && reqs.length != null) ? reqs.length : 0;
+        } catch (_) { document.getElementById('aRequests').textContent = '—'; }
+      }
+
+      async function loadActivity() {
+        var feed = document.getElementById('activityFeed');
+        C.renderSkeleton(feed, 'row', 5);
+        try {
+          // Combine: auditor activity + recent control runs (best-effort)
+          var [auditor, runs] = await Promise.all([
+            C.apiFetch('/admin/auditor-activity?limit=10', { silent: true }).catch(function () { return []; }),
+            C.apiFetch('/controls/runs?limit=10', { silent: true }).catch(function () { return { items: [] }; })
+          ]);
+          var events = [];
+          (auditor || []).forEach(function (a) {
+            events.push({
+              ts: a.accessed_at,
+              icon: 'fa-user-shield',
+              cls: 'act-info',
+              text: a.auditor_email + ' — ' + (a.action || '').replace(/_/g, ' '),
+              meta: a.target_type ? ('on ' + a.target_type + (a.target_id ? ' · ' + a.target_id.slice(0, 8) : '')) : ''
+            });
+          });
+          ((runs && runs.items) || []).forEach(function (r) {
+            var icon = r.status === 'pass' ? 'fa-check' : r.status === 'fail' ? 'fa-times' : 'fa-question';
+            var cls = r.status === 'pass' ? 'act-pass' : r.status === 'fail' ? 'act-fail' : 'act-info';
+            events.push({
+              ts: r.run_at,
+              icon: icon, cls: cls,
+              text: 'Control ' + (r.control_id || '').slice(0, 8) + ' — ' + (r.status || ''),
+              meta: r.failure_reason || ''
+            });
+          });
+
+          events.sort(function (a, b) { return new Date(b.ts) - new Date(a.ts); });
+          events = events.slice(0, 20);
+
+          if (!events.length) {
+            C.renderEmptyState(feed, 'fa-stream', 'No recent activity', 'Activity will appear here as controls run and auditors browse.');
+            return;
+          }
+          feed.innerHTML = '';
+          events.forEach(function (ev) {
+            var item = document.createElement('div'); item.className = 'activity-item';
+            var icon = document.createElement('div'); icon.className = 'activity-icon ' + (ev.cls || '');
+            var fa = document.createElement('i'); fa.className = 'fas ' + ev.icon; icon.appendChild(fa);
+            var content = document.createElement('div'); content.className = 'activity-content';
+            var text = document.createElement('div'); text.className = 'activity-text'; text.textContent = ev.text;
+            var meta = document.createElement('div'); meta.className = 'activity-meta';
+            meta.textContent = (ev.meta ? (ev.meta + ' · ') : '') + C.relativeTime(ev.ts);
+            content.appendChild(text); content.appendChild(meta);
+            item.appendChild(icon); item.appendChild(content);
+            feed.appendChild(item);
+          });
+        } catch (e) {
+          C.renderEmptyState(feed, 'fa-triangle-exclamation', 'Could not load activity', e.message || 'Try refreshing.');
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        renderSidebar('dashboard');
+        document.getElementById('btnRefresh').addEventListener('click', function () {
+          loadFrameworkScores(); loadActionItems(); loadActivity();
+          C.showNotification('Refreshing', 'Fetching latest compliance data…', 'info');
+        });
+        loadFrameworkScores();
+        loadActionItems();
+        loadActivity();
+      });
+    })();
+  </script>
+</body>
+</html>

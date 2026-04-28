@@ -1,0 +1,73 @@
+/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-8.3.4, pluggy-1.6.0 -- /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a
+configfile: pytest.ini
+plugins: cov-7.1.0, httpx-0.35.0, asyncio-0.25.0, respx-0.23.1, anyio-4.13.0
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None
+collecting ... collected 52 items
+
+tests/test_vapt/test_vapt_retest_flow.py::test_request_retest_transitions_status PASSED [  1%]
+tests/test_vapt/test_vapt_retest_flow.py::test_request_retest_wrong_tenant_returns_none PASSED [  3%]
+tests/test_vapt/test_vapt_retest_flow.py::test_vendor_retest_pass_closes_submission_and_risk PASSED [  5%]
+tests/test_vapt/test_vapt_retest_flow.py::test_vendor_retest_fail_reverts_status PASSED [  7%]
+tests/test_vapt/test_vapt_retest_flow.py::test_retest_response_invalid_state_raises PASSED [  9%]
+tests/test_vapt/test_vapt_retest_flow.py::test_retest_response_invalid_result_raises PASSED [ 11%]
+tests/test_vapt/test_vapt_security.py::test_regular_user_jwt_rejected_on_vendor_endpoints PASSED [ 13%]
+tests/test_vapt/test_vapt_security.py::test_vendor_jwt_rejected_on_admin_endpoints PASSED [ 15%]
+tests/test_vapt/test_vapt_security.py::test_revoked_vendor_jwt_rejected PASSED [ 17%]
+tests/test_vapt/test_vapt_security.py::test_expired_vendor_jwt_rejected PASSED [ 19%]
+tests/test_vapt/test_vapt_security.py::test_tampered_vendor_jwt_rejected PASSED [ 21%]
+tests/test_vapt/test_vapt_security.py::test_vendor_cannot_see_other_vendors_submissions PASSED [ 23%]
+tests/test_vapt/test_vapt_security.py::test_vendor_get_submission_by_id_blocks_cross_vendor PASSED [ 25%]
+tests/test_vapt/test_vapt_security.py::test_admin_cannot_see_other_tenants_vendors PASSED [ 26%]
+tests/test_vapt/test_vapt_security.py::test_admin_cannot_get_vendor_in_other_tenant_404 PASSED [ 28%]
+tests/test_vapt/test_vapt_security.py::test_user_jwt_with_wrong_audience_rejected PASSED [ 30%]
+tests/test_vapt/test_vapt_security.py::test_jwt_with_unknown_vendor_id_rejected PASSED [ 32%]
+tests/test_vapt/test_vapt_security.py::test_missing_authorization_header_rejected PASSED [ 34%]
+tests/test_vapt/test_vapt_submission_pipeline.py::test_submit_finding_creates_linked_risk PASSED [ 36%]
+tests/test_vapt/test_vapt_submission_pipeline.py::test_submit_finding_no_cve_still_creates_risk PASSED [ 38%]
+tests/test_vapt/test_vapt_submission_pipeline.py::test_submit_finding_invalid_severity_raises PASSED [ 40%]
+tests/test_vapt/test_vapt_submission_pipeline.py::test_submit_finding_clamps_cvss_to_range PASSED [ 42%]
+tests/test_vapt/test_vapt_submission_pipeline.py::test_submit_finding_audit_log_written PASSED [ 44%]
+tests/test_vapt/test_vapt_vendor_invitation.py::test_invite_vendor_creates_vendor_and_invitation PASSED [ 46%]
+tests/test_vapt/test_vapt_vendor_invitation.py::test_accept_invitation_returns_jwt PASSED [ 48%]
+tests/test_vapt/test_vapt_vendor_invitation.py::test_accept_invitation_invalid_token_returns_none PASSED [ 50%]
+tests/test_vapt/test_vapt_vendor_invitation.py::test_accept_invitation_expired_returns_none PASSED [ 51%]
+tests/test_vapt/test_vapt_vendor_invitation.py::test_accept_invitation_single_use PASSED [ 53%]
+tests/test_vapt/test_vapt_vendor_invitation.py::test_revoke_vendor_blocks_subsequent_calls PASSED [ 55%]
+tests/test_vapt/test_vapt_vendor_invitation.py::test_revoke_vendor_wrong_tenant_returns_false PASSED [ 57%]
+tests/test_vapt/test_vapt_vendor_invitation.py::test_jwt_signature_uses_jwt_secret_key PASSED [ 59%]
+tests/test_vapt/test_vapt_vendor_models.py::test_vapt_vendor_row_inserts PASSED [ 61%]
+tests/test_vapt/test_vapt_vendor_models.py::test_vapt_invitation_row_inserts PASSED [ 63%]
+tests/test_vapt/test_vapt_vendor_models.py::test_vapt_submission_row_inserts PASSED [ 65%]
+tests/test_vapt/test_vapt_vendor_models.py::test_vapt_vendor_status_defaults_to_active PASSED [ 67%]
+tests/test_vapt/test_vapt_vendor_models.py::test_vapt_submission_unique_per_vendor_tenant PASSED [ 69%]
+tests/test_vapt/test_vapt_vendor_routes.py::test_admin_invite_vendor_returns_201_with_invitation_url PASSED [ 71%]
+tests/test_vapt/test_vapt_vendor_routes.py::test_admin_invite_vendor_requires_ciso_role PASSED [ 73%]
+tests/test_vapt/test_vapt_vendor_routes.py::test_admin_list_vendors PASSED [ 75%]
+tests/test_vapt/test_vapt_vendor_routes.py::test_admin_get_vendor_detail PASSED [ 76%]
+tests/test_vapt/test_vapt_vendor_routes.py::test_admin_revoke_vendor PASSED [ 78%]
+tests/test_vapt/test_vapt_vendor_routes.py::test_vendor_accept_invitation_returns_jwt PASSED [ 80%]
+tests/test_vapt/test_vapt_vendor_routes.py::test_vendor_accept_invitation_bad_token_401 PASSED [ 82%]
+tests/test_vapt/test_vapt_vendor_routes.py::test_vendor_accept_invitation_already_redeemed_409 PASSED [ 84%]
+tests/test_vapt/test_vapt_vendor_routes.py::test_vendor_profile_returns_own_data PASSED [ 86%]
+tests/test_vapt/test_vapt_vendor_routes.py::test_vendor_profile_requires_jwt PASSED [ 88%]
+tests/test_vapt/test_vapt_vendor_routes.py::test_vendor_list_submissions_empty_initially PASSED [ 90%]
+tests/test_vapt/test_vapt_vendor_routes.py::test_vendor_submit_finding_creates_risk PASSED [ 92%]
+tests/test_vapt/test_vapt_vendor_routes.py::test_vendor_submit_finding_rejects_oversize_evidence PASSED [ 94%]
+tests/test_vapt/test_vapt_vendor_routes.py::test_vendor_submit_finding_invalid_severity_422 PASSED [ 96%]
+tests/test_vapt/test_vapt_vendor_routes.py::test_vendor_submit_finding_invalid_cvss_422 PASSED [ 98%]
+tests/test_vapt/test_vapt_vendor_routes.py::test_admin_lists_all_submissions PASSED [100%]
+
+=============================== warnings summary ===============================
+tests/test_vapt/test_vapt_vendor_invitation.py::test_jwt_signature_uses_jwt_secret_key
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/jwt/api_jwt.py:365: InsecureKeyLengthWarning: The HMAC key is 12 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+    decoded = self.decode_complete(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 52 passed, 1 warning in 18.68s ========================

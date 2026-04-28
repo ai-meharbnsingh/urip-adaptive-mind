@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Security | URIP</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="urip-app">
+  <div id="app-shell" data-page="ai-security">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">AI Security</h1>
+        <p class="page-subtitle">
+          Model inventory, prompt-injection telemetry, and ISO 42001 / EU AI Act / NIST AI RMF governance.
+          <em style="color:var(--u-fg-3);font-size:.85em;">
+            MVP scaffold — runtime model-firewall and red-team automation are roadmap.
+          </em>
+        </p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-outline" id="btnRefresh"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+    </div>
+
+    <div class="action-row" id="summaryWidgets">
+      <div class="action-tile">
+        <div class="action-tile-icon icon-info"><i class="fas fa-robot"></i></div>
+        <div class="action-tile-content">
+          <span class="action-tile-value" id="totalModels">--</span>
+          <span class="action-tile-label">AI Models</span>
+        </div>
+      </div>
+      <div class="action-tile">
+        <div class="action-tile-icon icon-warn"><i class="fas fa-bolt"></i></div>
+        <div class="action-tile-content">
+          <span class="action-tile-value" id="injectionCount">--</span>
+          <span class="action-tile-label">Prompt Injections</span>
+        </div>
+      </div>
+      <div class="action-tile">
+        <div class="action-tile-icon icon-success"><i class="fas fa-balance-scale"></i></div>
+        <div class="action-tile-content">
+          <span class="action-tile-value" id="iso42001Avg">--</span>
+          <span class="action-tile-label">ISO 42001 Avg</span>
+        </div>
+      </div>
+      <div class="action-tile">
+        <div class="action-tile-icon icon-success"><i class="fas fa-gavel"></i></div>
+        <div class="action-tile-content">
+          <span class="action-tile-value" id="euAiActAvg">--</span>
+          <span class="action-tile-label">EU AI Act Avg</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title"><i class="fas fa-list" style="color:var(--u-cyan);margin-right:.5rem"></i>Registered Models</span>
+      </div>
+      <div class="card-body">
+        <table class="data-table" id="modelsTable">
+          <thead><tr><th>Name</th><th>Provider</th><th>Purpose</th><th>Risk Level</th><th>Endpoints</th><th>Last Audit</th></tr></thead>
+          <tbody id="modelsBody"><tr><td colspan="6" class="text-center">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      window.URIP.shell.mount({
+        page: 'ai-security',
+        title: 'AI Security',
+        breadcrumb: 'Strategic Modules / AI Security'
+      });
+    });
+  </script>
+  <script>
+    (async function() {
+      const body = document.getElementById('modelsBody');
+      if (!body) return;
+      try {
+        const resp = await window.URIP.apiFetch('/ai-security/models', { silent: true });
+        const items = resp.items || [];
+        document.getElementById('totalModels').textContent = resp.total ?? items.length;
+        if (items.length === 0) {
+          body.innerHTML = '<tr><td colspan="6" class="text-center">No models registered yet.</td></tr>';
+        } else {
+          body.innerHTML = items.map(m => `
+            <tr>
+              <td>${m.name}</td>
+              <td>${m.provider}</td>
+              <td>${m.purpose || '—'}</td>
+              <td><span class="badge badge-${m.risk_level === 'high' || m.risk_level === 'critical' ? 'critical' : 'info'}">${m.risk_level}</span></td>
+              <td>${(m.deployment_endpoints || []).length}</td>
+              <td>${m.last_audited_at ? new Date(m.last_audited_at).toLocaleDateString() : '—'}</td>
+            </tr>
+          `).join('');
+        }
+      } catch (e) {
+        body.innerHTML = `<tr><td colspan="6" class="text-center text-error">Failed: ${e.message}</td></tr>`;
+      }
+
+      try {
+        const pi = await window.URIP.apiFetch('/ai-security/prompt-injections', { silent: true });
+        document.getElementById('injectionCount').textContent = pi.total ?? (pi.items || []).length;
+      } catch (e) { /* non-blocking */ }
+
+      try {
+        const gov = await window.URIP.apiFetch('/ai-security/governance-status', { silent: true });
+        const avgs = gov.framework_averages || {};
+        document.getElementById('iso42001Avg').textContent = avgs.ISO_42001 ?? '—';
+        document.getElementById('euAiActAvg').textContent = avgs.EU_AI_ACT ?? '—';
+      } catch (e) { /* non-blocking */ }
+    })();
+  </script>
+</body>
+</html>

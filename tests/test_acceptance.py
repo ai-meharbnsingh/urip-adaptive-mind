@@ -1,4 +1,10 @@
-"""Tests for /api/acceptance endpoints (create, approve, reject, duplicate)."""
+"""Tests for /api/acceptance endpoints (create, approve, reject, duplicate).
+
+NOTE 2026-04-27 (backend gaps audit): POST /api/acceptance now returns 201
+(was 200) per HTTP semantics for resource creation — see ENDPOINT_AUDIT.md
+criterion #7.  The previous expectation of 200 was incorrect.  Approve/reject
+endpoints remain 200 because they are state transitions, not creations.
+"""
 
 import pytest
 from httpx import AsyncClient
@@ -19,7 +25,7 @@ async def test_create_acceptance(
         "compensating_controls": ["Network segmentation", "IDS monitoring"],
         "residual_risk": "Low — isolated environment",
     })
-    assert resp.status_code == 200
+    assert resp.status_code == 201
 
     body = resp.json()
     assert body["status"] == "pending"
@@ -41,7 +47,7 @@ async def test_approve_acceptance(
         "risk_id": risk_id,
         "justification": "Acceptable per business risk assessment",
     })
-    assert create_resp.status_code == 200
+    assert create_resp.status_code == 201
     acceptance_id = create_resp.json()["id"]
 
     # Approve (CISO)
@@ -71,7 +77,7 @@ async def test_reject_acceptance(
         "risk_id": risk_id,
         "justification": "Not critical enough to remediate",
     })
-    assert create_resp.status_code == 200
+    assert create_resp.status_code == 201
     acceptance_id = create_resp.json()["id"]
 
     # Reject (CISO)
@@ -97,7 +103,7 @@ async def test_duplicate_acceptance(
         "risk_id": risk_id,
         "justification": "First request",
     })
-    assert resp1.status_code == 200
+    assert resp1.status_code == 201
 
     # Second request for same risk returns 409
     resp2 = await client.post("/api/acceptance", headers=it_team_headers, json={

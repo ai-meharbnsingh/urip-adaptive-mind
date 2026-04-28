@@ -1,0 +1,159 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-8.3.4, pluggy-1.6.0 -- /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/bin/python3.14
+cachedir: .pytest_cache
+rootdir: /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/compliance/backend
+configfile: pyproject.toml
+plugins: cov-7.1.0, httpx-0.35.0, asyncio-0.25.0, respx-0.23.1, anyio-4.13.0
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None
+collecting ... collected 6 items
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_compliance_audit_log_model_exists PASSED [ 16%]
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_create_writes_compliance_audit_log PASSED [ 33%]
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_update_writes_compliance_audit_log PASSED [ 50%]
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_upload_document_persists_bytes_to_storage PASSED [ 66%]
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_policy_publish_writes_compliance_audit_log PASSED [ 83%]
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_auditor_invitation_revoke_writes_compliance_audit_log PASSED [100%]
+
+=============================== warnings summary ===============================
+../../.venv/lib/python3.14/site-packages/fastapi/routing.py:233: 97 warnings
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/fastapi/routing.py:233: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    is_coroutine = asyncio.iscoroutinefunction(dependant.call)
+
+../../.venv/lib/python3.14/site-packages/starlette/_utils.py:39: 101 warnings
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/starlette/_utils.py:39: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    return asyncio.iscoroutinefunction(obj) or (callable(obj) and asyncio.iscoroutinefunction(obj.__call__))
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_compliance_audit_log_model_exists
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:1153: DeprecationWarning: 'asyncio.get_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    return asyncio.get_event_loop_policy()
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_compliance_audit_log_model_exists
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_create_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_update_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_upload_document_persists_bytes_to_storage
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_policy_publish_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_auditor_invitation_revoke_writes_compliance_audit_log
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:844: DeprecationWarning: 'asyncio.get_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    _restore_event_loop_policy(asyncio.get_event_loop_policy()),
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_compliance_audit_log_model_exists
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_create_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_update_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_upload_document_persists_bytes_to_storage
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_policy_publish_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_auditor_invitation_revoke_writes_compliance_audit_log
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:1125: DeprecationWarning: 'asyncio.set_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    asyncio.set_event_loop_policy(new_loop_policy)
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_compliance_audit_log_model_exists
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_create_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_update_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_upload_document_persists_bytes_to_storage
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_policy_publish_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_auditor_invitation_revoke_writes_compliance_audit_log
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:1126: DeprecationWarning: 'asyncio.get_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_compliance_audit_log_model_exists
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_create_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_update_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_upload_document_persists_bytes_to_storage
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_policy_publish_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_auditor_invitation_revoke_writes_compliance_audit_log
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:859: DeprecationWarning: 'asyncio.get_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    policy = asyncio.get_event_loop_policy()
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_compliance_audit_log_model_exists
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_create_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_update_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_upload_document_persists_bytes_to_storage
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_policy_publish_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_auditor_invitation_revoke_writes_compliance_audit_log
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:904: DeprecationWarning: 'asyncio.get_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    policy = asyncio.get_event_loop_policy()
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_compliance_audit_log_model_exists
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_create_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_update_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_upload_document_persists_bytes_to_storage
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_policy_publish_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_auditor_invitation_revoke_writes_compliance_audit_log
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:928: DeprecationWarning: 'asyncio.set_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    asyncio.set_event_loop_policy(previous_policy)
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_compliance_audit_log_model_exists
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_create_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_update_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_upload_document_persists_bytes_to_storage
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_policy_publish_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_auditor_invitation_revoke_writes_compliance_audit_log
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:940: DeprecationWarning: 'asyncio.get_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    policy = asyncio.get_event_loop_policy()
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_create_writes_compliance_audit_log
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:756: DeprecationWarning: 'asyncio.get_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    old_loop_policy = asyncio.get_event_loop_policy()
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_create_writes_compliance_audit_log
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:761: DeprecationWarning: 'asyncio.set_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    asyncio.set_event_loop_policy(policy)
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_create_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_update_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_update_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_upload_document_persists_bytes_to_storage
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_upload_document_persists_bytes_to_storage
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_policy_publish_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_auditor_invitation_revoke_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_auditor_invitation_revoke_writes_compliance_audit_log
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/jose/jwt.py:311: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = timegm(datetime.utcnow().utctimetuple())
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_create_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_update_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_upload_document_persists_bytes_to_storage
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/compliance/backend/compliance_backend/services/vendor_risk.py:53: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    onboarded_at=datetime.utcnow(),
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_create_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_update_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_update_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_upload_document_persists_bytes_to_storage
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_upload_document_persists_bytes_to_storage
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_policy_publish_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_policy_publish_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_auditor_invitation_revoke_writes_compliance_audit_log
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_auditor_invitation_revoke_writes_compliance_audit_log
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/sql/schema.py:3624: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_vendor_upload_document_persists_bytes_to_storage
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/compliance/backend/compliance_backend/services/vendor_risk.py:180: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    uploaded_at=datetime.utcnow(),
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_policy_publish_writes_compliance_audit_log
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/compliance/backend/compliance_backend/services/policy_manager.py:48: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    published_at=datetime.utcnow(),
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_auditor_invitation_revoke_writes_compliance_audit_log
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/compliance/backend/tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py:254: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "audit_period_start": (datetime.utcnow()).isoformat(),
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_auditor_invitation_revoke_writes_compliance_audit_log
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/compliance/backend/tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py:255: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "audit_period_end": (datetime.utcnow() + timedelta(days=30)).isoformat(),
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_auditor_invitation_revoke_writes_compliance_audit_log
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/compliance/backend/tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py:256: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "expires_at": (datetime.utcnow() + timedelta(days=14)).isoformat(),
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_auditor_invitation_revoke_writes_compliance_audit_log
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/compliance/backend/compliance_backend/models/auditor.py:79: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    DateTime, nullable=False, default=lambda: datetime.utcnow()
+
+tests/test_critfix_audit_log/test_compliance_audit_and_vendor_upload.py::test_auditor_invitation_revoke_writes_compliance_audit_log
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:765: DeprecationWarning: 'asyncio.set_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    asyncio.set_event_loop_policy(old_loop_policy)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 6 passed, 270 warnings in 0.07s ========================

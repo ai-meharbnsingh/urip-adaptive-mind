@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications | URIP</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="urip-app">
+  <div id="app-shell" data-page="audit-log">
+    <div class="rr-toolbar">
+      <input id="nfSearch" type="search" placeholder="Filter notifications…">
+      <select id="nfType">
+        <option value="">All types</option>
+        <option value="login">Login</option>
+        <option value="risk">Risk</option>
+        <option value="control">Control</option>
+        <option value="ticket">Ticket</option>
+        <option value="connector">Connector</option>
+      </select>
+      <button class="u-btn is-ghost is-sm" id="nfReset"><i class="fas fa-rotate-left"></i> Reset</button>
+    </div>
+
+    <div class="u-card">
+      <div class="u-card-h"><h3>Recent Activity</h3></div>
+      <div class="u-card-b" id="nfBody">
+        <div class="u-skel" style="margin-bottom:10px"></div>
+        <div class="u-skel" style="margin-bottom:10px"></div>
+        <div class="u-skel"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      if (typeof window.checkAuth === 'function') window.checkAuth();
+      var state = { items: [], filters: { search: '', type: '' } };
+
+      document.addEventListener('DOMContentLoaded', function () {
+        window.URIP.shell.mount({
+          page: 'audit-log',
+          title: 'Notifications',
+          breadcrumb: 'Operations / Notifications',
+          actions: [
+            { label: 'Mark all read', icon: 'fa-check-double', variant: 'is-ghost', onClick: function () {
+                window.URIP.showNotification('Marked', 'All notifications marked as read (local only — backend persistence pending).', 'success');
+              }
+            }
+          ]
+        });
+
+        document.getElementById('nfSearch').addEventListener('input', function (e) {
+          state.filters.search = e.target.value.trim().toLowerCase();
+          render();
+        });
+        document.getElementById('nfType').addEventListener('change', function (e) {
+          state.filters.type = e.target.value;
+          render();
+        });
+        document.getElementById('nfReset').addEventListener('click', function () {
+          state.filters = { search: '', type: '' };
+          document.getElementById('nfSearch').value = '';
+          document.getElementById('nfType').value = '';
+          render();
+        });
+
+        load();
+      });
+
+      async function load() {
+        try {
+          var resp = await window.URIP.apiFetch('/audit-log?per_page=100', { silent: true });
+          state.items = (resp && (resp.items || resp.entries || resp)) || [];
+          if (!Array.isArray(state.items)) state.items = [];
+        } catch (_e) {
+          state.items = [];
+        }
+        render();
+      }
+
+      function render() {
+        var body = document.getElementById('nfBody');
+        body.textContent = '';
+        var rows = state.items.filter(function (it) {
+          if (state.filters.search) {
+            var hay = JSON.stringify(it).toLowerCase();
+            if (hay.indexOf(state.filters.search) === -1) return false;
+          }
+          if (state.filters.type) {
+            var t = (it.action || it.event_type || '').toLowerCase();
+            if (t.indexOf(state.filters.type) === -1) return false;
+          }
+          return true;
+        });
+        if (!rows.length) {
+          body.appendChild(window.URIP.shell.makeEmpty(
+            'fa-bell-slash',
+            'No notifications',
+            state.items.length ? 'No matches for those filters.' : 'New activity will show up here.'
+          ));
+          return;
+        }
+        rows.forEach(function (it) {
+          var row = document.createElement('div');
+          row.style.display = 'flex';
+          row.style.gap = '12px';
+          row.style.padding = '12px 0';
+          row.style.borderBottom = '1px solid var(--u-border)';
+          var ic = document.createElement('div');
+          ic.className = 'r-feed-icon';
+          ic.innerHTML = '<i class="fas fa-bolt"></i>';
+          row.appendChild(ic);
+          var bd = document.createElement('div');
+          bd.style.flex = '1';
+          var t = document.createElement('div');
+          t.style.fontSize = '13px';
+          t.style.fontWeight = '500';
+          t.textContent = it.action || it.event_type || it.message || 'Event';
+          bd.appendChild(t);
+          var m = document.createElement('div');
+          m.style.fontSize = '11px';
+          m.style.color = 'var(--u-fg-3)';
+          m.textContent = (it.user_email || it.actor || '') + ' • ' + window.URIP.shell.relTime(it.timestamp || it.created_at || '');
+          bd.appendChild(m);
+          row.appendChild(bd);
+          body.appendChild(row);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

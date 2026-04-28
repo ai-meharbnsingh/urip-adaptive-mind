@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloud Security | URIP - Unified Risk Intelligence Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/domain-page.css">
+  <link rel="stylesheet" href="css/module-tools.css">
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+    <main class="main-content">
+      <header class="topbar"></header>
+      <div class="content-area">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title"><i class="fas fa-cloud" style="color:var(--teal-accent);margin-right:.5rem"></i>Cloud Security</h1>
+            <p class="page-subtitle">CSPM posture across AWS, Azure, and GCP — misconfigurations mapped to CIS / NIST / PCI controls.</p>
+          </div>
+          <div class="flex gap-2">
+            <a class="btn btn-outline" id="btnManageConnectors" href="tool-catalog.html?category=CSPM">
+              <i class="fas fa-puzzle-piece"></i> Manage Connectors
+            </a>
+            <a class="btn btn-outline" href="cspm-dashboard.html">
+              <i class="fas fa-arrow-up-right-from-square"></i> Full CSPM
+            </a>
+            <button class="btn btn-primary" id="btnRunScan" type="button">
+              <i class="fas fa-play"></i> Run Scan
+            </button>
+          </div>
+        </div>
+
+        <!-- Available integrations for this module -->
+        <div id="moduleTools" data-modules="CSPM"></div>
+
+        <div class="domain-kpi-strip four">
+          <div class="kpi-card"><div class="kpi-icon" style="background:rgba(99,102,241,0.1);color:#6366F1"><i class="fas fa-list"></i></div><div class="kpi-content"><div class="kpi-value"><span id="kpiTotalRisks">--</span></div><div class="kpi-label">Total Risks</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon critical"><i class="fas fa-fire"></i></div><div class="kpi-content"><div class="kpi-value" style="color:#E74C3C"><span id="kpiCriticalCount">--</span></div><div class="kpi-label">Critical</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon medium"><i class="fas fa-gauge-high"></i></div><div class="kpi-content"><div class="kpi-value"><span id="kpiMeanScore">--</span></div><div class="kpi-label">Mean Score</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon" style="background:rgba(39,174,96,0.1);color:#27AE60"><i class="fas fa-plug-circle-check"></i></div><div class="kpi-content"><div class="kpi-value"><span id="kpiConnectorsConfigured">--</span></div><div class="kpi-label">Connectors Configured</div></div></div>
+        </div>
+
+        <!-- Cloud score donuts -->
+        <div class="section-row"><h2>Posture Score by Cloud Provider</h2></div>
+        <div class="cloud-score-row" id="cloudScoreRow">
+          <div class="cloud-score-card">
+            <div class="provider"><i class="fab fa-aws"></i> AWS</div>
+            <div class="donut" id="awsDonut"><span id="awsScore">--</span></div>
+            <div style="font-size:12px;color:var(--gray-500)">CIS / NIST / PCI</div>
+          </div>
+          <div class="cloud-score-card">
+            <div class="provider"><i class="fab fa-microsoft"></i> Azure</div>
+            <div class="donut" id="azureDonut"><span id="azureScore">--</span></div>
+            <div style="font-size:12px;color:var(--gray-500)">CIS / NIST / PCI</div>
+          </div>
+          <div class="cloud-score-card">
+            <div class="provider"><i class="fab fa-google"></i> GCP</div>
+            <div class="donut" id="gcpDonut"><span id="gcpScore">--</span></div>
+            <div style="font-size:12px;color:var(--gray-500)">CIS / NIST / PCI</div>
+          </div>
+        </div>
+
+        <!-- Failing controls -->
+        <div class="section-row">
+          <h2>Top Failing Controls</h2>
+          <a class="btn btn-sm btn-outline" href="cspm-findings.html?status=fail">View all <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="risk-table-card">
+          <table>
+            <thead><tr><th>Control</th><th>Cloud</th><th>Severity</th><th>Status</th></tr></thead>
+            <tbody id="failingControlsBody"><tr><td colspan="4" style="padding:2rem;text-align:center;color:#94A3B8">Loading…</td></tr></tbody>
+          </table>
+        </div>
+
+        <!-- Connectors -->
+        <div class="section-row">
+          <h2>Connectors in this domain</h2>
+          <a class="btn btn-sm btn-outline" href="tool-catalog.html?category=CSPM"><i class="fas fa-plus"></i> Add</a>
+        </div>
+        <div id="connectorGrid" class="connector-grid"></div>
+
+        <!-- Top risks -->
+        <div class="section-row">
+          <h2>Top Risks (last 30 days)</h2>
+          <a class="btn btn-sm btn-outline" href="risk-register.html?domain=cloud">View All <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div id="riskFallbackBanner" class="fallback-banner" style="display:none">
+          <i class="fas fa-circle-info"></i> Showing risks via source filter — Risk.domain field empty.
+        </div>
+        <div class="risk-table-card">
+          <table>
+            <thead><tr><th>ID</th><th>Finding</th><th>Source</th><th>Score</th><th>Severity</th></tr></thead>
+            <tbody id="topRisksBody"><tr><td colspan="5" style="padding:2rem;text-align:center;color:#94A3B8">Loading…</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="section-row"><h2>Activity Timeline (last 7 days)</h2></div>
+        <div id="activityTimeline" class="activity-timeline">
+          <div class="activity-item">
+            <span class="time">—</span>
+            <span>Cloud event timeline (CSPM scans, control fixes, drift detections) not yet populated.</span>
+            <span class="actor">system</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/domain-page.js"></script>
+  <script src="js/module-tools.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      loadModuleTools(['CSPM'], 'moduleTools', {
+        title: 'Available integrations for Cloud Security',
+        subtitle: 'Connect AWS, Azure, and GCP CSPM tools to start scoring posture against CIS / NIST / PCI.',
+        manageHref: 'tool-catalog.html?category=CSPM'
+      });
+    });
+  </script>
+  <script>
+    function paintDonut(id, score) {
+      var el = document.getElementById(id);
+      if (!el || score == null) return;
+      var pct = Math.max(0, Math.min(100, score));
+      var deg = Math.round(pct * 3.6);
+      var color = pct >= 80 ? '#27AE60' : pct >= 60 ? '#F1C40F' : '#E74C3C';
+      el.style.background = 'conic-gradient(' + color + ' ' + deg + 'deg, var(--gray-200) ' + deg + 'deg)';
+    }
+
+    DomainPage.init({
+      domainSlug: 'domain-cloud',
+      connectors: ['aws_cspm', 'azure_cspm', 'gcp_cspm'],
+      sources: ['aws_cspm', 'azure_cspm', 'gcp_cspm'],
+      domainField: 'cloud',
+      catalogCategory: 'CSPM',
+      onSpecialWidgets: async function () {
+        var apiFetch = window.URIP && window.URIP.apiFetch;
+        if (!apiFetch) return;
+        try {
+          var resp = await apiFetch('/cspm/score', { silent: true });
+          if (resp && Array.isArray(resp.providers)) {
+            resp.providers.forEach(function (p) {
+              var key = (p.cloud_provider || p.provider || '').toLowerCase();
+              var sc = p.score != null ? Math.round(p.score) : null;
+              if (key.indexOf('aws') >= 0) {
+                document.getElementById('awsScore').textContent = sc != null ? sc + '%' : '--';
+                paintDonut('awsDonut', sc);
+              } else if (key.indexOf('azure') >= 0) {
+                document.getElementById('azureScore').textContent = sc != null ? sc + '%' : '--';
+                paintDonut('azureDonut', sc);
+              } else if (key.indexOf('gcp') >= 0 || key.indexOf('google') >= 0) {
+                document.getElementById('gcpScore').textContent = sc != null ? sc + '%' : '--';
+                paintDonut('gcpDonut', sc);
+              }
+            });
+          }
+        } catch (e) {
+          // No CSPM connected yet — donuts stay at "--"
+          console.warn('cspm score not available', e);
+        }
+
+        try {
+          var fr = await apiFetch('/cspm/findings?status=fail&per_page=10', { silent: true });
+          var body = document.getElementById('failingControlsBody');
+          body.textContent = '';
+          var items = (fr && (fr.items || fr.findings)) || [];
+          if (!items.length) {
+            var tr = document.createElement('tr');
+            var td = document.createElement('td');
+            td.colSpan = 4;
+            td.style.padding = '1.5rem';
+            td.style.textAlign = 'center';
+            td.style.color = '#94A3B8';
+            td.textContent = 'No failing controls — connect a CSPM provider to populate.';
+            tr.appendChild(td);
+            body.appendChild(tr);
+            return;
+          }
+          items.slice(0, 10).forEach(function (f) {
+            var tr = document.createElement('tr');
+            var td1 = document.createElement('td');
+            td1.textContent = f.control_name || f.control_id || f.title || '—';
+            tr.appendChild(td1);
+            var td2 = document.createElement('td');
+            td2.textContent = f.cloud_provider || f.provider || '—';
+            tr.appendChild(td2);
+            var td3 = document.createElement('td');
+            var sev = document.createElement('span');
+            sev.className = 'badge badge-' + (f.severity || 'info').toLowerCase();
+            sev.textContent = f.severity || '—';
+            td3.appendChild(sev);
+            tr.appendChild(td3);
+            var td4 = document.createElement('td');
+            td4.textContent = f.status || 'fail';
+            tr.appendChild(td4);
+            body.appendChild(tr);
+          });
+        } catch (e) {
+          console.warn('cspm findings not available', e);
+        }
+      },
+    });
+  </script>
+</body>
+</html>

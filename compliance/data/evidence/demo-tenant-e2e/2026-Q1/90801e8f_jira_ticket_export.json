@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:24:25.415522",
+  "tickets": [
+    {
+      "id": "ADV-OPS-3332",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "In Progress",
+      "assignee": "user-228@adverb.in",
+      "created": "2026-03-17T13:24:25.415526",
+      "resolved": "2026-04-25T13:24:25.415529"
+    },
+    {
+      "id": "ADV-OPS-7960",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "Done",
+      "assignee": "user-119@adverb.in",
+      "created": "2026-02-10T13:24:25.415532",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-1696",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-133@adverb.in",
+      "created": "2026-02-06T13:24:25.415535",
+      "resolved": "2026-04-19T13:24:25.415538"
+    },
+    {
+      "id": "ADV-OPS-2948",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-167@adverb.in",
+      "created": "2026-03-05T13:24:25.415541",
+      "resolved": "2026-04-14T13:24:25.415543"
+    },
+    {
+      "id": "ADV-OPS-2581",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "Done",
+      "assignee": "user-701@adverb.in",
+      "created": "2026-03-18T13:24:25.415546",
+      "resolved": "2026-04-21T13:24:25.415548"
+    },
+    {
+      "id": "ADV-OPS-1479",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "Done",
+      "assignee": "user-966@adverb.in",
+      "created": "2026-03-08T13:24:25.415551",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-6698",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-975@adverb.in",
+      "created": "2026-02-07T13:24:25.415554",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-4962",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "Done",
+      "assignee": "user-201@adverb.in",
+      "created": "2026-01-28T13:24:25.415557",
+      "resolved": null
+    }
+  ]
+}

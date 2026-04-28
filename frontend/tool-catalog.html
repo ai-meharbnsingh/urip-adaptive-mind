@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tool Catalog | URIP</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="urip-app">
+  <div id="app-shell" data-page="tool-catalog">
+
+    <!-- KPI strip -->
+    <div class="tc-kpi-strip">
+      <div class="tc-kpi"><div class="tc-kpi-val" id="kpiTotal">—</div><div class="tc-kpi-lbl">Available integrations</div></div>
+      <div class="tc-kpi"><div class="tc-kpi-val" id="kpiConfigured">—</div><div class="tc-kpi-lbl">Configured for your tenant</div></div>
+      <div class="tc-kpi"><div class="tc-kpi-val" id="kpiHealthy">—</div><div class="tc-kpi-lbl">Healthy</div></div>
+      <div class="tc-kpi"><div class="tc-kpi-val" id="kpiErrors">—</div><div class="tc-kpi-lbl">Errors (24h)</div></div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="tc-filter-bar">
+      <input id="filterSearch" type="search" placeholder="Search tools by name or category…" aria-label="Search">
+      <select id="filterCategory" aria-label="Category"><option value="">All categories</option></select>
+      <select id="filterConfigured" aria-label="Status">
+        <option value="">All</option>
+        <option value="yes">Configured</option>
+        <option value="no">Available</option>
+      </select>
+      <button class="u-btn is-ghost is-sm" id="filterReset"><i class="fas fa-rotate-left"></i> Reset</button>
+    </div>
+
+    <!-- Tile grid (grouped by module) -->
+    <div class="tc-grid" id="catalogGrid"></div>
+    <div id="catalogEmpty" style="display:none"></div>
+    <div id="catalogError" style="display:none"></div>
+  </div>
+
+  <!-- Setup Guide Drawer -->
+  <div class="u-drawer-mask" id="sgMask"></div>
+  <aside class="u-drawer" id="sgDrawer" aria-hidden="true">
+    <div class="u-drawer-h">
+      <div>
+        <h2 id="sgTitle">Tool Setup</h2>
+        <div id="sgSubtitle" style="font-size:12px;color:var(--u-fg-3);margin-top:2px"></div>
+      </div>
+      <button class="u-btn is-ghost is-icon" id="sgClose" aria-label="Close">
+        <i class="fas fa-xmark"></i>
+      </button>
+    </div>
+    <div class="u-drawer-b" id="sgBody">
+      <div class="u-skel" style="margin-bottom:10px"></div>
+      <div class="u-skel" style="margin-bottom:10px"></div>
+      <div class="u-skel"></div>
+    </div>
+    <div class="u-drawer-f" id="sgFooter"></div>
+  </aside>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shell.js"></script>
+  <script src="js/tool-catalog.js?v=20260428"></script>
+</body>
+</html>

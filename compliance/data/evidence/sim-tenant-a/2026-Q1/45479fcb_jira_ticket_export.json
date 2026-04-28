@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:24:24.852455",
+  "tickets": [
+    {
+      "id": "ADV-OPS-1369",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "To Do",
+      "assignee": "user-793@adverb.in",
+      "created": "2026-04-01T13:24:24.852458",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-7462",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "To Do",
+      "assignee": "user-425@adverb.in",
+      "created": "2026-02-06T13:24:24.852462",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-6915",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "Done",
+      "assignee": "user-833@adverb.in",
+      "created": "2026-02-17T13:24:24.852465",
+      "resolved": "2026-04-21T13:24:24.852467"
+    },
+    {
+      "id": "ADV-OPS-1199",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "In Progress",
+      "assignee": "user-459@adverb.in",
+      "created": "2026-03-04T13:24:24.852470",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-2435",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "To Do",
+      "assignee": "user-859@adverb.in",
+      "created": "2026-02-18T13:24:24.852473",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-5728",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "To Do",
+      "assignee": "user-846@adverb.in",
+      "created": "2026-02-18T13:24:24.852476",
+      "resolved": "2026-04-17T13:24:24.852480"
+    },
+    {
+      "id": "ADV-OPS-2410",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-410@adverb.in",
+      "created": "2026-02-11T13:24:24.852482",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-9606",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-704@adverb.in",
+      "created": "2026-02-23T13:24:24.852485",
+      "resolved": "2026-04-20T13:24:24.852487"
+    }
+  ]
+}

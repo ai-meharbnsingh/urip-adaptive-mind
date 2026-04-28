@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:25:37.047935",
+  "tickets": [
+    {
+      "id": "ADV-OPS-4115",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "Done",
+      "assignee": "user-340@adverb.in",
+      "created": "2026-03-13T13:25:37.047939",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-4387",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-954@adverb.in",
+      "created": "2026-03-12T13:25:37.047942",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-6833",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-222@adverb.in",
+      "created": "2026-04-02T13:25:37.047946",
+      "resolved": "2026-04-16T13:25:37.047948"
+    },
+    {
+      "id": "ADV-OPS-9071",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "Done",
+      "assignee": "user-882@adverb.in",
+      "created": "2026-02-02T13:25:37.047951",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-8901",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "In Progress",
+      "assignee": "user-604@adverb.in",
+      "created": "2026-01-29T13:25:37.047954",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-9041",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "In Progress",
+      "assignee": "user-507@adverb.in",
+      "created": "2026-03-15T13:25:37.047957",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-3101",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "To Do",
+      "assignee": "user-589@adverb.in",
+      "created": "2026-02-02T13:25:37.047961",
+      "resolved": "2026-04-21T13:25:37.047963"
+    },
+    {
+      "id": "ADV-OPS-7450",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "To Do",
+      "assignee": "user-223@adverb.in",
+      "created": "2026-02-05T13:25:37.047966",
+      "resolved": "2026-04-15T13:25:37.047968"
+    }
+  ]
+}

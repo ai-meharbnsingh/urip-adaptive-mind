@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connector Wizard | URIP - Unified Risk Intelligence Platform</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="urip-app">
+  <div id="app-shell" data-page="connector-wizard">
+        <div class="page-header">
+          <div>
+            <a href="tool-catalog.html" class="back-link">
+              <i class="fas fa-arrow-left"></i> Back to tool catalog
+            </a>
+            <h1 class="page-title">Connector Setup</h1>
+            <p class="page-subtitle" id="wizardSubtitle">Configure credentials for one of your tools.</p>
+          </div>
+        </div>
+
+        <!-- Loading state while we resolve tool + status -->
+        <div id="wizardLoading" class="empty-state">
+          <div class="empty-state-icon"><i class="fas fa-spinner fa-spin"></i></div>
+          <div class="empty-state-title">Loading…</div>
+        </div>
+
+        <!-- Hard error: bad ?tool= param or schema missing -->
+        <div id="wizardError" class="alert alert-danger" style="display:none">
+          <i class="fas fa-exclamation-circle"></i>
+          <div style="flex:1">
+            <strong>Could not load wizard.</strong>
+            <div id="wizardErrorMsg" style="margin-top:0.25rem;font-weight:400"></div>
+          </div>
+          <a class="btn btn-outline btn-sm" href="tool-catalog.html">
+            <i class="fas fa-arrow-left"></i> Back to catalog
+          </a>
+        </div>
+
+        <div id="wizardShell" class="wizard-shell" style="display:none">
+          <!-- Insecure-page warning -->
+          <div id="insecureBanner" class="insecure-banner" style="display:none">
+            <i class="fas fa-shield-halved"></i>
+            <span>This page is not loaded over HTTPS. Saving credentials here would send them in the clear.
+                  Open the secure URL before continuing.</span>
+          </div>
+
+          <!-- Header -->
+          <div class="wizard-header-card">
+            <div class="tool-logo" id="wizardLogo"></div>
+            <div class="wizard-header-meta">
+              <h2 class="wizard-tool-title" id="wizardToolName">Tool</h2>
+              <p class="wizard-tool-sub" id="wizardToolSub">Category · pulls every —</p>
+            </div>
+            <span class="status-pill status-not-configured" id="wizardStatusPill">Not configured</span>
+          </div>
+
+          <!-- Form card -->
+          <form id="wizardForm" class="card" novalidate>
+            <div class="card-header">
+              <strong>Credentials</strong>
+              <a class="text-teal" id="wizardDocsLink" href="#" target="_blank" rel="noopener noreferrer">
+                <i class="fas fa-arrow-up-right-from-square"></i> Vendor API docs
+              </a>
+            </div>
+
+            <div class="card-body wizard-card-body">
+              <div class="wizard-grid" id="wizardFields">
+                <!-- Fields injected by connector-wizard.js -->
+              </div>
+
+              <!-- Test result panel (filled after Test Connection click) -->
+              <div id="testResult" class="test-result" style="display:none"></div>
+
+              <!-- Last sync hint -->
+              <div id="lastSyncHint" class="form-hint" style="margin-top:1rem;display:none"></div>
+            </div>
+
+            <div class="card-footer flex justify-between items-center">
+              <div class="flex gap-2">
+                <button class="btn btn-outline" id="btnTest" type="button">
+                  <i class="fas fa-bolt"></i> Test Connection
+                </button>
+              </div>
+              <div class="flex gap-2">
+                <a class="btn btn-ghost" href="tool-catalog.html">Cancel</a>
+                <button class="btn btn-primary" id="btnSave" type="submit">
+                  <i class="fas fa-floppy-disk"></i> Save &amp; Enable
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Confirm modal (shared by destructive actions) -->
+        <div id="confirmModalRoot"></div>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    if (typeof checkAuth === 'function') checkAuth();
+    document.addEventListener('DOMContentLoaded', function () {
+      window.URIP.shell.mount({
+        page: 'connector-wizard',
+        title: 'Connector Setup',
+        breadcrumb: 'Configuration / Connector Wizard'
+      });
+    });
+  </script>
+  <script src="js/connector-schemas.js"></script>
+  <script src="js/connector-wizard.js"></script>
+</body>
+</html>

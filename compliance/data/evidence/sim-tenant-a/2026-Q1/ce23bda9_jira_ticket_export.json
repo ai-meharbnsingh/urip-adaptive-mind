@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:25:36.213875",
+  "tickets": [
+    {
+      "id": "ADV-OPS-6772",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-735@adverb.in",
+      "created": "2026-03-11T13:25:36.213878",
+      "resolved": "2026-04-15T13:25:36.213880"
+    },
+    {
+      "id": "ADV-OPS-3240",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "Done",
+      "assignee": "user-416@adverb.in",
+      "created": "2026-02-15T13:25:36.213884",
+      "resolved": "2026-04-21T13:25:36.213885"
+    },
+    {
+      "id": "ADV-OPS-3153",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "In Progress",
+      "assignee": "user-434@adverb.in",
+      "created": "2026-02-18T13:25:36.213888",
+      "resolved": "2026-04-24T13:25:36.213890"
+    },
+    {
+      "id": "ADV-OPS-9837",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "In Progress",
+      "assignee": "user-950@adverb.in",
+      "created": "2026-03-22T13:25:36.213893",
+      "resolved": "2026-04-13T13:25:36.213895"
+    },
+    {
+      "id": "ADV-OPS-8894",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "In Progress",
+      "assignee": "user-923@adverb.in",
+      "created": "2026-03-29T13:25:36.213898",
+      "resolved": "2026-04-25T13:25:36.213900"
+    },
+    {
+      "id": "ADV-OPS-3306",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "To Do",
+      "assignee": "user-966@adverb.in",
+      "created": "2026-01-31T13:25:36.213903",
+      "resolved": "2026-04-14T13:25:36.213905"
+    },
+    {
+      "id": "ADV-OPS-7464",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "In Progress",
+      "assignee": "user-649@adverb.in",
+      "created": "2026-03-28T13:25:36.213908",
+      "resolved": "2026-04-16T13:25:36.213909"
+    },
+    {
+      "id": "ADV-OPS-5295",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "To Do",
+      "assignee": "user-942@adverb.in",
+      "created": "2026-02-24T13:25:36.213912",
+      "resolved": "2026-04-23T13:25:36.213914"
+    }
+  ]
+}

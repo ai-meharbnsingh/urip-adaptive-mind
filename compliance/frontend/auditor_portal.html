@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auditor Portal | Adverb Compliance</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/main.css" />
+
+  <style>
+    /* Auditor portal is single-page, no sidebar — uses its own minimal nav */
+    .auditor-shell { min-height: 100vh; background: var(--gray-100); }
+    .auditor-topbar {
+      position: sticky; top: 0; z-index: 100;
+      height: 64px;
+      background: linear-gradient(90deg, var(--navy-primary) 0%, var(--navy-light) 100%);
+      color: var(--white);
+      display: flex; align-items: center;
+      padding: 0 1.5rem;
+      gap: 1.5rem;
+      box-shadow: var(--shadow-md);
+    }
+    .auditor-brand {
+      display: flex; align-items: center; gap: .75rem;
+      font-weight: 700; font-size: 1rem;
+    }
+    .auditor-brand-icon {
+      width: 36px; height: 36px;
+      background: var(--teal-accent); border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--white);
+    }
+    .auditor-tabs { display: flex; gap: 0.25rem; flex: 1; }
+    .auditor-tab {
+      padding: 0.5rem 1rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .auditor-tab:hover { background-color: rgba(255, 255, 255, 0.05); color: var(--white); }
+    .auditor-tab.active { background-color: rgba(26, 188, 156, 0.18); color: var(--teal-accent); }
+    .auditor-user {
+      display: flex; align-items: center; gap: 0.625rem;
+      font-size: 0.8125rem;
+    }
+
+    .auditor-content { padding: 1.5rem 2rem; max-width: 1400px; margin: 0 auto; }
+
+    /* Sign-in card */
+    .signin-page {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-primary) 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.5rem;
+    }
+    .signin-card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 2.5rem;
+      max-width: 460px; width: 100%;
+      box-shadow: var(--shadow-xl);
+    }
+    .signin-logo {
+      width: 64px; height: 64px;
+      background: linear-gradient(135deg, var(--teal-accent), var(--teal-hover));
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--white); font-size: 1.5rem;
+      margin: 0 auto 1.25rem;
+    }
+    .signin-title { text-align: center; font-size: 1.5rem; margin-bottom: .5rem; }
+    .signin-sub { text-align: center; color: var(--gray-500); margin-bottom: 2rem; font-size: .875rem; }
+
+    /* Tab content panes */
+    .pane { display: none; }
+    .pane.active { display: block; animation: fadeIn 200ms ease; }
+
+    /* Detail drawer */
+    .drawer {
+      position: fixed; right: 0; top: 0; bottom: 0;
+      width: min(560px, 95vw);
+      background: var(--white);
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      transform: translateX(100%);
+      transition: transform 250ms ease;
+      overflow-y: auto;
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .drawer-body { padding: 1.5rem; }
+    .drawer-overlay {
+      position: fixed; inset: 0;
+      background: rgba(15, 23, 42, 0.4);
+      z-index: 999;
+      display: none;
+    }
+    .drawer-overlay.open { display: block; animation: fadeIn 200ms ease; }
+  </style>
+</head>
+<body>
+  <!-- SIGN-IN VIEW -->
+  <div class="signin-page" id="signinView">
+    <div class="signin-card">
+      <div class="signin-logo"><i class="fas fa-user-shield"></i></div>
+      <h1 class="signin-title">Auditor Sign-In</h1>
+      <p class="signin-sub">Read-only audit portal — time-bounded, framework-scoped.</p>
+      <form id="signinForm">
+        <div class="form-group">
+          <label class="form-label">Invitation token or URL</label>
+          <input type="text" class="form-input" id="tokenInput" placeholder="Paste token or full link…" autocomplete="off" required />
+          <p class="form-help">From your invitation email. Either the raw token or the full link works.</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">API base URL</label>
+          <input type="text" class="form-input" id="apiInput" value="http://localhost:8001" />
+          <p class="form-help">Defaults to localhost — override only if instructed.</p>
+        </div>
+        <button type="submit" class="btn btn-primary w-full" id="signinBtn">
+          <i class="fas fa-sign-in-alt"></i> Sign in to audit
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- AUDITOR APP -->
+  <div class="auditor-shell hidden" id="appView">
+    <header class="auditor-topbar">
+      <div class="auditor-brand">
+        <div class="auditor-brand-icon"><i class="fas fa-shield-halved"></i></div>
+        <span>Adverb Auditor Portal</span>
+      </div>
+      <nav class="auditor-tabs">
+        <a href="#" class="auditor-tab active" data-tab="controls"><i class="fas fa-list-check"></i> Controls</a>
+        <a href="#" class="auditor-tab" data-tab="evidence"><i class="fas fa-folder-open"></i> Evidence</a>
+        <a href="#" class="auditor-tab" data-tab="policies"><i class="fas fa-file-signature"></i> Policies</a>
+        <a href="#" class="auditor-tab" data-tab="activity"><i class="fas fa-history"></i> My activity</a>
+      </nav>
+      <div class="auditor-user">
+        <span id="userEmail" class="text-sm" style="opacity:.85"></span>
+        <button class="btn btn-sm btn-outline" id="bundleBtn" style="color:#fff;border-color:rgba(255,255,255,.3)">
+          <i class="fas fa-file-zipper"></i> Export bundle
+        </button>
+        <button class="btn btn-sm btn-secondary" id="signoutBtn">
+          <i class="fas fa-sign-out-alt"></i> Sign out
+        </button>
+      </div>
+    </header>
+
+    <div class="auditor-content">
+      <!-- Countdown banner -->
+      <div class="countdown-banner" id="countdown">
+        <div class="cd-icon"><i class="fas fa-clock"></i></div>
+        <div class="cd-meta">
+          <strong id="cdRemaining">—</strong>
+          <span id="cdDetail">Audit period</span>
+        </div>
+        <div class="ml-auto" style="text-align:right;font-size:.8125rem;opacity:.85">
+          <div id="cdFramework">—</div>
+          <div id="cdPeriod">—</div>
+        </div>
+      </div>
+
+      <!-- Controls tab -->
+      <div class="pane active" id="paneControls">
+        <div class="filter-bar">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="cFilter" placeholder="Filter controls…" />
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Status:</span>
+            <select class="form-select" id="cStatusFilter" style="width:auto">
+              <option value="">All</option>
+              <option value="pass">Pass</option>
+              <option value="fail">Fail</option>
+              <option value="inconclusive">Inconclusive</option>
+              <option value="not_evaluated">Never run</option>
+            </select>
+          </div>
+          <button class="btn btn-outline btn-sm" id="cRefresh"><i class="fas fa-sync-alt"></i> Refresh</button>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title" id="cMeta">Loading…</span></div>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr><th>Code</th><th>Category</th><th>Title</th><th>Status</th><th>Last run</th></tr>
+              </thead>
+              <tbody id="cBody">
+                <tr><td colspan="5"><div class="skeleton skeleton-row"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Evidence tab -->
+      <div class="pane" id="paneEvidence">
+        <div class="card">
+          <div class="card-header"><span class="card-title" id="eMeta">Loading…</span></div>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr><th>Type</th><th>Control</th><th>Period</th><th>Captured</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="eBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Policies tab -->
+      <div class="pane" id="panePolicies">
+        <div class="card">
+          <div class="card-header"><span class="card-title" id="pMeta">Loading…</span></div>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr><th>Policy</th><th>Current version</th><th>Acked in period</th></tr>
+              </thead>
+              <tbody id="pBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity tab -->
+      <div class="pane" id="paneActivity">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Your audit activity (this session)</span>
+          </div>
+          <div class="card-body">
+            <p class="text-sm text-gray mb-4">All your actions are logged for the tenant's records. This is what your audit trail looks like.</p>
+            <div id="aBody"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drawer for control detail / evidence request -->
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+    <aside class="drawer" id="drawer">
+      <div class="drawer-header">
+        <h3 id="drawerTitle">—</h3>
+        <button class="modal-close" id="drawerClose"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="drawer-body" id="drawerBody"></div>
+    </aside>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      var STORAGE_KEY = 'auditor_jwt';
+      var API_KEY = 'auditor_api';
+      var EMAIL_KEY = 'auditor_email';
+      var SCOPE_KEY = 'auditor_scope';
+
+      var sessionLog = []; // client-side activity log (this session only)
+
+      // ---- helpers ----
+      var C = window.COMPLIANCE;
+      function getApi() { return sessionStorage.getItem(API_KEY) || 'http://localhost:8001'; }
+      function getJwt() { return sessionStorage.getItem(STORAGE_KEY); }
+
+      function logAction(text) {
+        sessionLog.unshift({ at: new Date().toISOString(), text: text });
+        sessionLog = sessionLog.slice(0, 50);
+        renderActivity();
+      }
+
+      async function audFetch(path, options) {
+        options = options || {};
+        var api = getApi();
+        var jwt = getJwt();
+        var headers = options.headers || {};
+        if (jwt) headers['Authorization'] = 'Bearer ' + jwt;
+        if (options.body && typeof options.body !== 'string') {
+          options.body = JSON.stringify(options.body);
+          headers['Content-Type'] = 'application/json';
+        }
+        options.headers = headers;
+        var resp = await fetch(api.replace(/\/$/, '') + path, options);
+        if (resp.status === 401) {
+          C.showNotification('Session expired', 'Please sign in again.', 'error');
+          signOut();
+          throw new Error('401');
+        }
+        if (!resp.ok) {
+          var b; try { b = await resp.json(); } catch (_) { b = { detail: resp.statusText }; }
+          throw new Error(b.detail || ('HTTP ' + resp.status));
+        }
+        if (options.raw) return resp;
+        if (resp.status === 204) return null;
+        var ct = resp.headers.get('content-type') || '';
+        if (ct.indexOf('application/json') > -1) return resp.json();
+        return resp;
+      }
+
+      // ---- sign-in ----
+      document.getElementById('signinForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var btn = document.getElementById('signinBtn');
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in…';
+        try {
+          var input = document.getElementById('tokenInput').value.trim();
+          var api = document.getElementById('apiInput').value.trim().replace(/\/$/, '');
+          var token = input;
+          try { var u = new URL(input); var t = u.searchParams.get('token'); if (t) token = t; } catch (_) {}
+          var resp = await fetch(api + '/auditor-invitations/accept', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: token })
+          });
+          if (!resp.ok) throw new Error(resp.status === 401 ? 'Invalid or expired token' : 'HTTP ' + resp.status);
+          var body = await resp.json();
+          sessionStorage.setItem(STORAGE_KEY, body.auditor_jwt);
+          sessionStorage.setItem(API_KEY, api);
+
+          // Decode email + framework + period from JWT
+          try {
+            var claims = JSON.parse(atob(body.auditor_jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/') + '=='.slice(0, 4 - body.auditor_jwt.split('.')[1].length % 4 || 0)));
+            sessionStorage.setItem(EMAIL_KEY, claims.email || claims.sub || 'auditor');
+            sessionStorage.setItem(SCOPE_KEY, JSON.stringify({
+              framework_id: claims.framework_id,
+              period_start: claims.period_start,
+              period_end: claims.period_end || body.expires_at
+            }));
+          } catch (_) {}
+          showApp();
+        } catch (err) {
+          C.showNotification('Sign-in failed', err.message, 'error');
+          btn.disabled = false; btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign in to audit';
+        }
+      });
+
+      function signOut() {
+        sessionStorage.removeItem(STORAGE_KEY);
+        sessionStorage.removeItem(API_KEY);
+        sessionStorage.removeItem(EMAIL_KEY);
+        sessionStorage.removeItem(SCOPE_KEY);
+        document.getElementById('appView').classList.add('hidden');
+        document.getElementById('signinView').classList.remove('hidden');
+        sessionLog = [];
+      }
+
+      function showApp() {
+        document.getElementById('signinView').classList.add('hidden');
+        document.getElementById('appView').classList.remove('hidden');
+        document.getElementById('userEmail').textContent = sessionStorage.getItem(EMAIL_KEY) || 'auditor';
+        renderCountdown();
+        loadControls();
+        loadEvidence();
+        loadPolicies();
+      }
+
+      function renderCountdown() {
+        var scope; try { scope = JSON.parse(sessionStorage.getItem(SCOPE_KEY) || '{}'); } catch (_) { scope = {}; }
+        if (scope.framework_id) document.getElementById('cdFramework').textContent = 'Framework: ' + scope.framework_id.slice(0, 8) + '…';
+        var endStr = scope.period_end || sessionStorage.getItem('auditor_jwt_expires');
+        if (endStr) {
+          var end = new Date(endStr);
+          var msLeft = end - new Date();
+          var daysLeft = Math.max(0, Math.ceil(msLeft / 86400000));
+          document.getElementById('cdRemaining').textContent = daysLeft + ' day' + (daysLeft === 1 ? '' : 's') + ' remaining';
+          document.getElementById('cdDetail').textContent = 'Audit period ends ' + end.toLocaleDateString();
+          document.getElementById('cdPeriod').textContent = scope.period_start
+            ? new Date(scope.period_start).toLocaleDateString() + ' – ' + end.toLocaleDateString()
+            : 'Ends ' + end.toLocaleDateString();
+        } else {
+          document.getElementById('cdRemaining').textContent = 'Active';
+          document.getElementById('cdDetail').textContent = 'Audit session active';
+        }
+      }
+
+      // ---- Tabs ----
+      document.querySelectorAll('.auditor-tab').forEach(function (tab) {
+        tab.addEventListener('click', function (e) {
+          e.preventDefault();
+          var name = tab.getAttribute('data-tab');
+          document.querySelectorAll('.auditor-tab').forEach(function (t) { t.classList.toggle('active', t === tab); });
+          document.querySelectorAll('.pane').forEach(function (p) {
+            p.classList.toggle('active', p.id === 'pane' + name.charAt(0).toUpperCase() + name.slice(1));
+          });
+          if (name === 'activity') renderActivity();
+        });
+      });
+
+      // ---- Sign out + bundle ----
+      document.getElementById('signoutBtn').addEventListener('click', signOut);
+      document.getElementById('bundleBtn').addEventListener('click', async function () {
+        var btn = this; btn.disabled = true;
+        try {
+          C.showNotification('Preparing bundle', 'This may take a few seconds…', 'info');
+          // Auditor doesn't have /evidence/bundle but fetches each evidence individually as a workaround.
+          // Use the admin /evidence/bundle if available, otherwise download each file.
+          var resp = await fetch(getApi() + '/evidence/bundle', { headers: { 'Authorization': 'Bearer ' + getJwt() } });
+          if (resp.status === 401 || resp.status === 403) {
+            C.showNotification('Backend gap', 'Auditor-scoped bundle export not yet implemented — request the tenant admin to send the bundle.', 'warning');
+            return;
+          }
+          if (!resp.ok) throw new Error('HTTP ' + resp.status);
+          var blob = await resp.blob();
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url; a.download = 'evidence_bundle.zip';
+          document.body.appendChild(a); a.click(); document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          C.showNotification('Bundle ready', 'Download started.', 'success');
+          logAction('Exported evidence bundle');
+        } catch (e) {
+          C.showNotification('Failed', e.message, 'error');
+        } finally { btn.disabled = false; }
+      });
+
+      // ---- Controls ----
+      var controlsCache = [];
+      async function loadControls() {
+        var body = document.getElementById('cBody');
+        body.innerHTML = '<tr><td colspan="5"><div class="skeleton skeleton-row"></div></td></tr>';
+        try {
+          var rows = await audFetch('/auditor/controls');
+          controlsCache = rows || [];
+          applyControlsFilter();
+          logAction('Listed ' + controlsCache.length + ' controls');
+        } catch (e) {
+          if (e.message !== '401') C.showNotification('Failed', e.message, 'error');
+        }
+      }
+
+      function applyControlsFilter() {
+        var text = document.getElementById('cFilter').value.toLowerCase();
+        var s = document.getElementById('cStatusFilter').value;
+        var rows = controlsCache.filter(function (c) {
+          if (s && c.current_status !== s) return false;
+          if (text) {
+            var hay = (c.control_code + ' ' + (c.title || '') + ' ' + c.category).toLowerCase();
+            if (hay.indexOf(text) === -1) return false;
+          }
+          return true;
+        });
+        document.getElementById('cMeta').textContent = rows.length + ' control(s) in scope';
+        var body = document.getElementById('cBody');
+        body.innerHTML = '';
+        if (!rows.length) {
+          var tr = document.createElement('tr');
+          var td = document.createElement('td'); td.colSpan = 5; td.style.padding = 0;
+          var w = document.createElement('div');
+          C.renderEmptyState(w, 'fa-list-check', 'No controls match', 'Adjust filters above.');
+          td.appendChild(w); tr.appendChild(td); body.appendChild(tr);
+          return;
+        }
+        rows.forEach(function (c) {
+          var tr = document.createElement('tr'); tr.className = 'row-clickable';
+          tr.addEventListener('click', function () { openControlDrawer(c); });
+          tr.innerHTML =
+            '<td><strong>' + C.escapeHtml(c.control_code) + '</strong></td>' +
+            '<td>' + C.escapeHtml(c.category) + '</td>' +
+            '<td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + C.escapeHtml(c.title || c.description || '') + '</td>' +
+            '<td><span class="status-pill status-' + c.current_status + '">' + c.current_status.replace(/_/g, ' ') + '</span></td>' +
+            '<td style="font-size:.8125rem;color:var(--gray-500)">' + (c.last_run_at ? C.relativeTime(c.last_run_at) : '—') + '</td>';
+          body.appendChild(tr);
+        });
+      }
+
+      async function openControlDrawer(c) {
+        document.getElementById('drawerTitle').textContent = c.control_code + ' — ' + (c.title || '');
+        var body = document.getElementById('drawerBody');
+        body.innerHTML = '<div class="skeleton skeleton-row"></div>';
+        openDrawer();
+        try {
+          var detail = await audFetch('/auditor/controls/' + c.id);
+          logAction('Viewed control ' + c.control_code);
+          var ev = (detail.evidence || []);
+          body.innerHTML = '';
+          var meta = document.createElement('div');
+          meta.innerHTML =
+            '<div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap">' +
+              '<span class="badge badge-info">' + C.escapeHtml(c.category) + '</span>' +
+              '<span class="status-pill status-' + detail.control.current_status + '">' + detail.control.current_status.replace(/_/g, ' ') + '</span>' +
+            '</div>' +
+            '<p style="color:var(--gray-700);font-size:.9375rem;line-height:1.5">' + C.escapeHtml(detail.control.description || '') + '</p>' +
+            '<h4 style="margin-top:1.5rem;margin-bottom:.75rem">Evidence in audit period (' + ev.length + ')</h4>';
+          body.appendChild(meta);
+
+          if (!ev.length) {
+            var w = document.createElement('div');
+            C.renderEmptyState(w, 'fa-folder-open', 'No evidence in scope', 'You may request additional evidence below.');
+            body.appendChild(w);
+          } else {
+            ev.forEach(function (e) {
+              var row = document.createElement('div');
+              row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:.625rem 0;border-bottom:1px solid var(--gray-100)';
+              row.innerHTML =
+                '<div>' +
+                  '<div style="font-weight:500">' + C.escapeHtml(e.type) + ' · ' + C.escapeHtml(e.audit_period || '') + '</div>' +
+                  '<div class="text-xs text-gray">' + C.relativeTime(e.captured_at) + ' by ' + C.escapeHtml(e.captured_by) + '</div>' +
+                '</div>';
+              var btn = document.createElement('button'); btn.className = 'btn btn-sm btn-outline';
+              btn.innerHTML = '<i class="fas fa-download"></i> Download';
+              btn.addEventListener('click', function () { downloadEvidence(e.id); });
+              row.appendChild(btn);
+              body.appendChild(row);
+            });
+          }
+
+          // Request more evidence
+          var reqWrap = document.createElement('div');
+          reqWrap.style.cssText = 'margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--gray-200)';
+          reqWrap.innerHTML =
+            '<h4 style="margin-bottom:.75rem">Request additional evidence</h4>' +
+            '<textarea class="form-textarea" id="reqDesc" placeholder="Describe what you need…"></textarea>';
+          var reqBtn = document.createElement('button');
+          reqBtn.className = 'btn btn-primary mt-4';
+          reqBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send request';
+          reqBtn.addEventListener('click', async function () {
+            var desc = document.getElementById('reqDesc').value.trim();
+            if (!desc) { C.showNotification('Validation', 'Description required.', 'error'); return; }
+            reqBtn.disabled = true;
+            try {
+              await audFetch('/auditor/evidence-requests', {
+                method: 'POST',
+                body: { control_id: c.id, description: desc }
+              });
+              C.showNotification('Sent', 'Evidence request sent to tenant admin.', 'success');
+              logAction('Requested evidence for ' + c.control_code);
+              document.getElementById('reqDesc').value = '';
+            } catch (err) {
+              C.showNotification('Failed', err.message, 'error');
+            } finally { reqBtn.disabled = false; }
+          });
+          reqWrap.appendChild(reqBtn);
+          body.appendChild(reqWrap);
+        } catch (e) {
+          body.innerHTML = '';
+          C.renderEmptyState(body, 'fa-triangle-exclamation', 'Failed to load', e.message);
+        }
+      }
+
+      function openDrawer() {
+        document.getElementById('drawer').classList.add('open');
+        document.getElementById('drawerOverlay').classList.add('open');
+      }
+      function closeDrawer() {
+        document.getElementById('drawer').classList.remove('open');
+        document.getElementById('drawerOverlay').classList.remove('open');
+      }
+      document.getElementById('drawerClose').addEventListener('click', closeDrawer);
+      document.getElementById('drawerOverlay').addEventListener('click', closeDrawer);
+
+      async function downloadEvidence(evId) {
+        try {
+          var resp = await audFetch('/auditor/evidence/' + evId + '/download', { raw: true });
+          var blob = await resp.blob();
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url; a.download = 'evidence_' + evId + '.bin';
+          document.body.appendChild(a); a.click(); document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          var hash = resp.headers.get('X-Evidence-Hash');
+          C.showNotification('Downloaded', hash ? ('Verify SHA-256: ' + hash.slice(0, 16) + '…') : 'Saved.', 'success');
+          logAction('Downloaded evidence ' + evId.slice(0, 8));
+        } catch (e) {
+          C.showNotification('Failed', e.message, 'error');
+        }
+      }
+
+      document.getElementById('cFilter').addEventListener('input', applyControlsFilter);
+      document.getElementById('cStatusFilter').addEventListener('change', applyControlsFilter);
+      document.getElementById('cRefresh').addEventListener('click', loadControls);
+
+      // ---- Evidence ----
+      async function loadEvidence() {
+        var body = document.getElementById('eBody');
+        body.innerHTML = '<tr><td colspan="5"><div class="skeleton skeleton-row"></div></td></tr>';
+        try {
+          var rows = await audFetch('/auditor/evidence');
+          rows = rows || [];
+          document.getElementById('eMeta').textContent = rows.length + ' evidence item(s) in audit period';
+          body.innerHTML = '';
+          if (!rows.length) {
+            var tr = document.createElement('tr');
+            var td = document.createElement('td'); td.colSpan = 5; td.style.padding = 0;
+            var w = document.createElement('div');
+            C.renderEmptyState(w, 'fa-folder-open', 'No evidence in scope', 'Nothing has been captured yet for this audit period.');
+            td.appendChild(w); tr.appendChild(td); body.appendChild(tr);
+            return;
+          }
+          rows.forEach(function (e) {
+            var tr = document.createElement('tr');
+            tr.innerHTML =
+              '<td><span class="badge badge-info">' + C.escapeHtml(e.type) + '</span></td>' +
+              '<td style="font-family:\'SF Mono\',monospace;font-size:.75rem">' + (e.control_id || '').slice(0, 12) + '…</td>' +
+              '<td>' + C.escapeHtml(e.audit_period || '—') + '</td>' +
+              '<td style="font-size:.8125rem">' + C.relativeTime(e.captured_at) + '</td>' +
+              '<td><button class="btn btn-sm btn-outline" data-id="' + e.id + '"><i class="fas fa-download"></i> Download</button></td>';
+            body.appendChild(tr);
+          });
+          body.querySelectorAll('[data-id]').forEach(function (b) {
+            b.addEventListener('click', function () { downloadEvidence(b.getAttribute('data-id')); });
+          });
+        } catch (err) {
+          if (err.message !== '401') C.showNotification('Failed', err.message, 'error');
+        }
+      }
+
+      // ---- Policies ----
+      async function loadPolicies() {
+        var body = document.getElementById('pBody');
+        body.innerHTML = '<tr><td colspan="3"><div class="skeleton skeleton-row"></div></td></tr>';
+        try {
+          var rows = await audFetch('/auditor/policies');
+          rows = rows || [];
+          document.getElementById('pMeta').textContent = rows.length + ' policy(ies)';
+          body.innerHTML = '';
+          if (!rows.length) {
+            var tr = document.createElement('tr');
+            var td = document.createElement('td'); td.colSpan = 3; td.style.padding = 0;
+            var w = document.createElement('div');
+            C.renderEmptyState(w, 'fa-file-signature', 'No policies', 'No policies are exposed for this audit.');
+            td.appendChild(w); tr.appendChild(td); body.appendChild(tr);
+            return;
+          }
+          rows.forEach(function (p) {
+            var tr = document.createElement('tr');
+            tr.innerHTML =
+              '<td><strong>' + C.escapeHtml(p.name) + '</strong></td>' +
+              '<td>' + (p.current_version != null ? 'v' + p.current_version : '—') + '</td>' +
+              '<td><span class="badge badge-info">' + p.acknowledged_count + ' acks</span></td>';
+            body.appendChild(tr);
+          });
+        } catch (err) {
+          if (err.message !== '401') C.showNotification('Failed', err.message, 'error');
+        }
+      }
+
+      // ---- Activity ----
+      function renderActivity() {
+        var body = document.getElementById('aBody');
+        if (!sessionLog.length) {
+          C.renderEmptyState(body, 'fa-history', 'No actions yet', 'Browse a control or download evidence to populate this list.');
+          return;
+        }
+        body.innerHTML = '';
+        sessionLog.forEach(function (a) {
+          var row = document.createElement('div');
+          row.className = 'activity-item';
+          row.innerHTML =
+            '<div class="activity-icon act-info"><i class="fas fa-circle"></i></div>' +
+            '<div class="activity-content">' +
+              '<div class="activity-text">' + C.escapeHtml(a.text) + '</div>' +
+              '<div class="activity-meta">' + C.relativeTime(a.at) + '</div>' +
+            '</div>';
+          body.appendChild(row);
+        });
+      }
+
+      // ---- Auto-resume ----
+      if (getJwt()) showApp();
+    })();
+  </script>
+</body>
+</html>

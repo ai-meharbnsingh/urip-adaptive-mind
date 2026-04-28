@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSPM Dashboard | URIP</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="urip-app">
+  <div id="app-shell" data-page="cspm-dashboard">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">CSPM Dashboard</h1>
+        <p class="page-subtitle">Cloud Security Posture across AWS, Azure, and GCP</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-outline" id="btnRefresh"><i class="fas fa-sync-alt"></i> Refresh</button>
+        <button class="btn btn-primary" id="btnScanNow"><i class="fas fa-play"></i> Scan Now</button>
+      </div>
+    </div>
+
+    <div class="action-row" id="scoreWidgets">
+      <div class="action-tile" id="awsScoreTile">
+        <div class="action-tile-icon icon-fail"><i class="fab fa-aws"></i></div>
+        <div class="action-tile-content">
+          <span class="action-tile-value" id="awsScore">--</span>
+          <span class="action-tile-label">AWS Score</span>
+        </div>
+      </div>
+      <div class="action-tile" id="azureScoreTile">
+        <div class="action-tile-icon icon-warn"><i class="fab fa-microsoft"></i></div>
+        <div class="action-tile-content">
+          <span class="action-tile-value" id="azureScore">--</span>
+          <span class="action-tile-label">Azure Score</span>
+        </div>
+      </div>
+      <div class="action-tile" id="gcpScoreTile">
+        <div class="action-tile-icon icon-info"><i class="fab fa-google"></i></div>
+        <div class="action-tile-content">
+          <span class="action-tile-value" id="gcpScore">--</span>
+          <span class="action-tile-label">GCP Score</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="split-3">
+      <div class="card" style="flex:2">
+        <div class="card-header">
+          <span class="card-title"><i class="fas fa-exclamation-circle" style="color:var(--u-cyan);margin-right:.5rem"></i>Top Failing Controls</span>
+          <a href="cspm-findings.html?status=fail" class="btn btn-sm btn-ghost">View all <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="card-body">
+          <table class="data-table" id="failingTable">
+            <thead><tr><th>Control</th><th>Severity</th><th>Cloud</th><th>Status</th></tr></thead>
+            <tbody id="failingBody"><tr><td colspan="4" class="text-center">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title"><i class="fas fa-server" style="color:var(--u-cyan);margin-right:.5rem"></i>Cloud Accounts</span>
+        </div>
+        <div class="card-body" id="cloudAccountsBody">
+          <p class="text-gray">Loading...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      window.URIP.shell.mount({
+        page: 'cspm-dashboard',
+        title: 'CSPM Dashboard',
+        breadcrumb: 'Strategic Modules / CSPM'
+      });
+    });
+  </script>
+  <script src="js/cspm-dashboard.js"></script>
+</body>
+</html>

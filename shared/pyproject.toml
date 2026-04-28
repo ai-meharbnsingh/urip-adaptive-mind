@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "urip-shared"
+version = "0.1.0"
+description = "Shared packages for URIP and Compliance services (auth, tenant context, event bus)"
+requires-python = ">=3.11"
+dependencies = [
+    # H7 audit fix — migrated off python-jose 3.3.0 (CVE-2024-33663,
+    # CVE-2024-33664; library is unmaintained). PyJWT covers the same HS256
+    # surface and is actively maintained. The shared.auth.jwt_verifier module
+    # already imports `jwt` (PyJWT) so this is a dependency declaration sync.
+    "PyJWT>=2.9.0",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+redis = ["redis>=4.0.0"]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.25.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["shared"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+markers = [
+    "integration: marks tests that require external services (Redis, Postgres)",
+]

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search | URIP</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="urip-app">
+  <div id="app-shell" data-page="">
+    <div style="display:flex;gap:12px;margin-bottom:18px;align-items:center">
+      <div style="font-size:12px;color:var(--u-fg-3)">Searching for</div>
+      <div id="searchTermLabel" class="mono" style="font-size:14px;color:var(--u-primary-2);font-weight:600"></div>
+    </div>
+
+    <div class="u-tabs">
+      <span class="u-tab is-active" data-tab="risks">Risks</span>
+      <span class="u-tab" data-tab="connectors">Connectors</span>
+      <span class="u-tab" data-tab="audit">Audit Log</span>
+    </div>
+
+    <div id="searchResults" class="u-card">
+      <div class="u-card-b" id="resultsBody">
+        <div class="u-skel" style="margin-bottom:10px"></div>
+        <div class="u-skel" style="margin-bottom:10px"></div>
+        <div class="u-skel"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shell.js"></script>
+  <script src="js/global-search.js"></script>
+</body>
+</html>

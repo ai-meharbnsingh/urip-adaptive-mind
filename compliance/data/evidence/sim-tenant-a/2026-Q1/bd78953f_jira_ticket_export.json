@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:24:24.575612",
+  "tickets": [
+    {
+      "id": "ADV-OPS-7348",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "To Do",
+      "assignee": "user-884@adverb.in",
+      "created": "2026-02-01T13:24:24.575615",
+      "resolved": "2026-04-22T13:24:24.575617"
+    },
+    {
+      "id": "ADV-OPS-6285",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "In Progress",
+      "assignee": "user-213@adverb.in",
+      "created": "2026-03-31T13:24:24.575620",
+      "resolved": "2026-04-25T13:24:24.575622"
+    },
+    {
+      "id": "ADV-OPS-1717",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-994@adverb.in",
+      "created": "2026-04-08T13:24:24.575625",
+      "resolved": "2026-04-19T13:24:24.575626"
+    },
+    {
+      "id": "ADV-OPS-4139",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "Done",
+      "assignee": "user-684@adverb.in",
+      "created": "2026-02-22T13:24:24.575629",
+      "resolved": "2026-04-18T13:24:24.575631"
+    },
+    {
+      "id": "ADV-OPS-5193",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "In Progress",
+      "assignee": "user-326@adverb.in",
+      "created": "2026-04-03T13:24:24.575634",
+      "resolved": "2026-04-23T13:24:24.575636"
+    },
+    {
+      "id": "ADV-OPS-9051",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "To Do",
+      "assignee": "user-920@adverb.in",
+      "created": "2026-04-05T13:24:24.575639",
+      "resolved": "2026-04-15T13:24:24.575641"
+    },
+    {
+      "id": "ADV-OPS-7814",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-943@adverb.in",
+      "created": "2026-03-09T13:24:24.575644",
+      "resolved": "2026-04-15T13:24:24.575646"
+    },
+    {
+      "id": "ADV-OPS-2153",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-321@adverb.in",
+      "created": "2026-02-05T13:24:24.575648",
+      "resolved": "2026-04-15T13:24:24.575650"
+    }
+  ]
+}

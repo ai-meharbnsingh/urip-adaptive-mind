@@ -52,7 +52,8 @@ async def test_create_remediation(
         "priority": "medium",
         "jira_key": "SEC-1234",
     })
-    assert resp.status_code == 200
+    # 201 Created — see ENDPOINT_AUDIT.md criterion #7.
+    assert resp.status_code == 201
 
     body = resp.json()
     assert body["title"] == "Upgrade TLS to 1.3"
@@ -76,7 +77,7 @@ async def test_update_remediation_status(
         "title": "Deploy WAF rules",
         "priority": "high",
     })
-    assert create_resp.status_code == 200
+    assert create_resp.status_code == 201
     task_id = create_resp.json()["id"]
 
     # Update to in_progress

@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:24:25.160839",
+  "tickets": [
+    {
+      "id": "ADV-OPS-4388",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "To Do",
+      "assignee": "user-888@adverb.in",
+      "created": "2026-01-28T13:24:25.160843",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-1320",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "To Do",
+      "assignee": "user-588@adverb.in",
+      "created": "2026-04-12T13:24:25.160847",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-5892",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "To Do",
+      "assignee": "user-651@adverb.in",
+      "created": "2026-02-02T13:24:25.160850",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-4613",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "Done",
+      "assignee": "user-379@adverb.in",
+      "created": "2026-02-16T13:24:25.160853",
+      "resolved": "2026-04-20T13:24:25.160855"
+    },
+    {
+      "id": "ADV-OPS-6507",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "Done",
+      "assignee": "user-960@adverb.in",
+      "created": "2026-02-12T13:24:25.160858",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-9751",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "To Do",
+      "assignee": "user-706@adverb.in",
+      "created": "2026-01-30T13:24:25.160861",
+      "resolved": "2026-04-25T13:24:25.160863"
+    },
+    {
+      "id": "ADV-OPS-8022",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "To Do",
+      "assignee": "user-286@adverb.in",
+      "created": "2026-04-06T13:24:25.160866",
+      "resolved": "2026-04-21T13:24:25.160868"
+    },
+    {
+      "id": "ADV-OPS-4467",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "In Progress",
+      "assignee": "user-445@adverb.in",
+      "created": "2026-02-23T13:24:25.160870",
+      "resolved": "2026-04-13T13:24:25.160872"
+    }
+  ]
+}

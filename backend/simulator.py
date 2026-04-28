@@ -1,9 +1,20 @@
 """
-URIP Vulnerability Simulator
-Generates realistic synthetic vulnerabilities from all 9 sources.
+URIP Vulnerability Simulator — LEGACY / DEMO ONLY.
+
+⚠️  L9 (Kimi LOW-003) — This module ships the historical "Royal Enfield"
+    flavoured CVE catalogue (REAL_CVES) used during the URIP MVP to
+    demonstrate the platform with realistic-looking findings.  It is
+    classified as a DEMO / LEGACY simulator and MUST NOT be used as the
+    default seed for new tenants.
+
+    The supported default for new tenants is `connectors.extended_simulator`.
+    Findings produced by this module are tagged ``simulator_mode =
+    "legacy_re_demo"`` so consumers can filter / dashboard them apart.
+
+Generates synthetic vulnerabilities from 9 sources.
 Runs every 15 minutes, pushes 5-15 new vulns per cycle via the live API.
 
-Usage:
+Usage (DEMO ONLY):
   # One-time bulk seed (3000 vulns)
   python -m backend.simulator --bulk
 
@@ -32,7 +43,17 @@ LOGIN_EMAIL = os.environ.get("URIP_LOGIN_EMAIL", "ciso@royalenfield.com")
 LOGIN_PASSWORD = os.environ.get("URIP_LOGIN_PASSWORD", "Urip@2026")
 INTERVAL_SECONDS = 900  # 15 minutes
 
-# ─── REAL CVE DATABASE (100+ entries) ────────────────────────
+# L9 — Tag identifying this simulator's mode.  Findings produced by
+# generate_vulnerability() carry this tag so downstream consumers can
+# distinguish "RE-flavoured legacy demo" data from the canonical
+# "extended_simulator" simulator.
+SIMULATOR_MODE = "legacy_re_demo"
+
+# ─── LEGACY CVE DATABASE (100+ entries — RE-flavoured demo data) ────────
+# NOTE: do not seed new tenants from this catalogue. Use the acme
+# simulator (see `connectors/extended_simulator.py`) which is the documented
+# default.  Kept here for backward-compat with the original URIP demo and
+# the GitHub-actions continuous mode.
 REAL_CVES = {
     "crowdstrike": [
         ("CVE-2024-3400", "Palo Alto PAN-OS Command Injection", 10.0, "critical", "endpoint"),
@@ -308,6 +329,9 @@ def generate_vulnerability() -> dict:
         "asset": asset,
         "owner_team": owner,
         "cve_id": cve_id if not cve_id.startswith(("EASM-", "CNAPP-", "ARMIS-", "VAPT-", "TI-", "BB-", "SOC-")) else None,
+        # L9 — tag every finding with the originating simulator mode so
+        # downstream filters / dashboards can distinguish legacy demo data.
+        "simulator_mode": SIMULATOR_MODE,
     }
 
 

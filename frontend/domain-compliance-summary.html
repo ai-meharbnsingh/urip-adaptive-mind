@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compliance Summary | URIP - Unified Risk Intelligence Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/domain-page.css">
+  <link rel="stylesheet" href="css/module-tools.css">
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+    <main class="main-content">
+      <header class="topbar"></header>
+      <div class="content-area">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title"><i class="fas fa-clipboard-check" style="color:var(--teal-accent);margin-right:.5rem"></i>Compliance Summary</h1>
+            <p class="page-subtitle">Live posture across SOC 2, ISO 27001, GDPR, HIPAA, PCI-DSS, DPDP, and NIST CSF — drill into the full Compliance module for control evidence.</p>
+          </div>
+          <div class="flex gap-2">
+            <a class="btn btn-primary" href="../compliance/frontend/frameworks.html">
+              <i class="fas fa-arrow-up-right-from-square"></i> Open Compliance Module
+            </a>
+          </div>
+        </div>
+
+        <!-- Available integrations for evidence collection -->
+        <div id="moduleTools" data-modules="ITSM,IDENTITY,EDR,CSPM,VM,EMAIL_COLLAB,NETWORK,DLP,EXTERNAL_THREAT,OT,COLLABORATION"></div>
+
+        <!-- Frameworks grid -->
+        <div class="section-row"><h2>Framework Posture</h2></div>
+        <div class="framework-grid" id="frameworkGrid">
+          <a class="framework-card" href="../compliance/frontend/frameworks.html?fw=soc2">
+            <div class="name">SOC 2</div>
+            <div class="score" id="fw-soc2">--</div>
+            <div class="score-label">controls passing</div>
+          </a>
+          <a class="framework-card" href="../compliance/frontend/frameworks.html?fw=iso27001">
+            <div class="name">ISO 27001</div>
+            <div class="score" id="fw-iso27001">--</div>
+            <div class="score-label">controls passing</div>
+          </a>
+          <a class="framework-card" href="../compliance/frontend/frameworks.html?fw=gdpr">
+            <div class="name">GDPR</div>
+            <div class="score" id="fw-gdpr">--</div>
+            <div class="score-label">controls passing</div>
+          </a>
+          <a class="framework-card" href="../compliance/frontend/frameworks.html?fw=hipaa">
+            <div class="name">HIPAA</div>
+            <div class="score" id="fw-hipaa">--</div>
+            <div class="score-label">controls passing</div>
+          </a>
+          <a class="framework-card" href="../compliance/frontend/frameworks.html?fw=pci-dss">
+            <div class="name">PCI-DSS</div>
+            <div class="score" id="fw-pci">--</div>
+            <div class="score-label">controls passing</div>
+          </a>
+          <a class="framework-card" href="../compliance/frontend/frameworks.html?fw=dpdp">
+            <div class="name">DPDP (India)</div>
+            <div class="score" id="fw-dpdp">--</div>
+            <div class="score-label">controls passing</div>
+          </a>
+          <a class="framework-card" href="../compliance/frontend/frameworks.html?fw=nist-csf">
+            <div class="name">NIST CSF</div>
+            <div class="score" id="fw-nist">--</div>
+            <div class="score-label">controls passing</div>
+          </a>
+        </div>
+
+        <!-- Audit prep + acks + vendor risk -->
+        <div class="dashboard-grid" style="margin-top:1.25rem">
+          <div class="dashboard-card col-6">
+            <div class="dashboard-card-header">
+              <h3 class="dashboard-card-title">Action items before next audit</h3>
+              <a href="../compliance/frontend/frameworks.html" class="btn btn-sm btn-ghost">Open <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="dashboard-card-body">
+              <div id="auditActions" style="font-size:14px;color:var(--gray-600)">
+                <em>Compliance module endpoint not connected — placeholder until /api/compliance/action-items lands.</em>
+              </div>
+            </div>
+          </div>
+          <div class="dashboard-card col-6">
+            <div class="dashboard-card-header">
+              <h3 class="dashboard-card-title">Pending policy acknowledgments</h3>
+              <a href="../compliance/frontend/policies.html" class="btn btn-sm btn-ghost">Open <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="dashboard-card-body">
+              <div id="pendingAcks" style="font-size:14px;color:var(--gray-600)">
+                <em>Compliance module endpoint not connected — placeholder until /api/compliance/policies lands.</em>
+              </div>
+            </div>
+          </div>
+          <div class="dashboard-card col-12">
+            <div class="dashboard-card-header">
+              <h3 class="dashboard-card-title">Vendor risk overview</h3>
+              <a href="../compliance/frontend/vendors.html" class="btn btn-sm btn-ghost">Open <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="dashboard-card-body">
+              <div id="vendorRisk" style="font-size:14px;color:var(--gray-600)">
+                <em>Vendor risk endpoint not connected — placeholder until /api/compliance/vendors lands.</em>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/module-tools.js"></script>
+  <script>
+    if (typeof checkAuth === 'function') checkAuth();
+    document.addEventListener('DOMContentLoaded', async function () {
+      if (typeof renderSidebar === 'function') renderSidebar('domain-compliance-summary');
+
+      loadModuleTools(
+        ['ITSM', 'IDENTITY', 'EDR', 'CSPM', 'VM', 'EMAIL_COLLAB', 'NETWORK', 'DLP',
+         'EXTERNAL_THREAT', 'OT', 'COLLABORATION'],
+        'moduleTools',
+        {
+          title: 'Connectors that feed compliance evidence',
+          subtitle: 'Compliance posture is computed from findings across every wired-up connector — the more sources, the deeper the evidence.',
+          manageHref: 'tool-catalog.html'
+        }
+      );
+
+      // Best-effort: attempt to fetch compliance overview if the endpoint exists.
+      // The Compliance Module is a separate sub-app — endpoints may not be wired
+      // into the main URIP backend yet, so we silently fall back to "—".
+      var apiFetch = window.URIP && window.URIP.apiFetch;
+      if (!apiFetch) return;
+
+      var fwMap = {
+        'soc2': 'fw-soc2',
+        'iso27001': 'fw-iso27001',
+        'gdpr': 'fw-gdpr',
+        'hipaa': 'fw-hipaa',
+        'pci-dss': 'fw-pci',
+        'pci_dss': 'fw-pci',
+        'dpdp': 'fw-dpdp',
+        'nist-csf': 'fw-nist',
+        'nist_csf': 'fw-nist',
+      };
+
+      try {
+        var resp = await apiFetch('/compliance/frameworks/summary', { silent: true });
+        if (resp && Array.isArray(resp.frameworks)) {
+          resp.frameworks.forEach(function (f) {
+            var key = (f.code || f.name || '').toLowerCase();
+            var elId = fwMap[key];
+            if (elId && f.score != null) {
+              var el = document.getElementById(elId);
+              if (el) el.textContent = Math.round(f.score) + '%';
+            }
+          });
+        }
+      } catch (e) {
+        // Endpoint not implemented in this backend — leave as "--"
+      }
+    });
+  </script>
+</body>
+</html>

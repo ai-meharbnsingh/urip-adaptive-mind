@@ -1,0 +1,80 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.0.2, pluggy-1.6.0 -- /opt/homebrew/opt/python@3.14/bin/python3.14
+cachedir: .pytest_cache
+rootdir: /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/compliance/backend
+configfile: pyproject.toml
+plugins: anyio-4.12.1, playwright-0.7.2, asyncio-1.3.0, base-url-2.1.0, timeout-2.4.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 30 items
+
+tests/test_policy_templates.py::test_all_nine_templates_present PASSED   [  3%]
+tests/test_policy_templates.py::test_each_template_has_non_empty_markdown PASSED [  6%]
+tests/test_policy_templates.py::test_get_template_by_name_exact_match PASSED [ 10%]
+tests/test_policy_templates.py::test_get_template_by_name_missing_returns_none PASSED [ 13%]
+tests/test_policy_models.py::test_create_policy PASSED                   [ 16%]
+tests/test_policy_models.py::test_policy_version_fk_constraint PASSED    [ 20%]
+tests/test_policy_models.py::test_policy_version_orphan_deletion PASSED  [ 23%]
+tests/test_policy_models.py::test_acknowledgment_unique_constraint PASSED [ 26%]
+tests/test_policy_models.py::test_tenant_isolation PASSED                [ 30%]
+tests/test_policy_models.py::test_policy_current_version_relationship PASSED [ 33%]
+tests/test_policy_manager.py::test_create_policy_creates_first_version PASSED [ 36%]
+tests/test_policy_manager.py::test_publish_new_version PASSED            [ 40%]
+tests/test_policy_manager.py::test_acknowledge_creates_record PASSED     [ 43%]
+tests/test_policy_manager.py::test_acknowledge_is_idempotent PASSED      [ 46%]
+tests/test_policy_manager.py::test_list_pending_acknowledgments PASSED   [ 50%]
+tests/test_policy_manager.py::test_list_pending_after_new_version PASSED [ 53%]
+tests/test_policy_manager.py::test_send_reminders PASSED                 [ 56%]
+tests/test_policy_manager.py::test_check_expiry PASSED                   [ 60%]
+tests/test_policy_manager.py::test_check_expiry_excludes_far_future PASSED [ 63%]
+tests/test_policy_routes.py::test_create_policy_as_admin PASSED          [ 66%]
+tests/test_policy_routes.py::test_create_policy_forbidden_for_non_admin PASSED [ 70%]
+tests/test_policy_routes.py::test_list_policies_returns_tenant_scoped PASSED [ 73%]
+tests/test_policy_routes.py::test_get_policy_detail PASSED               [ 76%]
+tests/test_policy_routes.py::test_get_policy_not_found_wrong_tenant PASSED [ 80%]
+tests/test_policy_routes.py::test_list_versions PASSED                   [ 83%]
+tests/test_policy_routes.py::test_publish_version_as_admin PASSED        [ 86%]
+tests/test_policy_routes.py::test_acknowledge_current_version PASSED     [ 90%]
+tests/test_policy_routes.py::test_get_pending_acknowledgments PASSED     [ 93%]
+tests/test_policy_routes.py::test_get_expiring_as_admin PASSED           [ 96%]
+tests/test_policy_routes.py::test_get_expiring_forbidden_for_non_admin PASSED [100%]
+
+=============================== warnings summary ===============================
+tests/test_policy_models.py: 9 warnings
+tests/test_policy_manager.py: 14 warnings
+tests/test_policy_routes.py: 11 warnings
+  /opt/homebrew/lib/python3.14/site-packages/sqlalchemy/sql/schema.py:3624: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+
+tests/test_policy_manager.py: 9 warnings
+tests/test_policy_routes.py: 10 warnings
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/compliance/backend/compliance_backend/services/policy_manager.py:48: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    published_at=datetime.utcnow(),
+
+tests/test_policy_manager.py::test_publish_new_version
+tests/test_policy_manager.py::test_list_pending_after_new_version
+tests/test_policy_manager.py::test_send_reminders
+tests/test_policy_routes.py::test_list_versions
+tests/test_policy_routes.py::test_publish_version_as_admin
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/compliance/backend/compliance_backend/services/policy_manager.py:83: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    published_at=datetime.utcnow(),
+
+tests/test_policy_manager.py::test_check_expiry
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/compliance/backend/tests/test_policy_manager.py:234: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    soon = datetime.utcnow() + timedelta(days=10)
+
+tests/test_policy_manager.py::test_check_expiry
+tests/test_policy_manager.py::test_check_expiry_excludes_far_future
+tests/test_policy_routes.py::test_get_expiring_as_admin
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/compliance/backend/compliance_backend/services/policy_manager.py:238: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = datetime.utcnow()
+
+tests/test_policy_manager.py::test_check_expiry_excludes_far_future
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/compliance/backend/tests/test_policy_manager.py:253: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    far = datetime.utcnow() + timedelta(days=100)
+
+tests/test_policy_routes.py::test_get_expiring_as_admin
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/compliance/backend/tests/test_policy_routes.py:253: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expires_at=datetime.utcnow() + timedelta(days=5),
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 30 passed, 64 warnings in 0.13s ========================

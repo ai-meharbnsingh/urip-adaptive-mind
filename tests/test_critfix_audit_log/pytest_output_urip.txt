@@ -1,0 +1,85 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-8.3.4, pluggy-1.6.0
+rootdir: /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a
+configfile: pytest.ini
+plugins: cov-7.1.0, httpx-0.35.0, asyncio-0.25.0, respx-0.23.1, anyio-4.13.0
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None
+collected 16 items
+
+tests/test_critfix_audit_log/test_audit_log_coverage.py ................ [100%]
+
+=============================== warnings summary ===============================
+backend/config.py:29
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/config.py:29: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class Settings(BaseSettings):
+
+backend/config.py:154
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/config.py:154: RuntimeWarning: [URIP CONFIG WARNING] JWT_SECRET_KEY is using the dev default (urip-dev-secret-change-in-production). This is acceptable in dev ONLY. You MUST rotate this secret before any prod / staging deployment (set URIP_ENV=production and a real JWT_SECRET_KEY).
+    _enforce_jwt_secret_policy(settings)
+
+.venv/lib/python3.14/site-packages/starlette/_utils.py:39: 130 warnings
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/starlette/_utils.py:39: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    return asyncio.iscoroutinefunction(obj) or (callable(obj) and asyncio.iscoroutinefunction(obj.__call__))
+
+backend/schemas/acceptance.py:17
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/schemas/acceptance.py:17: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class AcceptanceRead(BaseModel):
+
+.venv/lib/python3.14/site-packages/fastapi/routing.py:233: 126 warnings
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/fastapi/routing.py:233: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    is_coroutine = asyncio.iscoroutinefunction(dependant.call)
+
+backend/schemas/auth.py:15
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/schemas/auth.py:15: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class UserProfile(BaseModel):
+
+backend/schemas/dashboard.py:41
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/schemas/dashboard.py:41: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class AlertItem(BaseModel):
+
+backend/schemas/remediation.py:23
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/schemas/remediation.py:23: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class RemediationRead(BaseModel):
+
+backend/schemas/report.py:25
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/schemas/report.py:25: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class CertInAdvisory(BaseModel):
+
+backend/schemas/risk.py:30
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/schemas/risk.py:30: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class RiskRead(BaseModel):
+
+tests/test_critfix_audit_log/test_audit_log_coverage.py::test_risk_update_writes_audit_log_with_tenant_id
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:1153: DeprecationWarning: 'asyncio.get_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    return asyncio.get_event_loop_policy()
+
+tests/test_critfix_audit_log/test_audit_log_coverage.py: 16 warnings
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:844: DeprecationWarning: 'asyncio.get_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    _restore_event_loop_policy(asyncio.get_event_loop_policy()),
+
+tests/test_critfix_audit_log/test_audit_log_coverage.py: 16 warnings
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:1125: DeprecationWarning: 'asyncio.set_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    asyncio.set_event_loop_policy(new_loop_policy)
+
+tests/test_critfix_audit_log/test_audit_log_coverage.py: 16 warnings
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:1126: DeprecationWarning: 'asyncio.get_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+
+tests/test_critfix_audit_log/test_audit_log_coverage.py: 16 warnings
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:859: DeprecationWarning: 'asyncio.get_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    policy = asyncio.get_event_loop_policy()
+
+tests/test_critfix_audit_log/test_audit_log_coverage.py: 16 warnings
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:904: DeprecationWarning: 'asyncio.get_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    policy = asyncio.get_event_loop_policy()
+
+tests/test_critfix_audit_log/test_audit_log_coverage.py: 16 warnings
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:928: DeprecationWarning: 'asyncio.set_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    asyncio.set_event_loop_policy(previous_policy)
+
+tests/test_critfix_audit_log/test_audit_log_coverage.py: 16 warnings
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:940: DeprecationWarning: 'asyncio.get_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    policy = asyncio.get_event_loop_policy()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 16 passed, 377 warnings in 4.65s =======================

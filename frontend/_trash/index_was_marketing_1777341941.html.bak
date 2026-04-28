@@ -1,0 +1,2297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URIP — Unified Risk Intelligence Platform | Your tools. Your data. One pane. Audit-ready.</title>
+  <meta name="description" content="URIP turns your existing security stack into one live risk dashboard and one continuously audit-ready compliance dashboard — on the same data. 29 production connectors live · 25+ source categories supported via the universal four-method framework · 15 pre-built compliance frameworks · 16 license modules · Hybrid-SaaS keeps sensitive data on your network.">
+
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+  <!-- Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Landing styles -->
+  <link rel="stylesheet" href="css/landing.css">
+</head>
+<body>
+
+  <!-- ============================================
+       TOP NAV
+       ============================================ -->
+  <nav class="topbar" id="topbar">
+    <div class="topbar-inner">
+      <a href="#top" class="brand">
+        <span class="brand-mark"><i class="fas fa-shield-halved"></i></span>
+        <span>URIP</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#pipeline">Pipeline</a></li>
+        <li><a href="#intelligence-engine">Intelligence</a></li>
+        <li><a href="#connectors">Connectors</a></li>
+        <li><a href="#dashboards">Dashboards</a></li>
+        <li><a href="#auto-remediation">Auto-Fix</a></li>
+        <li><a href="#trust-center">Trust</a></li>
+        <li><a href="#modules">Modules</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="vendor-login.html" class="btn btn-ghost"><i class="fas fa-user-shield"></i> Vendor</a>
+        <a href="index.html" class="btn btn-primary">
+          <i class="fas fa-arrow-right-to-bracket"></i> Sign in
+        </a>
+        <button class="mobile-menu-btn" aria-label="Menu"><i class="fas fa-bars"></i></button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================================
+       HERO
+       ============================================ -->
+  <header class="hero" id="top">
+    <div class="container hero-inner">
+      <div class="hero-copy">
+        <span class="hero-eyebrow">
+          <span class="pulse-dot"></span>
+          Unified Risk &amp; Compliance &middot; SaaS / On&#8209;Prem / Hybrid
+        </span>
+        <h1>
+          Your CISO and your auditor finally <span class="accent">look at the same screen.</span>
+        </h1>
+        <p class="hero-sub">
+          URIP is a multi-tenant platform that turns any company&rsquo;s existing security tools into one live risk dashboard and one continuously audit-ready compliance dashboard &mdash; on the same data layer. Pick the tools you own. Enter API keys. Watch twenty-five consoles collapse into one pane.
+        </p>
+        <div class="hero-cta">
+          <a href="index.html" class="btn btn-primary btn-lg">
+            Sign in <i class="fas fa-arrow-right"></i>
+          </a>
+          <a href="#how" class="btn btn-secondary btn-lg">
+            <i class="fas fa-play"></i> See how it works
+          </a>
+        </div>
+        <div class="hero-tagline">
+          <span class="divider"></span>
+          Your tools &middot; Your data &middot; One pane &middot; Audit-ready
+        </div>
+      </div>
+
+      <!-- Floating dual-dashboard visual -->
+      <div class="hero-visual">
+        <div class="dash-card dash-card-risk">
+          <div class="dash-header">
+            <div class="dash-title"><i class="fas fa-shield-halved"></i> URIP Risk Intelligence</div>
+            <div class="dash-dots"><span></span><span></span><span></span></div>
+          </div>
+          <div class="dash-kpis">
+            <div class="kpi-tile">
+              <div class="kpi-label">Open Risks</div>
+              <div class="kpi-value">2,847</div>
+              <div class="kpi-delta up"><i class="fas fa-arrow-down"></i> 12</div>
+            </div>
+            <div class="kpi-tile">
+              <div class="kpi-label">Critical</div>
+              <div class="kpi-value" style="color:var(--red-critical)">38</div>
+              <div class="kpi-delta">+4</div>
+            </div>
+            <div class="kpi-tile">
+              <div class="kpi-label">IOC Hits</div>
+              <div class="kpi-value">17</div>
+              <div class="kpi-delta up"><i class="fas fa-arrow-down"></i> 3</div>
+            </div>
+          </div>
+          <div class="dash-rows">
+            <div class="dash-row"><span class="sev crit"></span><span class="label">CVE-2026-0142 &middot; Tenable &middot; T1 Asset</span><span class="score">9.7</span></div>
+            <div class="dash-row"><span class="sev crit"></span><span class="label">APT41 &middot; Zscaler C2 match</span><span class="score">9.4</span></div>
+            <div class="dash-row"><span class="sev high"></span><span class="label">Risky sign-in &middot; MS Entra</span><span class="score">8.1</span></div>
+            <div class="dash-row"><span class="sev high"></span><span class="label">Endpoint quarantine &middot; SentinelOne</span><span class="score">7.6</span></div>
+            <div class="dash-row"><span class="sev med"></span><span class="label">Policy drift &middot; Netskope</span><span class="score">6.0</span></div>
+          </div>
+        </div>
+
+        <div class="dash-card dash-card-comp">
+          <div class="dash-header">
+            <div class="dash-title"><i class="fas fa-clipboard-check"></i> Compliance &middot; Audit-Ready</div>
+            <div class="dash-dots"><span></span><span></span><span></span></div>
+          </div>
+          <div class="comp-frameworks">
+            <div class="fw-tile">
+              <div class="fw-donut">
+                <svg width="36" height="36"><circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4"/><circle cx="18" cy="18" r="14" fill="none" stroke="#00F0FF" stroke-width="4" stroke-dasharray="78 88" stroke-linecap="round"/></svg>
+                <div class="pct">89%</div>
+              </div>
+              <div>
+                <div class="fw-name">SOC 2 &middot; TSC 2022</div>
+                <div class="fw-meta">152 / 171 controls</div>
+              </div>
+            </div>
+            <div class="fw-tile">
+              <div class="fw-donut">
+                <svg width="36" height="36"><circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4"/><circle cx="18" cy="18" r="14" fill="none" stroke="#00F0FF" stroke-width="4" stroke-dasharray="68 88" stroke-linecap="round"/></svg>
+                <div class="pct">77%</div>
+              </div>
+              <div>
+                <div class="fw-name">ISO 27001:2022</div>
+                <div class="fw-meta">71 / 93 controls</div>
+              </div>
+            </div>
+            <div class="fw-tile">
+              <div class="fw-donut">
+                <svg width="36" height="36"><circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4"/><circle cx="18" cy="18" r="14" fill="none" stroke="#F1C40F" stroke-width="4" stroke-dasharray="55 88" stroke-linecap="round"/></svg>
+                <div class="pct">62%</div>
+              </div>
+              <div>
+                <div class="fw-name">PCI DSS v4.0</div>
+                <div class="fw-meta">155 / 250 controls</div>
+              </div>
+            </div>
+            <div class="fw-tile">
+              <div class="fw-donut">
+                <svg width="36" height="36"><circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4"/><circle cx="18" cy="18" r="14" fill="none" stroke="#00F0FF" stroke-width="4" stroke-dasharray="74 88" stroke-linecap="round"/></svg>
+                <div class="pct">84%</div>
+              </div>
+              <div>
+                <div class="fw-name">HIPAA</div>
+                <div class="fw-meta">42 / 50 safeguards</div>
+              </div>
+            </div>
+          </div>
+          <div class="dash-rows">
+            <div class="dash-row"><span class="sev crit"></span><span class="label">CC7.1 Threat Detection &mdash; FAIL (root: CVE-2026-0142)</span><span class="score">view</span></div>
+            <div class="dash-row"><span class="sev high"></span><span class="label">A.8.8 Vulnerability Mgmt &mdash; FAIL (3 CVEs)</span><span class="score">view</span></div>
+            <div class="dash-row"><span class="sev med"></span><span class="label">CC6.1 Logical Access &mdash; INCONCLUSIVE</span><span class="score">view</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================
+       STATS STRIP — coverage facts that buyers verify
+       (no internal test counts, no seed-data brags)
+       ============================================ -->
+  <section class="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div><div class="stat-num">25</div><div class="stat-label">Production Connectors Live</div></div>
+        <div><div class="stat-num">25+</div><div class="stat-label">Source Categories Supported</div></div>
+        <div><div class="stat-num">15</div><div class="stat-label">Compliance Frameworks</div></div>
+        <div><div class="stat-num">16</div><div class="stat-label">License Modules (Core + 15)</div></div>
+        <div><div class="stat-num">4</div><div class="stat-label">Live Threat Feeds (EPSS·KEV·MITRE·OTX)</div></div>
+        <div><div class="stat-num">3</div><div class="stat-label">Deployment Modes (SaaS · On&#8209;Prem · Hybrid)</div></div>
+        <div><div class="stat-num">2</div><div class="stat-label">Dashboards &middot; 1 Data Layer</div></div>
+        <div><div class="stat-num">0</div><div class="stat-label">Sensitive Data Leaves Network*</div></div>
+      </div>
+
+      <!-- Killer quote from blueprint Section 13 -->
+      <div class="killer-quote">
+        <i class="fas fa-quote-left"></i>
+        <p><strong>No customer is ever told &ldquo;we don&rsquo;t support that tool.&rdquo;</strong> They&rsquo;re told <em>&ldquo;implement four methods, or we&rsquo;ll build it for you.&rdquo;</em></p>
+        <span class="quote-attr">&mdash; The universal connector framework promise</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       WHAT URIP DOES THAT COMPETITORS CAN'T
+       ============================================ -->
+  <section class="block dark" id="scale">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">What only URIP does</span>
+        <h2>Eight things no other vendor can offer in one pane.</h2>
+        <p>Point solutions run one layer well — compliance, threat intel, CSPM, endpoint. URIP is the cockpit on top of <em>whatever stack you already own</em> — unifying risk, compliance, auto-remediation, and vendor collaboration in one pane.</p>
+      </div>
+
+      <div class="scale-grid">
+        <div class="scale-card">
+          <div class="scale-label">Risk &harr; Control Linkage</div>
+          <div class="scale-meta">When a SOC 2 control fails, URIP already shows the CVE causing it, its EPSS exploit probability, the APT exploiting it, and which Tier&#8209;1 asset is affected. No other platform joins risk intelligence and compliance control on the same data layer.</div>
+        </div>
+        <div class="scale-card">
+          <div class="scale-label">Native compliance automation</div>
+          <div class="scale-meta">15 frameworks pre-seeded (SOC 2, ISO 27001:2022, GDPR, HIPAA, PCI DSS v4, India DPDP, NIST CSF 2.0 + ISO 42001, EU AI Act, DORA, NIS2, ISO 27017/18/701, CIS v8). Auditor portal with framework-scoped, time-bound, read-only invitations.</div>
+        </div>
+        <div class="scale-card">
+          <div class="scale-label">Closed-loop VAPT Vendor Portal</div>
+          <div class="scale-meta">Pentest vendors log in via single-use JWT, upload findings, request re-tests. Auto-enrichment with EPSS + KEV. State machine: Open &rarr; Re-test &rarr; Pass/Fail &rarr; auto-close. No more PDF email chains.</div>
+        </div>
+        <div class="scale-card">
+          <div class="scale-label">Auto-Remediation pipeline</div>
+          <div class="scale-meta">CrowdStrike RTR (OAuth2 Bearer), Ansible Tower, Fortinet REST, CyberArk REST executors. Implication-check + approval-gate + re-test. Per-tenant Fernet vault. Whitelist categories for zero-touch closure.</div>
+        </div>
+        <div class="scale-card">
+          <div class="scale-label">Hybrid-SaaS deployment</div>
+          <div class="scale-meta">Docker agent on the customer's network. HMAC-signed reporter, anti-replay nonce, one-time drilldown tokens. Sensitive identifiers never leave the customer's perimeter &mdash; an architecture pure-cloud platforms structurally cannot match.</div>
+        </div>
+        <div class="scale-card">
+          <div class="scale-label">Trust Center / Sales acceleration</div>
+          <div class="scale-meta">Public NDA-gated posture page. Time-bound SHA&#8209;256-hashed access tokens. HTTP-206 Range streaming. Cuts security-questionnaire churn for B2B sales.</div>
+        </div>
+        <div class="scale-card">
+          <div class="scale-label">Bidirectional Jira / ServiceNow</div>
+          <div class="scale-meta">Auto-create on risk assignment. HMAC-signed webhooks for close-loop sync. Pre-flight schema validation against the customer&rsquo;s actual project key / table before save.</div>
+        </div>
+        <div class="scale-card">
+          <div class="scale-label">Module-pickable (16 capabilities)</div>
+          <div class="scale-meta">CORE + VM, EDR, Network, Identity, Collab, ITSM, DAST, DLP, CSPM, Compliance, DSPM, AI Security, ZTNA, Attack Path, Risk Quant (FAIR). Subscribe to what you need. Disabled modules are dark in the UI and inactive in the backend.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 1 — WHAT URIP IS
+       ============================================ -->
+  <section class="block muted" id="what">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">What URIP Is</span>
+        <h2>Two dashboards. One data layer. One pane.</h2>
+        <p>
+          URIP (Unified Risk Intelligence Platform) aggregates findings from your existing security stack, enriches every finding with live exploit and threat-actor intelligence, and renders the result as two linked dashboards on a single tenant.
+        </p>
+      </div>
+      <div class="dual-dash">
+        <div class="dash-feature">
+          <span class="badge"><i class="fas fa-radar"></i> CISO View</span>
+          <h3>URIP Risk Intelligence</h3>
+          <p class="question">&ldquo;Where am I most exposed today?&rdquo;</p>
+          <ul class="feature-list">
+            <li><i class="fas fa-check"></i> Composite 0&ndash;10 risk score on every CVE</li>
+            <li><i class="fas fa-check"></i> Live EPSS, KEV, MITRE ATT&amp;CK and OTX enrichment</li>
+            <li><i class="fas fa-check"></i> APT attribution and IOC matches per finding</li>
+            <li><i class="fas fa-check"></i> Asset-tier weighting (T1&ndash;T4)</li>
+            <li><i class="fas fa-check"></i> SLA timers, owner assignment, auto-ticket to ITSM</li>
+          </ul>
+        </div>
+        <div class="dash-feature">
+          <span class="badge"><i class="fas fa-clipboard-check"></i> Compliance Officer View</span>
+          <h3>Continuous Audit-Readiness</h3>
+          <p class="question">&ldquo;If the audit landed next week, would we pass?&rdquo;</p>
+          <ul class="feature-list">
+            <li><i class="fas fa-check"></i> Framework score widgets with trend arrows</li>
+            <li><i class="fas fa-check"></i> Per-control drill-down with root-cause CVEs</li>
+            <li><i class="fas fa-check"></i> Drag-drop evidence with SHA-256 integrity</li>
+            <li><i class="fas fa-check"></i> Time-bound, framework-scoped auditor portal</li>
+            <li><i class="fas fa-check"></i> Versioned policy templates with e-sign workflow</li>
+          </ul>
+        </div>
+      </div>
+      <div class="edge-quote" style="text-align:center;margin-top:48px;max-width:900px;margin-left:auto;margin-right:auto;">
+        Both dashboards render from the same tenant data, share the same auth, the same audit log, and the same connector mesh. Critically, they are <strong>linked</strong>: when a SOC 2 control fails, you see the exact CVEs causing it. <strong>No other product does this.</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       WHAT URIP IS NOT (§1.5 — Competitive Truth Table)
+       ============================================ -->
+  <section class="block dark" id="what-not">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">What URIP Is Not</span>
+        <h2>The competitive truth table.</h2>
+        <p>URIP is not a point solution. It is an intelligence overlay. Here is how that changes every architectural assumption.</p>
+      </div>
+
+      <div class="truth-table-wrap">
+        <table class="truth-table">
+          <thead>
+            <tr>
+              <th>Assumption</th>
+              <th>Vertically-Integrated Vendors</th>
+              <th>URIP</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Data ownership</strong></td>
+              <td class="bad">Findings live in the vendor&rsquo;s cloud</td>
+              <td class="good">Sensitive data stays on your network (Hybrid-SaaS)</td>
+            </tr>
+            <tr>
+              <td><strong>Tool coverage</strong></td>
+              <td class="bad">Only the vendor&rsquo;s own agent or scanner</td>
+              <td class="good">Any tool with an API &mdash; 25+ categories today</td>
+            </tr>
+            <tr>
+              <td><strong>Risk &times; Compliance linkage</strong></td>
+              <td class="bad">Risk and compliance are separate products with separate data</td>
+              <td class="good">One tenant. One schema. One pane.</td>
+            </tr>
+            <tr>
+              <td><strong>Scoring transparency</strong></td>
+              <td class="bad">Opaque AI or black-box scoring</td>
+              <td class="good">Deterministic formula &mdash; CVSS &times; 0.55 + EPSS &times; 2.5 + KEV + tier</td>
+            </tr>
+            <tr>
+              <td><strong>Vendor portal</strong></td>
+              <td class="bad">No dedicated vendor portal for external pentesters</td>
+              <td class="good">Scoped VAPT vendor login with auto-enrichment</td>
+            </tr>
+            <tr>
+              <td><strong>Auto-remediation</strong></td>
+              <td class="bad">Auto-remediation limited to the vendor&rsquo;s own ecosystem</td>
+              <td class="good">CrowdStrike RTR + Ansible + CyberArk &mdash; gated by safety checks</td>
+            </tr>
+            <tr>
+              <td><strong>Deployment flexibility</strong></td>
+              <td class="bad">SaaS-only deployment; no on-prem or hybrid option</td>
+              <td class="good">SaaS / On-Prem / Hybrid &mdash; same codebase</td>
+            </tr>
+            <tr>
+              <td><strong>Threat intel depth</strong></td>
+              <td class="bad">Proprietary threat feeds with no open-standard scoring</td>
+              <td class="good">EPSS + KEV + MITRE ATT&amp;CK + OTX + CloudSEK &mdash; all live</td>
+            </tr>
+            <tr>
+              <td><strong>Pricing model</strong></td>
+              <td class="bad">All-or-nothing platform licensing</td>
+              <td class="good">Per-module subscription &mdash; pay only for what you turn on</td>
+            </tr>
+            <tr>
+              <td><strong>Connector extensibility</strong></td>
+              <td class="bad">&ldquo;We don&rsquo;t support that tool&rdquo; &mdash; category gaps common</td>
+              <td class="good">&ldquo;Implement four methods, or we&rsquo;ll build it for you&rdquo;</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3 — ONBOARDING
+       ============================================ -->
+  <section class="block" id="how">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">How a Customer Onboards</span>
+        <h2>Three screens. No professional services.</h2>
+        <p>The same flow runs for the 50-person SaaS startup chasing SOC 2 and the 1000-person manufacturer with eleven tools.</p>
+      </div>
+      <div class="onboard-flow">
+        <div class="onboard-step">
+          <div class="step-num">01</div>
+          <div class="step-icon"><i class="fas fa-user-plus"></i></div>
+          <h4>Sign up &amp; brand</h4>
+          <p>Tenant provisioned with its own slug, encryption key and database scope. Upload logo, pick colors, set the app name. Login pages, dashboards, exports and auditor invites carry your brand.</p>
+        </div>
+        <div class="onboard-step">
+          <div class="step-num">02</div>
+          <div class="step-icon"><i class="fas fa-grip"></i></div>
+          <h4>Pick from the catalog</h4>
+          <p>A grid of every supported vendor &mdash; one-line description, setup difficulty, freshness target, and a status pill. Click each tool you own. Universal framework means every category is selectable.</p>
+        </div>
+        <div class="onboard-step">
+          <div class="step-num">03</div>
+          <div class="step-icon"><i class="fas fa-key"></i></div>
+          <h4>Paste &amp; test connection</h4>
+          <p>Per-tool guided wizard with inline help and the vendor&rsquo;s API doc link. Click <em>Test Connection</em> &mdash; in 2&ndash;4 seconds you see <em>&ldquo;Connected. Found 2,847 assets.&rdquo;</em> or the exact remediation step.</p>
+        </div>
+        <div class="onboard-step">
+          <div class="step-num">04</div>
+          <div class="step-icon"><i class="fas fa-bolt"></i></div>
+          <h4>Watch it populate</h4>
+          <p>Credentials saved to a per-tenant Fernet vault. The 15-minute poll cycle starts. Risk dashboard fills within minutes; compliance dashboard within an hour. Auditor invite can go out the same day.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       INTELLIGENCE OVERLAY ORCHESTRATION (NEW)
+       ============================================ -->
+  <section class="block dark" id="overlay">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Intelligence Overlay Architecture</span>
+        <h2>An intelligence overlay, not a replacement.</h2>
+        <p>URIP is a vendor-agnostic orchestration layer. It sits <strong>above</strong> your existing security stack &mdash; aggregating findings, normalising into one schema, scoring with the 5-lens engine, and routing to the consumers that matter.</p>
+      </div>
+
+      <div class="ov-stage">
+        <!-- Connecting flow SVG (absolute layer) -->
+        <svg class="ov-flow" viewBox="0 0 1100 580" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="ovFlowL" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#00F0FF" stop-opacity="0"/>
+              <stop offset="50%" stop-color="#00F0FF" stop-opacity="1"/>
+              <stop offset="100%" stop-color="#00F0FF" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="ovFlowR" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#60A5FA" stop-opacity="0"/>
+              <stop offset="50%" stop-color="#60A5FA" stop-opacity="1"/>
+              <stop offset="100%" stop-color="#60A5FA" stop-opacity="0"/>
+            </linearGradient>
+            <marker id="ovArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#60A5FA"/>
+            </marker>
+          </defs>
+
+          <!-- Left: 8 input flow lines from each src cube into URIP cube -->
+          <g class="ov-in" stroke-width="1.5" fill="none">
+            <path class="ov-line in-1" d="M 320 117 Q 380 130 440 250" stroke="rgba(0,240,255,0.35)"/>
+            <path class="ov-line in-2" d="M 320 172 Q 380 200 440 265" stroke="rgba(0,240,255,0.35)"/>
+            <path class="ov-line in-3" d="M 320 227 Q 380 240 440 275" stroke="rgba(0,240,255,0.35)"/>
+            <path class="ov-line in-4" d="M 320 282 Q 380 280 440 285" stroke="rgba(0,240,255,0.35)"/>
+            <path class="ov-line in-5" d="M 320 337 Q 380 320 440 295" stroke="rgba(0,240,255,0.35)"/>
+            <path class="ov-line in-6" d="M 320 392 Q 380 360 440 305" stroke="rgba(0,240,255,0.35)"/>
+            <path class="ov-line in-7" d="M 320 447 Q 380 400 440 315" stroke="rgba(0,240,255,0.35)"/>
+            <path class="ov-line in-8" d="M 320 502 Q 380 450 440 325" stroke="rgba(0,240,255,0.35)"/>
+          </g>
+          <!-- Animated flowing pulses on input lines -->
+          <g class="ov-pulse-in" stroke-width="2.5" fill="none">
+            <path class="ov-pulse p-1" d="M 320 117 Q 380 130 440 250" stroke="url(#ovFlowL)"/>
+            <path class="ov-pulse p-2" d="M 320 172 Q 380 200 440 265" stroke="url(#ovFlowL)"/>
+            <path class="ov-pulse p-3" d="M 320 227 Q 380 240 440 275" stroke="url(#ovFlowL)"/>
+            <path class="ov-pulse p-4" d="M 320 282 Q 380 280 440 285" stroke="url(#ovFlowL)"/>
+            <path class="ov-pulse p-5" d="M 320 337 Q 380 320 440 295" stroke="url(#ovFlowL)"/>
+            <path class="ov-pulse p-6" d="M 320 392 Q 380 360 440 305" stroke="url(#ovFlowL)"/>
+            <path class="ov-pulse p-7" d="M 320 447 Q 380 400 440 315" stroke="url(#ovFlowL)"/>
+            <path class="ov-pulse p-8" d="M 320 502 Q 380 450 440 325" stroke="url(#ovFlowL)"/>
+          </g>
+
+          <!-- Right: 3 output flow lines from URIP into output cubes -->
+          <g class="ov-out" stroke-width="1.6" fill="none">
+            <path class="ov-line out-1" d="M 672 245 Q 730 160 775 75" stroke="rgba(96,165,250,0.45)" marker-end="url(#ovArr)"/>
+            <path class="ov-line out-2" d="M 672 280 Q 730 230 775 188" stroke="rgba(96,165,250,0.45)" marker-end="url(#ovArr)"/>
+            <path class="ov-line out-3" d="M 672 315 Q 730 310 775 302" stroke="rgba(96,165,250,0.45)" marker-end="url(#ovArr)"/>
+          </g>
+          <g class="ov-pulse-out" stroke-width="2.5" fill="none">
+            <path class="ov-pulse o-1" d="M 672 245 Q 730 160 775 75" stroke="url(#ovFlowR)"/>
+            <path class="ov-pulse o-2" d="M 672 280 Q 730 230 775 188" stroke="url(#ovFlowR)"/>
+            <path class="ov-pulse o-3" d="M 672 315 Q 730 310 775 302" stroke="url(#ovFlowR)"/>
+          </g>
+        </svg>
+
+        <!-- Three columns of cards (z-index above SVG flow) -->
+        <div class="ov-grid">
+          <!-- LEFT: 25 sources stack -->
+          <div class="ov-col ov-col-left">
+            <div class="ov-col-title">
+              <span class="ov-num">25</span>
+              <div>
+                <div class="ov-h">Existing Sources</div>
+                <div class="ov-p">VM &middot; OT &middot; Cloud &middot; SoC &middot; EDR &middot; CASB &middot; PAM &middot; NAC ...</div>
+              </div>
+            </div>
+            <div class="ov-src-stack">
+              <div class="ov-src"><span class="ov-src-i"><i class="fas fa-shield-virus"></i></span> Vulnerability Mgmt</div>
+              <div class="ov-src"><span class="ov-src-i"><i class="fas fa-bug"></i></span> EDR / EPP</div>
+              <div class="ov-src"><span class="ov-src-i"><i class="fas fa-cloud"></i></span> CNAPP / Cloud</div>
+              <div class="ov-src"><span class="ov-src-i"><i class="fas fa-microchip"></i></span> OT / IoT</div>
+              <div class="ov-src"><span class="ov-src-i"><i class="fas fa-bell-on"></i></span> SoC / SIEM</div>
+              <div class="ov-src"><span class="ov-src-i"><i class="fas fa-network-wired"></i></span> NAC / Network</div>
+              <div class="ov-src"><span class="ov-src-i"><i class="fas fa-key"></i></span> PAM / Identity</div>
+              <div class="ov-src"><span class="ov-src-i"><i class="fas fa-envelope-open-text"></i></span> Workspace / Email</div>
+            </div>
+            <div class="ov-col-foot">+ 6 more categories</div>
+          </div>
+
+          <!-- CENTER: URIP Cube -->
+          <div class="ov-col ov-col-center">
+            <div class="urip-cube">
+              <div class="urip-cube-glow"></div>
+              <div class="urip-cube-front">
+                <div class="urip-brand">
+                  <div class="urip-mark"><i class="fas fa-shield-halved"></i></div>
+                  <div class="urip-name">URIP</div>
+                </div>
+                <div class="urip-pillars">
+                  <div class="urip-pillar">
+                    <i class="fas fa-arrows-rotate"></i>
+                    <div>Normalisation</div>
+                  </div>
+                  <div class="urip-pillar">
+                    <i class="fas fa-bullseye"></i>
+                    <div>Scoring</div>
+                  </div>
+                  <div class="urip-pillar">
+                    <i class="fas fa-layer-group"></i>
+                    <div>Enrichment</div>
+                  </div>
+                </div>
+                <div class="urip-tagline">One internal <code>URIPRiskRecord</code> schema</div>
+              </div>
+              <div class="urip-cube-rays"></div>
+            </div>
+            <div class="ov-center-foot">
+              <i class="fas fa-bolt"></i>
+              <span>Vendor-agnostic. Read-only. Deterministic.</span>
+            </div>
+          </div>
+
+          <!-- RIGHT: 3 outputs -->
+          <div class="ov-col ov-col-right">
+            <div class="ov-out-card">
+              <div class="ov-out-icon"><i class="fas fa-chart-pie"></i></div>
+              <div>
+                <div class="ov-out-h">CISO Dashboards</div>
+                <div class="ov-out-p">25-column live risk register &middot; SSVC tags &middot; A&ndash;F posture grade</div>
+              </div>
+            </div>
+            <div class="ov-out-card">
+              <div class="ov-out-icon"><i class="fas fa-bolt"></i></div>
+              <div>
+                <div class="ov-out-h">Auto-Remediation</div>
+                <div class="ov-out-p">Playbooks for the top 20 high-EPSS / KEV CVEs &middot; one-click apply</div>
+              </div>
+            </div>
+            <div class="ov-out-card">
+              <div class="ov-out-icon"><i class="fas fa-link"></i></div>
+              <div>
+                <div class="ov-out-h">Ticketing Integration</div>
+                <div class="ov-out-p">ManageEngine SDP / Jira bidirectional close-loop with SLA SLO</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       6-WAVE ROLLOUT (NEW — Section 13a of blueprint)
+       ============================================ -->
+  <section class="block muted" id="waves">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Implementation in 6 Waves</span>
+        <h2>From kickoff to auto-remediation go-live.</h2>
+        <p>A typical 7,000-endpoint enterprise rollout runs through six neutral waves &mdash; outcomes per wave, not calendar dates. A 50-person SaaS startup with 5 connectors completes Waves A&ndash;D in a fraction of the time.</p>
+      </div>
+
+      <div class="wave-grid">
+        <div class="wave-card">
+          <div class="wave-letter">A</div>
+          <h4>Core Data Flowing</h4>
+          <p>First two connectors stood up (typically VM + EDR). OT access pattern decided. Asset fingerprinting active. Managed / Unmanaged / Unknown classification engaged.</p>
+          <div class="wave-milestone">Live data from your two highest-volume sources landing in URIP.</div>
+        </div>
+        <div class="wave-card">
+          <div class="wave-letter">B</div>
+          <h4>Register Live with Remediation</h4>
+          <p>Risk register populated. Composite scoring computing on every finding. Pending Days counters running. Remediation steps auto-fetched from NVD. VAPT Vendor Portal stood up.</p>
+          <div class="wave-milestone">The IT team works the URIP register instead of Excel.</div>
+        </div>
+        <div class="wave-card">
+          <div class="wave-letter">C</div>
+          <h4>Full Workflow Live</h4>
+          <p>Risk Acceptance Workflow with HoD digital sign-off. Jira / ServiceNow bidirectional ticketing wired. Advisory Applicability Engine classifying every advisory.</p>
+          <div class="wave-milestone">Risk lifecycle fully owned inside URIP &mdash; no parallel Excel.</div>
+        </div>
+        <div class="wave-card">
+          <div class="wave-letter">D</div>
+          <h4>Demo Ready</h4>
+          <p>Executive Security Posture Dashboard. Board + CERT-In compliance reports. APT tagging + IOC matching active on every applicable risk. Role-based access tightened.</p>
+          <div class="wave-milestone">Customer can present URIP to their board and to CERT-In auditors.</div>
+        </div>
+        <div class="wave-card">
+          <div class="wave-letter">E</div>
+          <h4>Full System Live</h4>
+          <p>Long-tail tools connected (PAM, NAC, DLP, DAST). UAT cycle with the IT team. Auto-Remediation script library piloted on a controlled set of CVE classes.</p>
+          <div class="wave-milestone">Your full stack feeding URIP. Auto-Remediation pilot proven safe.</div>
+        </div>
+        <div class="wave-card">
+          <div class="wave-letter">F</div>
+          <h4>Auto-Remediation Go-Live</h4>
+          <p>Auto-Remediation pipeline goes live (gated by Implication Check + Approval Gate). Performance testing under load. Ops handover documentation.</p>
+          <div class="wave-milestone">URIP operationally owned by your team. We move to support mode.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       END-TO-END ORCHESTRATION PIPELINE (NEW)
+       ============================================ -->
+  <section class="block dark" id="pipeline">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">End-to-End Orchestration Pipeline</span>
+        <h2>Six stages from a raw API pull to a closed risk.</h2>
+        <p>Every finding moves through the same six-stage pipeline &mdash; deterministic, auditable, and re-runnable. No black boxes.</p>
+      </div>
+
+      <div class="pipeline">
+        <div class="pipe-step s1">
+          <div class="pipe-num">01 &middot; DETECT</div>
+          <div class="pipe-icon"><i class="fas fa-satellite-dish"></i></div>
+          <h4>Detect</h4>
+          <p>Pull live feeds from 25 disparate risk sources via read-only APIs and webhooks.</p>
+        </div>
+        <div class="pipe-step s2">
+          <div class="pipe-num">02 &middot; AGGREGATE</div>
+          <div class="pipe-icon"><i class="fas fa-layer-group"></i></div>
+          <h4>Aggregate</h4>
+          <p>Deduplicate via asset fingerprinting (MAC + Hostname + IP) and normalize to a 0&ndash;10 scale.</p>
+        </div>
+        <div class="pipe-step s3">
+          <div class="pipe-num">03 &middot; PRIORITISE</div>
+          <div class="pipe-icon"><i class="fas fa-bullseye"></i></div>
+          <h4>Prioritise</h4>
+          <p>Apply the 5-layer filter &mdash; CVSS, EPSS, CISA KEV, Asset Tier, MITRE ATT&amp;CK / OTX.</p>
+        </div>
+        <div class="pipe-step s4">
+          <div class="pipe-num">04 &middot; ASSIGN</div>
+          <div class="pipe-icon"><i class="fas fa-route"></i></div>
+          <h4>Assign</h4>
+          <p>Auto-route to the named domain owner (Network / Cloud / Identity) and trigger SLA timers.</p>
+        </div>
+        <div class="pipe-step s5">
+          <div class="pipe-num">05 &middot; REMEDIATE</div>
+          <div class="pipe-icon"><i class="fas fa-screwdriver-wrench"></i></div>
+          <h4>Remediate</h4>
+          <p>Attach mitigation steps. Push automated playbooks via CrowdStrike RTR / Ansible / CyberArk API.</p>
+        </div>
+        <div class="pipe-step s6">
+          <div class="pipe-num">06 &middot; REPORT</div>
+          <div class="pipe-icon"><i class="fas fa-chart-line"></i></div>
+          <h4>Report</h4>
+          <p>Generate clean CISO dashboards, framework score snapshots and audit-ready board packs.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       INTELLIGENCE ENGINE (§5.1.1)
+       ============================================ -->
+  <section class="block dark" id="intelligence-engine">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Intelligence Engine</span>
+        <h2>Five services that turn raw feeds into actionable intelligence.</h2>
+        <p>Behind every scored risk is a deterministic engine that normalises, fingerprints, matches, fetches and orchestrates &mdash; no black boxes, no opaque ML.</p>
+        <div class="vendor-agnostic-pill">
+          <i class="fas fa-layer-group"></i> Vendor-Agnostic &middot; Same engine runs under every connector
+        </div>
+      </div>
+
+      <div class="intel-grid">
+        <div class="intel-card">
+          <div class="intel-num">01</div>
+          <div class="intel-icon"><i class="fas fa-scale-balanced"></i></div>
+          <h4>Severity Normalisation</h4>
+          <p>Maps every vendor&rsquo;s severity vocabulary &mdash; Tenable&rsquo;s CVSS, SentinelOne&rsquo;s threat level, CrowdStrike&rsquo;s criticality &mdash; into one unified 0&ndash;10 scale before scoring begins.</p>
+          <div class="intel-meta">Deterministic mapping table per connector</div>
+        </div>
+        <div class="intel-card">
+          <div class="intel-num">02</div>
+          <div class="intel-icon"><i class="fas fa-fingerprint"></i></div>
+          <h4>Asset Fingerprinting</h4>
+          <p>Correlates MAC + hostname + IP + cloud instance ID to deduplicate findings across overlapping tools. One asset, one truth &mdash; no phantom duplicates inflating your register.</p>
+          <div class="intel-meta">Cross-connector identity resolution</div>
+        </div>
+        <div class="intel-card">
+          <div class="intel-num">03</div>
+          <div class="intel-icon"><i class="fas fa-filter"></i></div>
+          <h4>Advisory Applicability</h4>
+          <p>Classifies every CERT-In / US-CERT / ENISA advisory against your live asset inventory. <em>&ldquo;Does this advisory apply to anything we actually own?&rdquo;</em> Answered automatically.</p>
+          <div class="intel-meta">Inventory-matched advisory routing</div>
+        </div>
+        <div class="intel-card">
+          <div class="intel-num">04</div>
+          <div class="intel-icon"><i class="fas fa-wrench"></i></div>
+          <h4>Remediation Fetcher</h4>
+          <p>Auto-fetches vendor patches, workarounds and configuration steps from NVD and vendor KBs for every scored CVE. Remediation steps arrive with the risk, not two days later.</p>
+          <div class="intel-meta">NVD + vendor KB aggregation</div>
+        </div>
+        <div class="intel-card">
+          <div class="intel-num">05</div>
+          <div class="intel-icon"><i class="fas fa-gears"></i></div>
+          <h4>Connector Runner</h4>
+          <p>Orchestrates the poll cycle, health checks, drift detection and credential rotation for all 25+ connectors. If a connector goes silent, the engine escalates &mdash; never hides.</p>
+          <div class="intel-meta">15-min / 60-min / 4-hr staggered cycles</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       PRISM ENRICHMENT (NEW)
+       ============================================ -->
+  <section class="block dark" id="enrichment">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Risk Score Enrichment</span>
+        <h2>5 lenses turn raw CVSS into a score that actually matters.</h2>
+        <p>A theoretical CVSS 9.8 means nothing if no exploit exists. URIP layers exploit probability, federal exploitation status, business-asset criticality, and threat-actor context. The output is one ranked priority score per finding &mdash; ACT NOW / ACT / ATTEND / TRACK.</p>
+      </div>
+
+      <div class="prism-stage">
+        <!-- Photoreal hero render: 5 lens rings + beam + prismatic burst.
+             Generated externally; verdict labels (ACT NOW / ACT / ATTEND / TRACK)
+             are overlaid as absolute-positioned divs so they stay crisp + a11y-readable. -->
+        <figure class="prism-hero" role="img" aria-label="5-stage enrichment pipeline: a beam passes through five glass lens rings (Raw CVSS, EPSS, CISA KEV, Asset Criticality, Threat Intel) and splits into four prismatic output streams labelled ACT NOW, ACT, ATTEND, TRACK.">
+          <img src="assets/enrichment/prism-enrichment.svg"
+               alt=""
+               loading="lazy"
+               decoding="async"
+               class="prism-hero-img"/>
+          <div class="prism-verdicts" aria-hidden="false">
+            <span class="verdict v-act-now">ACT NOW</span>
+            <span class="verdict v-act">ACT</span>
+            <span class="verdict v-attend">ATTEND</span>
+            <span class="verdict v-track">TRACK</span>
+          </div>
+        </figure>
+
+        <!-- 5 caption cards aligned to lenses -->
+        <div class="prism-cards">
+          <div class="prism-card" data-stage="1">
+            <div class="prism-num">01</div>
+            <div class="prism-title">Raw CVSS</div>
+            <div class="prism-desc">Theoretical base severity from NVD (e.g., CVSS 10.0).</div>
+            <div class="prism-source">Source &middot; NVD</div>
+          </div>
+          <div class="prism-card teal" data-stage="2">
+            <div class="prism-num">02</div>
+            <div class="prism-title">EPSS</div>
+            <div class="prism-desc">Live ML model dictating exploit probability over the next 30 days (e.g., 97% chance).</div>
+            <div class="prism-source">Source &middot; FIRST.org</div>
+          </div>
+          <div class="prism-card amber" data-stage="3">
+            <div class="prism-num">03</div>
+            <div class="prism-title">CISA KEV</div>
+            <div class="prism-desc">Federal catalog confirming active exploitation in the wild &mdash; the "weaponised" badge.</div>
+            <div class="prism-source">Source &middot; CISA</div>
+          </div>
+          <div class="prism-card blue" data-stage="4">
+            <div class="prism-num">04</div>
+            <div class="prism-title">Asset Criticality</div>
+            <div class="prism-desc">Business-context mapping &mdash; Tier-1 Payment Gateway behaves nothing like a Lobby Kiosk.</div>
+            <div class="prism-source">Source &middot; URIP CMDB</div>
+          </div>
+          <div class="prism-card violet" data-stage="5">
+            <div class="prism-num">05</div>
+            <div class="prism-title">Threat Intel</div>
+            <div class="prism-desc">Actor context &mdash; who, where, and how. APT28 / Lazarus / Sandworm mapping with MITRE ATT&amp;CK.</div>
+            <div class="prism-source">Source &middot; MITRE &middot; OTX &middot; CloudSEK</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4 — RISK ENGINE
+       ============================================ -->
+  <section class="block muted" id="risk-engine">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">How We Calculate Risk</span>
+        <h2>URIP doesn&rsquo;t invent severity. It composes it.</h2>
+        <p>Every CVE that lands in URIP is run through a four-input formula plus an enrichment layer, producing a single 0&ndash;10 composite score.</p>
+      </div>
+      <div class="risk-engine">
+        <div class="formula-card">
+          <div class="formula-eq">URIP Risk Score = clamp[0, 10] (
+    (CVSS  &times; 0.55)        <span class="formula-comment">// theoretical severity</span>
+  + (EPSS  &times; 2.5)         <span class="formula-comment">// 30-day exploit probability</span>
+  + (KEV   ? +2.0 : 0)    <span class="formula-comment">// actively exploited now</span>
+  + (asset_tier_bonus)    <span class="formula-comment">// T1:+1.0  T2:+0.5  T3:0  T4:&minus;0.5</span>
+)</div>
+
+          <div class="formula-input">
+            <span class="ic"><i class="fas fa-shield-virus"></i></span>
+            <span>
+              <div class="name">CVSS Base Score</div>
+              <div class="desc">The public NVD severity anchor</div>
+            </span>
+            <span class="weight">&times; 0.55</span>
+          </div>
+          <div class="formula-input">
+            <span class="ic"><i class="fas fa-bullseye"></i></span>
+            <span>
+              <div class="name">EPSS Probability</div>
+              <div class="desc">Will this CVE be exploited in the wild in 30 days?</div>
+            </span>
+            <span class="weight">&times; 2.5</span>
+          </div>
+          <div class="formula-input">
+            <span class="ic"><i class="fas fa-fire"></i></span>
+            <span>
+              <div class="name">KEV Bonus</div>
+              <div class="desc">CISA Known Exploited Vulnerabilities flag</div>
+            </span>
+            <span class="weight">+ 2.0</span>
+          </div>
+          <div class="formula-input">
+            <span class="ic"><i class="fas fa-layer-group"></i></span>
+            <span>
+              <div class="name">Asset Tier Multiplier</div>
+              <div class="desc">Tenant-configurable T1&ndash;T4 criticality</div>
+            </span>
+            <span class="weight">&plusmn; 1.0</span>
+          </div>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom:16px;">Plus two enrichment layers no formula captures.</h3>
+          <p style="margin-bottom:24px;">
+            <strong>APT attribution</strong> &mdash; MITRE ATT&amp;CK CVE-to-group mapping. <em>&ldquo;This CVE is exploited by APT41 (T1190 Exploit Public-Facing Application). You are in their target sector. Treat as Critical.&rdquo;</em>
+          </p>
+          <p>
+            <strong>IOC matches</strong> &mdash; AlienVault OTX pulses. <em>&ldquo;This C2 IP from your Zscaler logs matches an active OTX pulse from yesterday.&rdquo;</em>
+          </p>
+          <div class="feed-pills">
+            <span class="feed-pill"><span class="live-dot"></span> EPSS &middot; FIRST.org</span>
+            <span class="feed-pill"><span class="live-dot"></span> KEV &middot; CISA</span>
+            <span class="feed-pill"><span class="live-dot"></span> MITRE ATT&amp;CK</span>
+            <span class="feed-pill"><span class="live-dot"></span> AlienVault OTX</span>
+          </div>
+          <div class="edge-quote">
+            <strong>The unique edge.</strong> When a SOC 2 control fails, URIP already knows <em>which CVE</em> caused it, its exploit probability, the APT exploiting it, and which Tier-1 asset is affected. Compliance-only platforms lack CVE-level threat enrichment. Threat-intel platforms lack compliance scaffolding. URIP has both, joined inside one tenant.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       THREAT INTELLIGENCE OVERLAY (NEW)
+       ============================================ -->
+  <section class="block dark" id="threat-intel">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Threat Intelligence Overlay</span>
+        <h2>Contextual intelligence layered on top of every risk row.</h2>
+        <p>Who is attacking, how, and are they targeting your specific sector? URIP joins live geo-cluster activity, APT actor mapping, and industry-vertical filtering against the CVEs already alive in your environment.</p>
+      </div>
+
+      <div class="ti-grid">
+        <!-- World Map -->
+        <div class="ti-mapwrap">
+          <svg class="ti-map" viewBox="0 0 800 420" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Animated world threat map">
+            <defs>
+              <radialGradient id="targetGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#00F0FF" stop-opacity="0.95"/>
+                <stop offset="60%" stop-color="#00F0FF" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#00F0FF" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="arcTeal" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#00F0FF" stop-opacity="0"/>
+                <stop offset="50%" stop-color="#00F0FF" stop-opacity="1"/>
+                <stop offset="100%" stop-color="#00F0FF" stop-opacity="0.85"/>
+              </linearGradient>
+              <linearGradient id="arcAmber" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#F59E0B" stop-opacity="0"/>
+                <stop offset="50%" stop-color="#FBBF24" stop-opacity="1"/>
+                <stop offset="100%" stop-color="#F59E0B" stop-opacity="0.85"/>
+              </linearGradient>
+              <linearGradient id="arcRed" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#EF4444" stop-opacity="0"/>
+                <stop offset="50%" stop-color="#FCA5A5" stop-opacity="1"/>
+                <stop offset="100%" stop-color="#EF4444" stop-opacity="0.85"/>
+              </linearGradient>
+              <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="2.5"/>
+              </filter>
+            </defs>
+
+            <!-- Subtle equator + meridian grid -->
+            <g class="ti-grid-lines" stroke="rgba(120,150,180,0.04)" stroke-width="0.5">
+              <line x1="0" y1="210" x2="800" y2="210"/>
+              <line x1="400" y1="0" x2="400" y2="420"/>
+            </g>
+
+            <!-- Real dotted world map (3500+ dots, generated from dotted-map) -->
+            <image class="ti-dotmap" href="assets/world-dots.svg" x="0" y="0" width="800" height="420" preserveAspectRatio="none" opacity="0.95"/>
+
+            <!-- Attack arcs -->
+            <g class="ti-arcs" fill="none" stroke-linecap="round">
+              <!-- LA → Europe target -->
+              <path class="arc arc-1" d="M 138 124 Q 280 -10 420 90" stroke="url(#arcTeal)" stroke-width="2"/>
+              <!-- Brazil → Europe -->
+              <path class="arc arc-2" d="M 296 233 Q 360 80 420 90" stroke="url(#arcTeal)" stroke-width="2"/>
+              <!-- Russia/Moscow → Europe -->
+              <path class="arc arc-3" d="M 482 78 Q 460 30 420 90" stroke="url(#arcRed)" stroke-width="2"/>
+              <!-- China → Europe -->
+              <path class="arc arc-4" d="M 633 122 Q 540 20 420 90" stroke="url(#arcAmber)" stroke-width="2"/>
+              <!-- North Korea → Europe -->
+              <path class="arc arc-5" d="M 682 111 Q 560 -5 420 90" stroke="url(#arcRed)" stroke-width="2"/>
+              <!-- Iran → Europe -->
+              <path class="arc arc-6" d="M 518 129 Q 480 50 420 90" stroke="url(#arcAmber)" stroke-width="2"/>
+              <!-- Australia → Europe -->
+              <path class="arc arc-7" d="M 736 273 Q 590 100 420 90" stroke="url(#arcTeal)" stroke-width="2"/>
+              <!-- South Africa → Europe -->
+              <path class="arc arc-8" d="M 462 258 Q 450 180 420 90" stroke="url(#arcAmber)" stroke-width="2"/>
+            </g>
+
+            <!-- Origin markers (pulse) -->
+            <g class="ti-origins">
+              <g transform="translate(138 124)" class="origin teal"><circle r="3"/><circle class="ring" r="3"/></g>
+              <g transform="translate(296 233)" class="origin teal"><circle r="3"/><circle class="ring" r="3"/></g>
+              <g transform="translate(482 78)" class="origin red"><circle r="3"/><circle class="ring" r="3"/></g>
+              <g transform="translate(633 122)" class="origin amber"><circle r="3"/><circle class="ring" r="3"/></g>
+              <g transform="translate(682 111)" class="origin red"><circle r="3"/><circle class="ring" r="3"/></g>
+              <g transform="translate(518 129)" class="origin amber"><circle r="3"/><circle class="ring" r="3"/></g>
+              <g transform="translate(736 273)" class="origin teal"><circle r="3"/><circle class="ring" r="3"/></g>
+              <g transform="translate(462 258)" class="origin amber"><circle r="3"/><circle class="ring" r="3"/></g>
+            </g>
+
+            <!-- Enterprise Target Zone (Europe) -->
+            <g class="ti-target" transform="translate(420 90)">
+              <circle r="38" fill="url(#targetGlow)"/>
+              <circle class="target-ring r1" r="14" fill="none" stroke="#00F0FF" stroke-width="1.2"/>
+              <circle class="target-ring r2" r="22" fill="none" stroke="#00F0FF" stroke-width="1" stroke-opacity="0.7"/>
+              <circle class="target-ring r3" r="30" fill="none" stroke="#00F0FF" stroke-width="0.8" stroke-opacity="0.4"/>
+              <circle r="4" fill="#00F0FF" filter="url(#softGlow)"/>
+              <circle r="2.5" fill="#FFFFFF"/>
+            </g>
+            <g transform="translate(420 90)">
+              <rect x="-65" y="46" width="130" height="22" rx="11" fill="rgba(13,27,42,0.85)" stroke="rgba(0,240,255,0.45)"/>
+              <text x="0" y="61" text-anchor="middle" fill="#00F0FF" font-family="Inter" font-size="10" font-weight="700" letter-spacing="0.06em">ENTERPRISE TARGET ZONE</text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Right column: 3 intel panels -->
+        <div class="ti-panels">
+          <div class="ti-panel">
+            <div class="ti-panel-head">
+              <div class="ti-panel-icon"><i class="fas fa-globe"></i></div>
+              <div>
+                <h4>Geo Threat Map</h4>
+                <p class="ti-mini">Live visualisation of global attack clusters</p>
+              </div>
+              <span class="ti-live"><span class="ti-live-dot"></span>LIVE</span>
+            </div>
+            <div class="ti-panel-stats">
+              <div><div class="ti-stat-num">412</div><div class="ti-stat-lbl">active pulses</div></div>
+              <div><div class="ti-stat-num">38</div><div class="ti-stat-lbl">origin countries</div></div>
+              <div><div class="ti-stat-num">9</div><div class="ti-stat-lbl">cluster regions</div></div>
+            </div>
+          </div>
+
+          <div class="ti-panel">
+            <div class="ti-panel-head">
+              <div class="ti-panel-icon shield"><i class="fas fa-user-secret"></i></div>
+              <div>
+                <h4>APT Overlays</h4>
+                <p class="ti-mini">Actor groups mapped to active CVEs in your environment</p>
+              </div>
+            </div>
+            <div class="ti-cve-list">
+              <div class="ti-cve-row">
+                <span class="ti-actor">APT28 <small>(RU)</small></span>
+                <span class="ti-sev hi">HIGH</span>
+                <div class="ti-cve-meta">
+                  <span class="ti-cve">CVE-2024-3400</span>
+                  <span class="ti-product">PAN-OS</span>
+                </div>
+              </div>
+              <div class="ti-cve-row">
+                <span class="ti-actor">Lazarus <small>(KP)</small></span>
+                <span class="ti-sev hi">HIGH</span>
+                <div class="ti-cve-meta">
+                  <span class="ti-cve">CVE-2023-20198</span>
+                  <span class="ti-product">Cisco IOS</span>
+                </div>
+              </div>
+              <div class="ti-cve-row">
+                <span class="ti-actor">Sandworm <small>(RU)</small></span>
+                <span class="ti-sev med">MEDIUM</span>
+                <div class="ti-cve-meta">
+                  <span class="ti-cve">CVE-2024-31497</span>
+                  <span class="ti-product">PuTTY</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ti-panel">
+            <div class="ti-panel-head">
+              <div class="ti-panel-icon"><i class="fas fa-chart-pie"></i></div>
+              <div>
+                <h4>Sector Focus</h4>
+                <p class="ti-mini">Threats actively targeting your industry vertical</p>
+              </div>
+            </div>
+            <div class="ti-sector">
+              <div class="ti-sector-row"><span class="ti-sl">Industry Vertical</span><span class="ti-sv">Financial Services</span></div>
+              <div class="ti-sector-row"><span class="ti-sl">Targeted Threats</span><span class="ti-sv strong">14 Active Pulses</span></div>
+              <div class="ti-sector-row"><span class="ti-sl">Top Actor</span><span class="ti-sv">APT33 <small>(IR)</small> &middot; Energy / Finance</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 5 — CONNECTOR FRAMEWORK (CATEGORIZED)
+       ============================================ -->
+  <section class="block dark connector-section" id="connectors">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Ingestion &middot; Taming Disparate Risk Sources</span>
+        <h2>29 production connectors live. 25+ source categories supported.</h2>
+        <p>Every input maps into one of two layers &mdash; <strong>9 Core Risk Inputs</strong> that produce findings, and <strong>5 Contextual Security Connectors</strong> that enrich them with business context. The universal four-method framework + simulator means <strong>every category is selectable today</strong> &mdash; even before the real connector is configured.</p>
+      </div>
+
+      <div class="cat-shell">
+        <!-- 9 Core Risk Inputs -->
+        <div class="cat-column">
+          <div class="cat-column-title">
+            <span class="cat-num">9</span>
+            <div>
+              <h3>Core Risk Inputs</h3>
+              <p>Primary findings &middot; CVEs, exploits, attacker activity</p>
+            </div>
+          </div>
+          <div class="cat-grid cat-grid-9">
+
+            <div class="cat-card">
+              <div class="cat-icon"><i class="fas fa-shield-virus"></i></div>
+              <div class="cat-name">Vulnerability Mgmt &amp; EDR</div>
+              <div class="cat-vendors">Tenable &middot; Qualys &middot; Rapid7 &middot; SentinelOne &middot; CrowdStrike &middot; Defender &middot; ManageEngine</div>
+              <div class="cat-logos">
+                <span class="cat-logo"><img src="assets/integrations/tenable.png" alt="Tenable"></span>
+                <span class="cat-logo"><img src="assets/integrations/qualys.png" alt="Qualys"></span>
+                <span class="cat-logo"><img src="assets/integrations/rapid7.png" alt="Rapid7"></span>
+                <span class="cat-logo"><img src="assets/integrations/sentinelone.png" alt="SentinelOne"></span>
+                <span class="cat-logo"><img src="assets/integrations/crowdstrike.png" alt="CrowdStrike"></span>
+                <span class="cat-logo"><img src="assets/integrations/microsoft.png" alt="Defender"></span>
+                <span class="cat-logo"><img src="assets/integrations/manageengine.png" alt="ManageEngine"></span>
+              </div>
+            </div>
+
+            <div class="cat-card">
+              <div class="cat-icon"><i class="fas fa-globe"></i></div>
+              <div class="cat-name">EASM</div>
+              <div class="cat-vendors">External attack surface &middot; CrowdStrike External &middot; CloudSEK</div>
+              <div class="cat-logos">
+                <span class="cat-logo"><img src="assets/integrations/crowdstrike.png" alt="CrowdStrike External"></span>
+                <span class="cat-logo"><img src="assets/integrations/cloudsek.png" alt="CloudSEK"></span>
+              </div>
+            </div>
+
+            <div class="cat-card">
+              <div class="cat-icon"><i class="fas fa-cloud"></i></div>
+              <div class="cat-name">CNAPP &middot; Cloud Posture</div>
+              <div class="cat-vendors">CrowdStrike Cloud &middot; AWS &middot; Azure &middot; GCP misconfig feeds</div>
+              <div class="cat-logos">
+                <span class="cat-logo"><img src="assets/integrations/crowdstrike.png" alt="CrowdStrike Cloud"></span>
+              </div>
+            </div>
+
+            <div class="cat-card">
+              <div class="cat-icon"><i class="fas fa-microchip"></i></div>
+              <div class="cat-name">OT Environments</div>
+              <div class="cat-vendors">Operational technology &middot; Armis</div>
+              <div class="cat-logos">
+                <span class="cat-logo"><img src="assets/integrations/armis.png" alt="Armis"></span>
+              </div>
+            </div>
+
+            <div class="cat-card featured">
+              <span class="new-pill">Vendor Portal</span>
+              <div class="cat-icon"><i class="fas fa-user-shield"></i></div>
+              <div class="cat-name">VAPT Reports</div>
+              <div class="cat-vendors">External pentesters via scoped login &middot; Burp Suite Enterprise</div>
+              <div class="cat-logos">
+                <span class="cat-logo"><img src="assets/integrations/burp.png" alt="Burp Suite Enterprise"></span>
+              </div>
+            </div>
+
+            <div class="cat-card">
+              <div class="cat-icon"><i class="fas fa-radar"></i></div>
+              <div class="cat-name">Threat Intelligence</div>
+              <div class="cat-vendors">EPSS &middot; CISA KEV &middot; MITRE ATT&amp;CK &middot; AlienVault OTX &middot; CloudSEK</div>
+              <div class="cat-logos">
+                <span class="cat-logo"><img src="assets/integrations/cloudsek.png" alt="CloudSEK"></span>
+              </div>
+            </div>
+
+            <div class="cat-card">
+              <div class="cat-icon"><i class="fas fa-landmark"></i></div>
+              <div class="cat-name">Govt Advisories</div>
+              <div class="cat-vendors">CERT-In &middot; US-CERT &middot; ENISA RSS / API</div>
+            </div>
+
+            <div class="cat-card">
+              <div class="cat-icon"><i class="fas fa-bug"></i></div>
+              <div class="cat-name">Bug Bounty</div>
+              <div class="cat-vendors">HackerOne &middot; BugCrowd &middot; Internal program webhook</div>
+            </div>
+
+            <div class="cat-card">
+              <div class="cat-icon"><i class="fas fa-bell-on"></i></div>
+              <div class="cat-name">SoC Alerts</div>
+              <div class="cat-vendors">SIEM webhooks &middot; Splunk &middot; ELK &middot; Sentinel &middot; ManageEngine</div>
+              <div class="cat-logos">
+                <span class="cat-logo"><img src="assets/integrations/manageengine.png" alt="ManageEngine SDP"></span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 5 Contextual Connectors -->
+        <div class="cat-column">
+          <div class="cat-column-title">
+            <span class="cat-num">5</span>
+            <div>
+              <h3>Contextual Security Connectors</h3>
+              <p>Context that turns CVEs into composite scores</p>
+            </div>
+          </div>
+          <div class="cat-grid cat-grid-5">
+
+            <div class="cat-card">
+              <div class="cat-icon"><i class="fas fa-network-wired"></i></div>
+              <div class="cat-name">Network Access Control</div>
+              <div class="cat-vendors">Forescout &middot; Cisco ISE</div>
+              <div class="cat-logos">
+                <span class="cat-logo"><img src="assets/integrations/forescout.png" alt="Forescout"></span>
+                <span class="cat-logo"><img src="assets/integrations/cisco.png" alt="Cisco ISE"></span>
+              </div>
+            </div>
+
+            <div class="cat-card">
+              <div class="cat-icon"><i class="fas fa-key"></i></div>
+              <div class="cat-name">Privileged Access (PAM)</div>
+              <div class="cat-vendors">CyberArk</div>
+              <div class="cat-logos">
+                <span class="cat-logo"><img src="assets/integrations/cyberark.png" alt="CyberArk"></span>
+              </div>
+            </div>
+
+            <div class="cat-card">
+              <div class="cat-icon"><i class="fas fa-cloud-arrow-up"></i></div>
+              <div class="cat-name">Cloud / CASB / SWG</div>
+              <div class="cat-vendors">Zscaler &middot; Netskope</div>
+              <div class="cat-logos">
+                <span class="cat-logo"><img src="assets/integrations/zscaler.png" alt="Zscaler"></span>
+                <span class="cat-logo"><img src="assets/integrations/netskope.png" alt="Netskope"></span>
+              </div>
+            </div>
+
+            <div class="cat-card">
+              <div class="cat-icon"><i class="fas fa-fire"></i></div>
+              <div class="cat-name">Firewall &middot; Network</div>
+              <div class="cat-vendors">Fortinet / Fortigate &middot; Palo Alto</div>
+              <div class="cat-logos">
+                <span class="cat-logo"><img src="assets/integrations/fortinet.png" alt="Fortinet"></span>
+                <span class="cat-logo"><img src="assets/integrations/paloalto.png" alt="Palo Alto Networks"></span>
+              </div>
+            </div>
+
+            <div class="cat-card">
+              <div class="cat-icon"><i class="fas fa-envelope-open-text"></i></div>
+              <div class="cat-name">Workspace &middot; Email Security</div>
+              <div class="cat-vendors">Microsoft 365 (Entra &middot; SharePoint &middot; OneDrive &middot; Teams) &middot; Google Workspace</div>
+              <div class="cat-logos">
+                <span class="cat-logo"><img src="assets/integrations/microsoft.png" alt="Microsoft 365"></span>
+                <span class="cat-logo"><img src="assets/integrations/googleworkspace.png" alt="Google Workspace"></span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="takeaway-banner">
+        <i class="fas fa-bolt"></i>
+        <span>Takeaway:<span class="light"> All feeds connect via read-only APIs or webhooks. Zero manual data entry. Drift detection escalates silently-failing connectors so a &ldquo;green-but-blind&rdquo; source never goes unnoticed.</span></span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1.05fr;gap:48px;align-items:center;margin-top:64px;">
+        <div>
+          <h3 style="color:var(--white);margin-bottom:18px;">The Normalization Engine</h3>
+          <p style="color:rgba(255,255,255,0.75);margin-bottom:18px;">
+            Every tool&rsquo;s raw output &mdash; a Tenable scan blob, a SentinelOne threat record, a Zscaler URL block, an Entra <code>riskEventType</code> &mdash; maps to one internal <code>URIPRiskRecord</code> schema before scoring. The risk register, the dashboard, the workflow, the SLA service, the audit log all consume the same shape.
+          </p>
+          <p style="color:rgba(255,255,255,0.75);margin-bottom:18px;">
+            This is the difference between &ldquo;we built 29 connectors&rdquo; and <strong style="color:var(--white)">&ldquo;we built one connector the same way &mdash; and 25+ source categories ride the same rails.&rdquo;</strong>
+          </p>
+          <ul class="feature-list" style="margin-top:16px;">
+            <li><i class="fas fa-check"></i> <span style="color:rgba(255,255,255,0.8)">Per-tenant Fernet-encrypted credential vault</span></li>
+            <li><i class="fas fa-check"></i> <span style="color:rgba(255,255,255,0.8)">15-min / 60-min / 4-hr staggered poll cycles</span></li>
+            <li><i class="fas fa-check"></i> <span style="color:rgba(255,255,255,0.8)">Drift detection &rarr; DEGRADED state (no silent failure)</span></li>
+            <li><i class="fas fa-check"></i> <span style="color:rgba(255,255,255,0.8)">Auto-discovered into the catalog wizard</span></li>
+          </ul>
+        </div>
+        <div class="contract-card">
+          <div style="color:rgba(255,255,255,0.5);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px;font-weight:600;">connectors/base/connector.py</div>
+<pre><span class="keyword">class</span> <span class="type">Connector</span>:
+    <span class="keyword">def</span> authenticate() <span class="ident">-&gt; AuthState</span>
+    <span class="keyword">def</span> fetch_findings(since: <span class="type">datetime</span>) <span class="ident">-&gt; list[RawFinding]</span>
+    <span class="keyword">def</span> normalize(raw: <span class="type">RawFinding</span>) <span class="ident">-&gt; URIPRiskRecord</span>
+    <span class="keyword">def</span> health_check() <span class="ident">-&gt; ConnectorHealth</span></pre>
+          <p style="color:rgba(255,255,255,0.6);font-size:0.875rem;margin-top:18px;">
+            Implement four methods. Provide a severity mapping. Register in the catalog. Ship. The plumbing &mdash; encrypted credentials, scheduling, normalization, scoring, audit logging &mdash; is already done.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 6 — TWO DASHBOARDS DEEP DIVE
+       ============================================ -->
+  <section class="block" id="dashboards">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">The Two Dashboards</span>
+        <h2>Both run from the same tenant. Both share the same auth.</h2>
+        <p>The Compliance dashboard runs as a separate FastAPI service on port 8001 with its own database &mdash; and can also run <strong>standalone</strong> for prospects who want only audit-readiness.</p>
+      </div>
+
+      <div class="dual-dash">
+        <div class="dash-feature">
+          <span class="badge">URIP &middot; The CISO Pane</span>
+          <h3>URIP Risk Intelligence Dashboard</h3>
+          <ul class="feature-list">
+            <li><i class="fas fa-check"></i> Top KPI strip &mdash; 5 click-through tiles (Open / Critical / High / Accepted / IOC Matches)</li>
+            <li><i class="fas fa-check"></i> <strong>25-column live risk register</strong> &mdash; auto-populated from every connector, every column drillable</li>
+            <li><i class="fas fa-check"></i> SSVC decision label per finding &mdash; ACT NOW / ACT / ATTEND / TRACK</li>
+            <li><i class="fas fa-check"></i> Pending Days counter on every row &middot; configurable escalation thresholds</li>
+            <li><i class="fas fa-check"></i> Threat intel panel &mdash; active APTs targeting your sector, MITRE techniques, IOC pulses</li>
+            <li><i class="fas fa-check"></i> Connector health board with drift detection (no &ldquo;green-but-blind&rdquo; failures)</li>
+            <li><i class="fas fa-check"></i> HoD risk-acceptance workflow with digital sign-off &middot; 90-day re-review reminder</li>
+            <li><i class="fas fa-check"></i> Auto-ticket to ManageEngine SDP &middot; bidirectional close-loop</li>
+            <li><i class="fas fa-check"></i> Immutable, tenant-scoped audit log (every action recorded)</li>
+            <li><i class="fas fa-check"></i> Executive Security Posture dashboard &mdash; A&ndash;F grade, week-over-week trend</li>
+          </ul>
+        </div>
+        <div class="dash-feature">
+          <span class="badge">Compliance &middot; The DPO Pane</span>
+          <h3>Compliance Dashboard</h3>
+          <ul class="feature-list">
+            <li><i class="fas fa-check"></i> 15 framework score widgets with trend arrows &middot; controls passing / total</li>
+            <li><i class="fas fa-check"></i> Per-framework drill-down (SOC 2 CC1&ndash;CC9 + A1 + PI1 + C1 + P1&ndash;P8)</li>
+            <li><i class="fas fa-check"></i> Single ranked list across ~895 controls by remedy_priority_score</li>
+            <li><i class="fas fa-check"></i> Drag-drop evidence with SHA-256 integrity hash &middot; bundle export</li>
+            <li><i class="fas fa-check"></i> 9 versioned policy templates &middot; e-sign workflow &middot; bulk-remind</li>
+            <li><i class="fas fa-check"></i> Vendor risk &mdash; questionnaires, criticality, contract / DPA / BAA expiry alerts</li>
+            <li><i class="fas fa-check"></i> Time-bound, framework-scoped, read-only auditor portal with full activity trail</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       VAPT VENDOR PORTAL (NEW)
+       ============================================ -->
+  <section class="block dark" id="vapt-portal">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">VAPT Vendor Portal &middot; Eradicating Manual Parsing</span>
+        <h2>Your pentesters get a scoped login. URIP gets the data automatically.</h2>
+        <p>Stop receiving 60-page PDFs. External VAPT vendors log in to a sandboxed portal, submit findings via a structured form, and URIP enriches every finding with EPSS / KEV / asset-tier context before it lands in your SPOC&rsquo;s queue.</p>
+      </div>
+
+      <!-- Legacy vs URIP -->
+      <div class="vapt-hero">
+        <div class="legacy-card">
+          <span class="vapt-tag legacy"><i class="fas fa-circle-xmark"></i> Legacy Workflow</span>
+          <h3>The 60-page PDF problem</h3>
+          <p>Vendor emails a PDF report. Internal team manually parses every finding. Re-keyed into Excel with formatting errors. Two-week lag before the CISO sees the first risk &mdash; by which point the EPSS score has already shifted.</p>
+          <div class="legacy-flow">
+            <span class="flow-pill bad"><i class="fas fa-file-pdf"></i> 60-page PDF</span>
+            <span class="flow-arrow"><i class="fas fa-arrow-right"></i></span>
+            <span class="flow-pill bad"><i class="fas fa-keyboard"></i> Manual parse</span>
+            <span class="flow-arrow"><i class="fas fa-arrow-right"></i></span>
+            <span class="flow-pill bad"><i class="fas fa-file-excel"></i> Excel rekey</span>
+            <span class="flow-arrow"><i class="fas fa-arrow-right"></i></span>
+            <span class="flow-pill bad"><i class="fas fa-clock"></i> 2-week lag</span>
+          </div>
+        </div>
+        <div class="modern-card">
+          <span class="vapt-tag modern"><i class="fas fa-circle-check"></i> URIP Collaboration Module</span>
+          <h3>Real-time scoped submissions</h3>
+          <p>Your vendor logs in to a sandboxed portal at <strong>vapt-portal-login.html</strong>. Submits findings through a real-time validated form. URIP auto-enriches and assigns to the right internal SPOC within seconds.</p>
+          <div class="modern-flow">
+            <span class="flow-pill good"><i class="fas fa-user-shield"></i> Scoped login</span>
+            <span class="flow-arrow"><i class="fas fa-arrow-right"></i></span>
+            <span class="flow-pill good"><i class="fas fa-clipboard-list"></i> Structured form</span>
+            <span class="flow-arrow"><i class="fas fa-arrow-right"></i></span>
+            <span class="flow-pill good"><i class="fas fa-bolt"></i> Auto-enrichment</span>
+            <span class="flow-arrow"><i class="fas fa-arrow-right"></i></span>
+            <span class="flow-pill good"><i class="fas fa-circle-check"></i> Routed in seconds</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3-step flow -->
+      <div class="vapt-flow">
+        <div class="vapt-step">
+          <div class="vstep-num">01</div>
+          <div class="vstep-icon"><i class="fas fa-user-shield"></i></div>
+          <h4>Scoped Vendor Login</h4>
+          <p>External pentester logs in to a sandboxed environment with time-bound access tied to the engagement window.</p>
+          <ul class="feature-list" style="margin-top:14px;">
+            <li><i class="fas fa-check"></i> <span style="color:rgba(255,255,255,0.78)">Sees only their own submissions</span></li>
+            <li><i class="fas fa-check"></i> <span style="color:rgba(255,255,255,0.78)">No access to internal network data</span></li>
+            <li><i class="fas fa-check"></i> <span style="color:rgba(255,255,255,0.78)">Cannot see other vendors&rsquo; findings</span></li>
+            <li><i class="fas fa-check"></i> <span style="color:rgba(255,255,255,0.78)">Auto-expires at engagement end</span></li>
+          </ul>
+        </div>
+        <div class="vapt-step">
+          <div class="vstep-num">02</div>
+          <div class="vstep-icon"><i class="fas fa-clipboard-list"></i></div>
+          <h4>Structured Submission Form</h4>
+          <p>Real-time validated fields. Vendor inputs the finding once &mdash; URIP captures every field needed for scoring.</p>
+          <ul class="feature-list" style="margin-top:14px;">
+            <li><i class="fas fa-check"></i> <span style="color:rgba(255,255,255,0.78)">CVE ID auto-suggested from NVD</span></li>
+            <li><i class="fas fa-check"></i> <span style="color:rgba(255,255,255,0.78)">CVSS vector calculator built in</span></li>
+            <li><i class="fas fa-check"></i> <span style="color:rgba(255,255,255,0.78)">Affected asset selector from your inventory</span></li>
+            <li><i class="fas fa-check"></i> <span style="color:rgba(255,255,255,0.78)">PoC artifact upload (zip / screenshots)</span></li>
+          </ul>
+        </div>
+        <div class="vapt-step">
+          <div class="vstep-num">03</div>
+          <div class="vstep-icon"><i class="fas fa-bolt"></i></div>
+          <h4>Auto-Enrichment &amp; Routing</h4>
+          <p>Submission triggers the URIP scoring engine instantly &mdash; same formula, same enrichment as native connector findings.</p>
+          <ul class="feature-list" style="margin-top:14px;">
+            <li><i class="fas fa-check"></i> <span style="color:rgba(255,255,255,0.78)">EPSS / KEV / MITRE / OTX overlay</span></li>
+            <li><i class="fas fa-check"></i> <span style="color:rgba(255,255,255,0.78)">Composite 0&ndash;10 score computed</span></li>
+            <li><i class="fas fa-check"></i> <span style="color:rgba(255,255,255,0.78)">Auto-assigned to internal SPOC</span></li>
+            <li><i class="fas fa-check"></i> <span style="color:rgba(255,255,255,0.78)">Re-test loop with closure status</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Invite flow -->
+      <div class="invite-flow">
+        <h3>How clients invite vendors</h3>
+        <p>The full vendor lifecycle &mdash; invite to closure &mdash; lives inside the URIP admin console.</p>
+        <div class="invite-steps">
+          <div class="invite-step">
+            <div class="istep-num">01 &middot; ADMIN</div>
+            <h5>Open Vendor Access</h5>
+            <p>Settings &rarr; Vendor Access &rarr; <em>Invite VAPT Vendor</em>. Enter the vendor&rsquo;s name and contact email.</p>
+          </div>
+          <div class="invite-step">
+            <div class="istep-num">02 &middot; SCOPE</div>
+            <h5>Configure scope</h5>
+            <p>Pick the asset tiers in scope, the engagement window (start / end), permitted CVE classes, and re-test allowance.</p>
+          </div>
+          <div class="invite-step">
+            <div class="istep-num">03 &middot; INVITE</div>
+            <h5>One-time signup link</h5>
+            <p>Vendor receives a signed email link. Sets a password. Lands in the sandboxed vendor portal &mdash; nothing else of yours visible.</p>
+          </div>
+          <div class="invite-step">
+            <div class="istep-num">04 &middot; LIVE</div>
+            <h5>Findings flow in</h5>
+            <p>Each submission is enriched and routed. Your SPOC sees a normal Risk Register row. Vendor sees only the closure status.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="vapt-cta-row">
+        <div class="cta-text">
+          <h4>Already have an invitation?</h4>
+          <p>Sign in to the scoped vendor sandbox &mdash; you&rsquo;ll see only your own submissions and re-test requests.</p>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="vapt-portal-login.html" class="btn btn-primary btn-lg">
+            <i class="fas fa-user-shield"></i> Vendor Portal Login
+          </a>
+          <a href="index.html" class="btn btn-secondary btn-lg" style="background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.3);">
+            Customer Login
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       AUTO-REMEDIATION ENGINE (§13 — Phase 2 LIVE)
+       ============================================ -->
+  <section class="block dark" id="auto-remediation">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Auto-Remediation Engine &middot; Phase 2 Live</span>
+        <h2>From insight to execution in one click.</h2>
+        <p>Weaponised risks with available patches don&rsquo;t sit in queues. URIP&rsquo;s gated automation checks implications, gets approval, executes the fix, and re-tests &mdash; closing the loop without manual handoff.</p>
+      </div>
+
+      <div class="auto-rem-flow">
+        <div class="auto-rem-step">
+          <div class="arm-dot red"></div>
+          <div class="arm-label">Risk Registered</div>
+        </div>
+        <div class="arm-connector"></div>
+        <div class="auto-rem-step">
+          <div class="arm-dot amber"></div>
+          <div class="arm-label">Patch Available?</div>
+        </div>
+        <div class="arm-connector"></div>
+        <div class="auto-rem-step">
+          <div class="arm-dot amber"></div>
+          <div class="arm-label">Implication Check</div>
+        </div>
+        <div class="arm-connector"></div>
+        <div class="auto-rem-step">
+          <div class="arm-dot amber"></div>
+          <div class="arm-label">Script Executed</div>
+        </div>
+        <div class="arm-connector"></div>
+        <div class="auto-rem-step">
+          <div class="arm-dot amber"></div>
+          <div class="arm-label">Re-test Runs</div>
+        </div>
+        <div class="arm-connector"></div>
+        <div class="auto-rem-step">
+          <div class="arm-dot green"></div>
+          <div class="arm-label">Risk Closed</div>
+        </div>
+      </div>
+
+      <div class="exec-hubs">
+        <h3 style="color:var(--white);margin-bottom:24px;">Execution Hubs</h3>
+        <div class="exec-hub-grid">
+          <div class="exec-hub-card">
+            <div class="exec-hub-icon"><i class="fas fa-crosshairs"></i></div>
+            <h4>CrowdStrike RTR</h4>
+            <p>Real-time response patching endpoints remotely. Isolates, patches, and releases without agent re-deployment.</p>
+          </div>
+          <div class="exec-hub-card">
+            <div class="exec-hub-icon"><i class="fas fa-scroll"></i></div>
+            <h4>Ansible Playbooks</h4>
+            <p>Server configuration fixes and firewall rule adjustments pushed through your existing automation mesh.</p>
+          </div>
+          <div class="exec-hub-card">
+            <div class="exec-hub-icon"><i class="fas fa-key"></i></div>
+            <h4>CyberArk API</h4>
+            <p>Auto-resetting compromised admin credentials and rotating secrets the moment a PAM breach is detected.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="safety-callout">
+        <div class="safety-icon"><i class="fas fa-circle-info"></i></div>
+        <div>
+          <h4>Safety Callout</h4>
+          <p>The &lsquo;Implication Check&rsquo; ensures expected downtime and rollback plans are verified before any script executes. Low-impact assets auto-execute. Tier-1 assets trigger a <strong>&ldquo;Require SPOC Approval&rdquo;</strong> button.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       ROLE-BASED GOVERNANCE (NEW)
+       ============================================ -->
+  <section class="block dark" id="governance">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Role-Based Governance &amp; Visibility</span>
+        <h2>Four roles. Strict access boundaries. No data leakage.</h2>
+        <p>The same multi-tenant isolation that keeps Customer A invisible to Customer B keeps your VAPT vendor invisible to your network internals.</p>
+      </div>
+
+      <div class="gov-cards">
+        <article class="gov-card">
+          <div class="gov-card-head">
+            <div class="gov-role-icon"><i class="fas fa-user-tie"></i></div>
+            <div>
+              <span class="gov-role-tag">Tenant Owner</span>
+              <h3>CISO &middot; Admin</h3>
+              <p class="gov-role-desc">Full unrestricted access within their own tenant boundary.</p>
+            </div>
+          </div>
+          <div class="gov-perm-row">
+            <div class="gov-perm can">
+              <div class="gov-perm-title"><i class="fas fa-circle-check"></i> Can see</div>
+              <ul>
+                <li>All 25 risk source feeds (9 Core + 5 Contextual + 11 Module expansions)</li>
+                <li>Full Risk Register &middot; 25 columns &middot; every drill-down</li>
+                <li>Unmitigated vs. accepted risks split</li>
+                <li>Every connector&rsquo;s live health &amp; drift status</li>
+              </ul>
+            </div>
+            <div class="gov-perm cannot">
+              <div class="gov-perm-title"><i class="fas fa-circle-minus"></i> Cannot see</div>
+              <ul>
+                <li>Other tenants&rsquo; data &mdash; multi-tenant isolation enforced at every query</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="gov-card">
+          <div class="gov-card-head">
+            <div class="gov-role-icon"><i class="fas fa-user-gear"></i></div>
+            <div>
+              <span class="gov-role-tag">Domain SPOC</span>
+              <h3>IT Team &middot; SPOC</h3>
+              <p class="gov-role-desc">Domain-scoped operator who owns remediation for their assigned slice.</p>
+            </div>
+          </div>
+          <div class="gov-perm-row">
+            <div class="gov-perm can">
+              <div class="gov-perm-title"><i class="fas fa-circle-check"></i> Can see</div>
+              <ul>
+                <li>Only risks strictly assigned to their domain</li>
+                <li>SLA countdowns &amp; pending-day escalations</li>
+                <li>Their own remediation queue &amp; ticket lineage</li>
+              </ul>
+            </div>
+            <div class="gov-perm cannot">
+              <div class="gov-perm-title"><i class="fas fa-circle-minus"></i> Cannot see</div>
+              <ul>
+                <li>Other domains&rsquo; queues or workload</li>
+                <li>External vendor identity / commercial details</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="gov-card guest">
+          <div class="gov-card-head">
+            <div class="gov-role-icon vendor"><i class="fas fa-user-shield"></i></div>
+            <div>
+              <span class="gov-role-tag teal">External Guest &middot; Scoped Login</span>
+              <h3>VAPT Vendor</h3>
+              <p class="gov-role-desc">External pentester or auditor with sandboxed access &mdash; cannot see the network they&rsquo;re testing.</p>
+            </div>
+          </div>
+          <div class="gov-perm-row">
+            <div class="gov-perm can">
+              <div class="gov-perm-title"><i class="fas fa-circle-check"></i> Can see</div>
+              <ul>
+                <li>Only their own submitted findings</li>
+                <li>Re-test request status &amp; closure verdict</li>
+                <li>Their assigned scope &amp; engagement timeline</li>
+              </ul>
+            </div>
+            <div class="gov-perm cannot">
+              <div class="gov-perm-title"><i class="fas fa-circle-minus"></i> Cannot see</div>
+              <ul>
+                <li>Internal enterprise network data</li>
+                <li>Other vendor&rsquo;s findings or reports</li>
+                <li>Full Risk Register or native connector outputs</li>
+                <li>Other tenants &mdash; ever</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="gov-card">
+          <div class="gov-card-head">
+            <div class="gov-role-icon"><i class="fas fa-chart-line"></i></div>
+            <div>
+              <span class="gov-role-tag">Executive Read-Only</span>
+              <h3>Executive &middot; Board</h3>
+              <p class="gov-role-desc">Posture-level visibility for governance reporting &mdash; no operational raw data.</p>
+            </div>
+          </div>
+          <div class="gov-perm-row">
+            <div class="gov-perm can">
+              <div class="gov-perm-title"><i class="fas fa-circle-check"></i> Can see</div>
+              <ul>
+                <li>High-level KPI dashboards (A&ndash;F grade, week-over-week)</li>
+                <li>Framework trend charts &amp; coverage heatmap</li>
+                <li>Overall posture &amp; risk acceptance rollup</li>
+              </ul>
+            </div>
+            <div class="gov-perm cannot">
+              <div class="gov-perm-title"><i class="fas fa-circle-minus"></i> Cannot see</div>
+              <ul>
+                <li>Raw finding details &amp; individual exploit strings</li>
+                <li>Low-level operational ticket data</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="gov-note">
+        <strong>Acceptance Workflow:</strong> Risk acceptance requires digital sign-off from the Head of Department. Accepted risks are automatically excluded from Board dashboards to prevent artificial inflation of the security posture &mdash; honest results, not vanity numbers.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       TRUST CENTER (§13 — LIVE)
+       ============================================ -->
+  <section class="block dark" id="trust-center">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Trust Center</span>
+        <h2>Procurement-grade security posture &mdash; self-serve.</h2>
+        <p>Enterprise buyers no longer email security@ with 80-question worksheets. Your Trust Center publishes live posture evidence, compliance certifications, penetration-test summaries and data-processing agreements &mdash; all kept current by URIP itself.</p>
+      </div>
+
+      <div class="trust-grid">
+        <div class="trust-card">
+          <div class="trust-icon"><i class="fas fa-shield-halved"></i></div>
+          <h4>Live Posture Widgets</h4>
+          <p>Real-time control-pass rates, open-critical-risk counts and framework grades update automatically as your URIP tenant evolves. No stale PDFs.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon"><i class="fas fa-file-contract"></i></div>
+          <h4>Compliance Certifications</h4>
+          <p>SOC 2 Type 2, ISO 27001, PCI DSS and HIPAA attestation documents with expiry tracking and automatic re-validation reminders.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon"><i class="fas fa-bug-slash"></i></div>
+          <h4>Pen-Test Summaries</h4>
+          <p>Scoped, anonymised VAPT results with remediation status and re-test closure. Buyers see proof, not promises.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon"><i class="fas fa-handshake"></i></div>
+          <h4>Data Processing Agreements</h4>
+          <p>Auto-generated DPA / BAA documents mapped to the actual sub-processors and data flows in your deployment mode.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon"><i class="fas fa-user-lock"></i></div>
+          <h4>Sub-Processor Registry</h4>
+          <p>Complete list of every third-party service URIP touches, with geo-location, data-classification and opt-out paths where applicable.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon"><i class="fas fa-envelope-open-text"></i></div>
+          <h4>Self-Serve NDA &amp; Access</h4>
+          <p>Prospects sign an e-NDA and get time-bounded, read-only access to your Trust Center &mdash; zero sales-engineer friction.</p>
+        </div>
+      </div>
+
+      <div class="trust-note">
+        <i class="fas fa-circle-check"></i>
+        <span><strong>Fully integrated, not bolted on.</strong> URIP&rsquo;s Trust Center draws live data from the same compliance engine your auditor sees. When a control fails, the Trust Center reflects it honestly &mdash; no vanity metrics.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 7 — MODULE CATALOG
+       ============================================ -->
+  <section class="block muted" id="modules">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">The Module Catalog</span>
+        <h2>10 capability modules + a mandatory Core. Pick what you need.</h2>
+        <p>Disabled modules are dark in the UI (route guards) and inactive in the backend (decorator checks). Three-layer enforcement: UI, API, connector data plane.</p>
+      </div>
+
+      <div class="modules-grid">
+        <div class="module-card core">
+          <span class="mod-tag">Mandatory</span>
+          <div class="mod-icon"><i class="fas fa-cube"></i></div>
+          <h4>CORE</h4>
+          <p>Risk register, scoring engine, dashboard, workflow, audit log, reports, EPSS + KEV + MITRE + OTX enrichment, multi-tenancy, white-label theming.</p>
+          <div class="mod-includes">Always-on for every tenant.</div>
+          <div class="mod-fit">For every tenant</div>
+        </div>
+        <div class="module-card">
+          <div class="mod-icon"><i class="fas fa-shield-virus"></i></div>
+          <h4>VM &middot; Vulnerability Management</h4>
+          <p>Tenable + Qualys + Rapid7 + CrowdStrike Spotlight connectors for full vulnerability scan ingestion.</p>
+          <div class="mod-includes">Tenable &middot; Qualys &middot; Rapid7 &middot; CrowdStrike Spotlight</div>
+          <div class="mod-fit">Anyone running scanners</div>
+        </div>
+        <div class="module-card">
+          <div class="mod-icon"><i class="fas fa-laptop-medical"></i></div>
+          <h4>EDR &middot; Endpoint Detection</h4>
+          <p>SentinelOne + CrowdStrike Falcon + Defender for Endpoint + ManageEngine EC + MDM.</p>
+          <div class="mod-includes">SentinelOne &middot; Falcon &middot; Defender &middot; ManageEngine EC &middot; MDM</div>
+          <div class="mod-fit">Anyone with endpoint security</div>
+        </div>
+        <div class="module-card">
+          <div class="mod-icon"><i class="fas fa-network-wired"></i></div>
+          <h4>NETWORK</h4>
+          <p>Zscaler + Netskope + Palo Alto + Fortigate + CloudSEK external threat surface.</p>
+          <div class="mod-includes">Zscaler &middot; Netskope &middot; Palo Alto &middot; Fortigate &middot; CloudSEK</div>
+          <div class="mod-fit">Cloud-first orgs</div>
+        </div>
+        <div class="module-card">
+          <div class="mod-icon"><i class="fas fa-id-badge"></i></div>
+          <h4>IDENTITY</h4>
+          <p>Microsoft Entra + Okta + Google Workspace identity-risk telemetry.</p>
+          <div class="mod-includes">Entra &middot; Okta &middot; Google Workspace</div>
+          <div class="mod-fit">Anyone with SSO</div>
+        </div>
+        <div class="module-card">
+          <div class="mod-icon"><i class="fas fa-people-group"></i></div>
+          <h4>COLLABORATION</h4>
+          <p>SharePoint + OneDrive + Teams + Slack + Confluence sharing &amp; data-loss signals.</p>
+          <div class="mod-includes">SharePoint &middot; OneDrive &middot; Teams &middot; Slack &middot; Confluence</div>
+          <div class="mod-fit">Knowledge-work orgs</div>
+        </div>
+        <div class="module-card">
+          <div class="mod-icon"><i class="fas fa-ticket"></i></div>
+          <h4>ITSM</h4>
+          <p>ServiceNow + Jira + ManageEngine SDP &mdash; bidirectional ticketing for active remediation.</p>
+          <div class="mod-includes">ServiceNow &middot; Jira &middot; ManageEngine SDP</div>
+          <div class="mod-fit">Anyone with formal ticketing</div>
+        </div>
+        <div class="module-card">
+          <div class="mod-icon"><i class="fas fa-bug"></i></div>
+          <h4>DAST</h4>
+          <p>Burp Suite Enterprise + OWASP ZAP + Acunetix &mdash; dynamic application security testing.</p>
+          <div class="mod-includes">Burp Enterprise &middot; OWASP ZAP &middot; Acunetix</div>
+          <div class="mod-fit">App-heavy orgs</div>
+        </div>
+        <div class="module-card">
+          <div class="mod-icon"><i class="fas fa-shield-heart"></i></div>
+          <h4>DLP &middot; Data Loss Prevention</h4>
+          <p>GTB + Forcepoint + Symantec DLP &mdash; data-exfiltration and insider-risk telemetry.</p>
+          <div class="mod-includes">GTB &middot; Forcepoint &middot; Symantec DLP</div>
+          <div class="mod-fit">Compliance-driven orgs</div>
+        </div>
+        <div class="module-card">
+          <div class="mod-icon"><i class="fas fa-cloud"></i></div>
+          <h4>CSPM &middot; Cloud Security Posture</h4>
+          <p>AWS CSPM + Azure CSPM + GCP CSPM connectors live in production. Continuous misconfig detection across every cloud account.</p>
+          <div class="mod-includes">AWS &middot; Azure Defender &middot; GCP SCC &middot; Native rule engine</div>
+          <div class="mod-fit">Multi-cloud orgs</div>
+        </div>
+        <div class="module-card">
+          <div class="mod-icon"><i class="fas fa-clipboard-check"></i></div>
+          <h4>COMPLIANCE &amp; AUDIT-READINESS</h4>
+          <p>7-framework engine, control monitoring, evidence automation, policy management, access reviews, vendor risk, incident lifecycle, asset inventory, auditor portal, framework-specific reports.</p>
+          <div class="mod-includes">SOC 2 &middot; ISO 27001 &middot; GDPR &middot; HIPAA &middot; PCI DSS &middot; DPDP &middot; NIST CSF</div>
+          <div class="mod-fit">Anyone facing audits</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 8 — ARCHITECTURE / DEPLOYMENT
+       ============================================ -->
+  <section class="block dark" id="architecture">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Architecture</span>
+        <h2>Same code. Three deployment topologies. Your choice.</h2>
+        <p>Pure SaaS for fastest time-to-value. On-Premise for maximum sovereignty. Hybrid-SaaS for the best of both.</p>
+      </div>
+
+      <div class="deploy-modes">
+        <div class="deploy-card">
+          <div class="deploy-icon"><i class="fas fa-cloud"></i></div>
+          <h4>Pure SaaS</h4>
+          <p>We host everything. The customer logs in to their tenant.urip.io subdomain. Fastest time-to-value, standard SaaS commercial model.</p>
+          <span class="data-tag"><i class="fas fa-bolt"></i> Quickest deployment</span>
+        </div>
+        <div class="deploy-card featured">
+          <div class="deploy-icon"><i class="fas fa-shield-halved"></i></div>
+          <h4>Hybrid-SaaS</h4>
+          <p>Cloud portal for UI &amp; intelligence. A Docker agent inside your network for connectors and raw storage. <strong>Sensitive identifiers never leave your network.</strong></p>
+          <span class="data-tag"><i class="fas fa-lock"></i> Procurement-clearing for regulated buyers</span>
+        </div>
+        <div class="deploy-card">
+          <div class="deploy-icon"><i class="fas fa-server"></i></div>
+          <h4>On-Premise Licensed</h4>
+          <p>The customer hosts everything. Maximum data sovereignty. Same codebase, same UX. Zero operational burden on us.</p>
+          <span class="data-tag"><i class="fas fa-fingerprint"></i> Air-gap compatible</span>
+        </div>
+      </div>
+
+      <div class="hybrid-diagram">
+        <h3 style="margin-bottom:8px;">The Hybrid-SaaS trust boundary</h3>
+        <p style="margin-bottom:32px;max-width:680px;margin-left:auto;margin-right:auto;">
+          The only thing crossing from your network to our cloud is a tiny JSON envelope of summary metrics &mdash; risk scores, control pass/fail counts, compliance percentages, connector heartbeats. Same architectural pattern CrowdStrike Falcon, Tenable Nessus Agent and Splunk Forwarder use to clear procurement at regulated buyers.
+        </p>
+
+        <!-- Hand-crafted SVG diagram -->
+        <svg viewBox="0 0 1000 480" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:900px;margin:0 auto;">
+          <defs>
+            <linearGradient id="cloudGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#00F0FF" stop-opacity="0.2"/>
+              <stop offset="100%" stop-color="#00F0FF" stop-opacity="0.04"/>
+            </linearGradient>
+            <linearGradient id="customerGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#1B2838" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#0D1B2A" stop-opacity="0.95"/>
+            </linearGradient>
+            <marker id="arrowTeal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#00F0FF"/>
+            </marker>
+          </defs>
+
+          <!-- Cloud zone -->
+          <rect x="40" y="30" width="920" height="160" rx="14" fill="url(#cloudGrad)" stroke="#00F0FF" stroke-opacity="0.35" stroke-dasharray="6 4"/>
+          <text x="64" y="58" fill="#00F0FF" font-size="13" font-weight="700" letter-spacing="2" font-family="Inter">SEMANTIC GRAVITY CLOUD</text>
+
+          <rect x="100" y="80" width="280" height="80" rx="10" fill="#0D1B2A" stroke="rgba(255,255,255,0.12)"/>
+          <text x="240" y="115" fill="#FFFFFF" font-size="14" font-weight="600" text-anchor="middle" font-family="Inter">Frontend Portal</text>
+          <text x="240" y="138" fill="rgba(255,255,255,0.6)" font-size="11" text-anchor="middle" font-family="Inter">Dashboard UI &middot; Auditor portal &middot; Reports</text>
+
+          <rect x="420" y="80" width="480" height="80" rx="10" fill="#0D1B2A" stroke="rgba(255,255,255,0.12)"/>
+          <text x="660" y="108" fill="#FFFFFF" font-size="14" font-weight="600" text-anchor="middle" font-family="Inter">Cloud Backend &middot; Intelligence Engine</text>
+          <text x="660" y="128" fill="rgba(255,255,255,0.6)" font-size="11" text-anchor="middle" font-family="Inter">EPSS / KEV / MITRE / OTX feeds &middot; Compliance scoring</text>
+          <text x="660" y="146" fill="rgba(255,255,255,0.5)" font-size="10" text-anchor="middle" font-family="Inter">Aggregate metadata only &middot; HMAC-signed ingest</text>
+
+          <!-- HMAC arrow -->
+          <line x1="500" y1="200" x2="500" y2="270" stroke="#00F0FF" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrowTeal)"/>
+          <text x="510" y="240" fill="#00F0FF" font-size="11" font-weight="600" font-family="Inter">HTTPS &middot; HMAC-signed</text>
+          <text x="510" y="254" fill="rgba(0,240,255,0.7)" font-size="10" font-family="Inter">scores + counts only</text>
+
+          <!-- Customer zone -->
+          <rect x="40" y="285" width="920" height="180" rx="14" fill="url(#customerGrad)" stroke="rgba(255,255,255,0.12)"/>
+          <text x="64" y="313" fill="rgba(255,255,255,0.85)" font-size="13" font-weight="700" letter-spacing="2" font-family="Inter">CUSTOMER NETWORK</text>
+
+          <rect x="100" y="335" width="380" height="100" rx="10" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.18)"/>
+          <text x="290" y="362" fill="#FFFFFF" font-size="14" font-weight="600" text-anchor="middle" font-family="Inter">URIP Agent &middot; Docker container</text>
+          <text x="290" y="382" fill="rgba(255,255,255,0.6)" font-size="11" text-anchor="middle" font-family="Inter">All Connectors &middot; Normalizer &middot; Local Vault</text>
+          <text x="290" y="400" fill="rgba(0,240,255,0.85)" font-size="10" text-anchor="middle" font-family="Inter">Encrypted Reporter &middot; Drill-down Tunnel (60s tokens)</text>
+
+          <rect x="520" y="335" width="380" height="100" rx="10" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.18)"/>
+          <text x="710" y="362" fill="#FFFFFF" font-size="14" font-weight="600" text-anchor="middle" font-family="Inter">Local Postgres &middot; customer-owned</text>
+          <text x="710" y="382" fill="rgba(255,255,255,0.6)" font-size="11" text-anchor="middle" font-family="Inter">IPs &middot; Hostnames &middot; Usernames &middot; Evidence files</text>
+          <text x="710" y="400" fill="#00F0FF" font-size="10" font-weight="600" text-anchor="middle" font-family="Inter">STAYS ON CUSTOMER NETWORK FOREVER</text>
+
+          <!-- agent <-> db -->
+          <line x1="480" y1="385" x2="520" y2="385" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 9 — TECH STACK
+       ============================================ -->
+  <section class="block" id="tech-stack">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">The Technology Stack</span>
+        <h2>Deliberately small. Opinionated. Operationally simple.</h2>
+        <p>Boring tech where it counts &mdash; so the smart stuff (scoring, enrichment, linkage) gets all the attention.</p>
+      </div>
+
+      <div class="stack-grid">
+        <div class="stack-card">
+          <div class="stack-cat">Backend</div>
+          <div class="stack-list"><strong>Python 3.13 / 3.11</strong>, FastAPI, SQLAlchemy 2.x async, Alembic, Pydantic v2.</div>
+        </div>
+        <div class="stack-card">
+          <div class="stack-cat">Database</div>
+          <div class="stack-list"><strong>Postgres</strong> (Neon in cloud, customer-managed in Hybrid-SaaS), per-tenant scope.</div>
+        </div>
+        <div class="stack-card">
+          <div class="stack-cat">Frontend</div>
+          <div class="stack-list">Vanilla <strong>HTML / JS / CSS</strong> for the URIP shell &middot; <strong>Next.js</strong> option for compliance UI.</div>
+        </div>
+        <div class="stack-card">
+          <div class="stack-cat">Auth &amp; Crypto</div>
+          <div class="stack-list"><strong>PyJWT</strong> tokens &middot; <strong>Fernet</strong>-encrypted per-tenant vault &middot; SHA-256 evidence integrity.</div>
+        </div>
+        <div class="stack-card">
+          <div class="stack-cat">Connectors</div>
+          <div class="stack-list"><strong>HTTPX + Pydantic v2</strong> with a plugin registry. Auto-discovered into the catalog wizard.</div>
+        </div>
+        <div class="stack-card">
+          <div class="stack-cat">Eventing &amp; Async</div>
+          <div class="stack-list"><strong>Redis pub/sub</strong> event bus + <strong>Celery</strong> workers for heavy connector pulls.</div>
+        </div>
+        <div class="stack-card">
+          <div class="stack-cat">Hybrid Agent</div>
+          <div class="stack-list"><strong>Docker</strong> + HMAC-signed reporter + reverse-WebSocket drill-down tunnel.</div>
+        </div>
+        <div class="stack-card">
+          <div class="stack-cat">External Feeds</div>
+          <div class="stack-list">EPSS &middot; CISA KEV &middot; MITRE ATT&amp;CK &middot; AlienVault OTX &mdash; all four live.</div>
+        </div>
+        <div class="stack-card">
+          <div class="stack-cat">Object Storage</div>
+          <div class="stack-list"><strong>S3-compatible</strong> &mdash; R2 in cloud, customer-local in Hybrid-SaaS.</div>
+        </div>
+        <div class="stack-card">
+          <div class="stack-cat">Observability</div>
+          <div class="stack-list">Structured JSON logs &middot; <strong>Sentry</strong> for errors &middot; <strong>Better Stack</strong> for metrics.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 10 — MOAT
+       ============================================ -->
+  <section class="block muted" id="why-urip">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">What Sets URIP Apart</span>
+        <h2>Three moats. Each individually meaningful. Together, decisive.</h2>
+      </div>
+      <div class="moat-grid">
+        <div class="moat-card">
+          <div class="moat-num">01</div>
+          <h3>Risk &times; Control linkage</h3>
+          <p>URIP is the only platform that says <em>&ldquo;this CVE is what&rsquo;s breaking your SOC 2 control CC7.1, on this Tier-1 asset, owned by this person, with EPSS 0.92 and KEV-active.&rdquo;</em></p>
+          <div class="vs">Compliance-only platforms see the control failure but lack CVE-level threat enrichment. Threat-intel platforms see the vulnerability but lack compliance scaffolding. URIP has both.</div>
+        </div>
+        <div class="moat-card">
+          <div class="moat-num">02</div>
+          <h3>Universal connector framework</h3>
+          <p>Bring any tool. Implement four methods. Auto-register in the catalog. The plumbing &mdash; encrypted credentials, polling, normalization, scoring, audit logging, health monitoring &mdash; is done.</p>
+          <div class="vs">No custom integration project. No professional services engagement. Same wizard for the 50-person startup and the 1000-person enterprise.</div>
+        </div>
+        <div class="moat-card">
+          <div class="moat-num">03</div>
+          <h3>Hybrid-SaaS data sovereignty</h3>
+          <p>Sensitive vulnerability data &mdash; IP addresses, hostnames, usernames, evidence files &mdash; stays on your network. The cloud only ever sees summary scores.</p>
+          <div class="vs">A proven enterprise agent pattern that clears procurement at regulated buyers &mdash; structurally unavailable to platforms that ship cloud-only.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       URIP vs VERTICALLY-INTEGRATED VENDORS (§10a)
+       ============================================ -->
+  <section class="block dark" id="vs-vendors">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Structural Edge</span>
+        <h2>Seven architectural advantages no vertically-integrated vendor can copy.</h2>
+        <p>Single-vendor platforms optimise for lock-in. URIP optimises for the customer&rsquo;s existing stack.</p>
+      </div>
+
+      <div class="edge-grid">
+        <div class="edge-card">
+          <div class="edge-num">01</div>
+          <h4>Best-of-Breed Preservation</h4>
+          <p>You already bought Tenable, CrowdStrike and Zscaler for a reason. URIP unifies them instead of replacing them. No rip-and-replace. No sunk-cost waste.</p>
+        </div>
+        <div class="edge-card">
+          <div class="edge-num">02</div>
+          <h4>Data Sovereignty by Design</h4>
+          <p>Hybrid-SaaS keeps IPs, hostnames and evidence on your network. Vertically-integrated vendors force everything into their cloud to train their models.</p>
+        </div>
+        <div class="edge-card">
+          <div class="edge-num">03</div>
+          <h4>Deterministic Scoring</h4>
+          <p>Our composite score is a formula you can audit. No opaque &ldquo;AI risk rating&rdquo; that changes overnight with no explanation.</p>
+        </div>
+        <div class="edge-card">
+          <div class="edge-num">04</div>
+          <h4>Universal Connector Framework</h4>
+          <p>Four methods. One registry. Any tool. A vendor with its own scanner has zero incentive to support competitors&rsquo; data feeds.</p>
+        </div>
+        <div class="edge-card">
+          <div class="edge-num">05</div>
+          <h4>Risk &times; Control Linkage</h4>
+          <p>When a control fails, URIP shows the exact CVE, its EPSS, the APT exploiting it, and the Tier-1 asset affected. No competitor has both sides.</p>
+        </div>
+        <div class="edge-card">
+          <div class="edge-num">06</div>
+          <h4>Modular Pricing</h4>
+          <p>Subscribe to Core + Compliance only, or run all eleven modules. You are not taxed for capabilities you will never use.</p>
+        </div>
+        <div class="edge-card">
+          <div class="edge-num">07</div>
+          <h4>Vendor-Agnostic Remediation</h4>
+          <p>Auto-remediation playbooks target CrowdStrike, Ansible and CyberArk &mdash; whichever tool the customer already owns. No forced ecosystem.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 11 — AUDIENCE
+       ============================================ -->
+  <section class="block" id="audience">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Who It&rsquo;s For</span>
+        <h2>Built for orgs already running a security stack &mdash; tired of switching between consoles.</h2>
+      </div>
+      <div class="audience-grid">
+        <div class="audience-card">
+          <div class="aud-icon"><i class="fas fa-rocket"></i></div>
+          <div>
+            <h4>Mid-market SaaS (50&ndash;1000 employees)</h4>
+            <p>Customer security questionnaires. SOC 2 Type 2 / ISO 27001. 5&ndash;15 security tools, no dedicated SOC.</p>
+          </div>
+        </div>
+        <div class="audience-card">
+          <div class="aud-icon"><i class="fas fa-industry"></i></div>
+          <div>
+            <h4>Manufacturing, robotics, regulated industries</h4>
+            <p>Multi-customer audit pressure, on-prem OT, procurement requirement that vendor data not leave the customer network &mdash; the Hybrid-SaaS sweet spot.</p>
+          </div>
+        </div>
+        <div class="audience-card">
+          <div class="aud-icon"><i class="fas fa-screwdriver-wrench"></i></div>
+          <div>
+            <h4>Any org with 5+ security tools</h4>
+            <p>Wants ONE pane &mdash; risk register, threat intelligence, compliance status, evidence, auditor portal &mdash; without rebuilding the data layer themselves.</p>
+          </div>
+        </div>
+        <div class="audience-card">
+          <div class="aud-icon"><i class="fas fa-clipboard-check"></i></div>
+          <div>
+            <h4>Compliance-first prospects</h4>
+            <p>DPO buyer, no CISO involvement, want only audit-readiness. Buy the standalone Compliance Module without the URIP risk layer.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 12 — ASKS FROM THE CUSTOMER
+       ============================================ -->
+  <section class="block dark" id="asks">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">What You Bring</span>
+        <h2>Three things to get started. No professional services required.</h2>
+        <p>The same onboarding flow runs for the 50-person startup and the 1,000-person enterprise.</p>
+      </div>
+      <div class="asks-list">
+        <div class="ask-card">
+          <h4><i class="fas fa-key"></i> &nbsp; API credentials per tool</h4>
+          <p>Read-only is fine for almost everything. ManageEngine SDP needs write for bidirectional ticketing. Vendor-published scopes only.</p>
+        </div>
+        <div class="ask-card">
+          <h4><i class="fas fa-user-shield"></i> &nbsp; One tenant admin</h4>
+          <p>Configures the workspace &mdash; brand, frameworks, module subscriptions, user invitations.</p>
+        </div>
+        <div class="ask-card">
+          <h4><i class="fas fa-network-wired"></i> &nbsp; Network allowlist</h4>
+          <p>Pure SaaS &mdash; allowlist our cloud IP at egress. Hybrid-SaaS &mdash; allow the Docker agent&rsquo;s outbound HTTPS to our cloud.</p>
+        </div>
+        <div class="ask-card">
+          <h4><i class="fas fa-id-card-clip"></i> &nbsp; MS Entra admin consent</h4>
+          <p>Required if Identity / Collaboration modules are subscribed. Least-privilege scopes documented in the per-tool wizard.</p>
+        </div>
+        <div class="ask-card">
+          <h4><i class="fas fa-bug"></i> &nbsp; Burp Suite Enterprise license</h4>
+          <p>If DAST module is subscribed &mdash; Burp Pro alone does not expose the full programmatic API.</p>
+        </div>
+      </div>
+      <p class="asks-footer">No professional services. No bespoke integration project. No consultant onsite.</p>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 2 — STORY IN NUMBERS / CAPABILITIES
+       (Section 13 reframed: capabilities delivered)
+       ============================================ -->
+  <section class="block" id="capabilities">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">What URIP Delivers Today</span>
+        <h2>A complete, working platform &mdash; not a roadmap promise.</h2>
+        <p>Every capability listed below runs against the real upstream API in production today.</p>
+      </div>
+      <div class="capabilities-grid">
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">29 production connectors live + 25+ source categories supported via universal framework</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">15 pre-seeded compliance frameworks (~895 controls — 7 audit-grade + 8 scaffold-grade)</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Both dashboards &mdash; full end-to-end UI</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Auditor portal with framework-scoped, time-bound, read-only access</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Hybrid-SaaS Docker agent with HMAC-signed reporter</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Drill-down reverse-WebSocket tunnel with 60s tokens</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Multi-tenant data plane with cross-tenant isolation tests</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">White-label per-tenant theming end-to-end</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Composite scoring engine (CVSS &middot; EPSS &middot; KEV &middot; tier)</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">4 live external intelligence feeds</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">SHA-256 evidence integrity hash on every artifact</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Per-tenant Fernet-encrypted credential vault</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">16 license modules (Core + 15 capability), with three-layer enforcement</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Standalone Compliance deployment &mdash; runs without the URIP risk layer</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Risk acceptance workflow with HoD approval</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Bidirectional ticketing into ManageEngine SDP, Jira and ServiceNow</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Intelligence Engine &mdash; 5 live services (normalisation, fingerprinting, applicability, remediation fetch, connector runner)</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Auto-Remediation Phase 2 &mdash; gated execution via CrowdStrike RTR (OAuth2 Bearer), Ansible, Fortinet, CyberArk</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Trust Center &mdash; public NDA-gated posture page with time-bound, hashed access tokens and self-serve procurement access</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">VAPT Vendor Portal &mdash; closed-loop pentest workflow with single-use JWT invitations</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">DSPM, AI Security, ZTNA, Attack Path Prediction, Cyber Risk Quantification (FAIR) &mdash; 5 strategic modules at MVP-scaffold depth</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">6 framework PDF report templates &mdash; SOC 2 management, ISO 27001 SoA, HIPAA risk analysis, GDPR Article 30 register, PCI DSS AOC inputs, India DPDP DPIA</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">LMS connectors &mdash; security-awareness-training telemetry surfaces as compliance evidence (ISO 27001 A.6.3 + SOC 2 CC1.4)</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">BGV connectors &mdash; background-verification status surfaces in HIPAA / India DPDP evidence (HIPAA &sect;164.308(a)(3))</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Auditor activity heatmap &mdash; GitHub-style 4-level grid showing every auditor action with calendar-day buckets</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Word Cloud Threat Map &mdash; board-friendly D3 visualisation of top APTs, TTPs, and targeted sectors</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Async task queue &mdash; Celery + Redis beat schedule (connector-pull 15min, scoring 60min, control-check 6h)</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Risk &harr; Control event bus &mdash; compliance.control.failed auto-creates linked URIP risks</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Immutable per-tenant audit log on every action</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">9 versioned policy templates with e-sign workflow</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Vendor risk &mdash; questionnaires, criticality, contract alerts</span></div>
+        <div class="cap-row"><span class="cap-check"><i class="fas fa-check"></i></span><span class="cap-text">Drift detection on connectors (no silent failure)</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 14 — PRICING NARRATIVE (qualitative)
+       ============================================ -->
+  <section class="block muted" id="pricing">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">The Pricing Story</span>
+        <h2>Per-module subscription. Pay only for what you turn on.</h2>
+        <p>Disabled modules are dark in the UI and inactive in the backend. A startup might subscribe to Core + Compliance only. An enterprise might run all sixteen.</p>
+      </div>
+      <div class="pricing-narrative">
+        <div class="price-card">
+          <div class="price-icon"><i class="fas fa-cubes"></i></div>
+          <h4>Per-module licensing</h4>
+          <p>Each tenant subscribes to exactly the capability modules they need. Core is always-on and bundled. Compliance is the strategic upsell that moves the conversation from operational tooling to board-level GRC.</p>
+        </div>
+        <div class="price-card highlight">
+          <div class="price-icon"><i class="fas fa-handshake"></i></div>
+          <h4>Cost-consolidation pitch</h4>
+          <p>One subscription replaces a typical bundle of compliance automation, external threat intel, manual audit-prep consultants, and the operational overhead of managing multiple dashboards &mdash; while adding the Risk &times; Control linkage neither vendor in your existing stack offers.</p>
+        </div>
+        <div class="price-card">
+          <div class="price-icon"><i class="fas fa-server"></i></div>
+          <h4>Hybrid-SaaS baseline</h4>
+          <p>A modest VPS on the customer side runs the on-prem Docker agent (a 2 vCPU / 4 GB instance is enough for most tenants). The cloud portal is included in the URIP subscription &mdash; no extra hosting line item.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 15 — HONEST LIMITATIONS
+       ============================================ -->
+  <section class="block" id="not-us">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Honest Limitations</span>
+        <h2>What URIP is &mdash; and isn&rsquo;t.</h2>
+        <p>URIP is a unifier and a scaffold, not a do-everything platform. Six things URIP explicitly does <strong>not</strong> do:</p>
+      </div>
+      <div class="not-grid">
+        <div class="not-card">
+          <h4><i class="fas fa-circle-xmark"></i> We don&rsquo;t crawl the dark web</h4>
+          <p>We integrate with CloudSEK &mdash; they run the crawler infrastructure (Tor, residential proxies, Telegram scraping, paid DNS feeds). We surface their alerts inside the unified URIP dashboard with EPSS + KEV + asset-tier prioritisation on top.</p>
+        </div>
+        <div class="not-card">
+          <h4><i class="fas fa-circle-xmark"></i> We don&rsquo;t run a SOC</h4>
+          <p>URIP surfaces and prioritises risks. It does not respond to incidents. Your security team or SOC vendor still owns response. URIP is the unified pane on which they triage.</p>
+        </div>
+        <div class="not-card">
+          <h4><i class="fas fa-circle-xmark"></i> We don&rsquo;t author training videos</h4>
+          <p>We do not build security training content. Training-completion telemetry from KnowBe4, Hoxhunt or Cybeready can be ingested via the universal connector framework when those modules are enabled.</p>
+        </div>
+        <div class="not-card">
+          <h4><i class="fas fa-circle-xmark"></i> We don&rsquo;t run BGV</h4>
+          <p>We do not perform background verification. BGV status from AuthBridge or OnGrid can be ingested as compliance evidence via the connector framework.</p>
+        </div>
+        <div class="not-card">
+          <h4><i class="fas fa-circle-xmark"></i> We are not the auditor</h4>
+          <p>We make audits easy &mdash; automated evidence collection, control monitoring, policy tracking, reporting, the auditor portal. The customer still owns control design, policy approvals, vendor selection and the audit engagement itself.</p>
+        </div>
+        <div class="not-card">
+          <h4><i class="fas fa-circle-xmark"></i> We are not legal counsel</h4>
+          <p>Framework templates and policies are starting points. Your legal / compliance counsel must review and tailor them for your jurisdiction and customer contracts.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FINAL CTA
+       ============================================ -->
+  <section class="final-cta">
+    <div class="final-cta-inner">
+      <h2>One cockpit for your entire security stack.</h2>
+      <p>See one number. Drill to one CVE. Fix one ticket. Both dashboards on one screen.</p>
+      <div class="hero-cta" style="justify-content:center;">
+        <a href="index.html" class="btn btn-primary btn-lg">
+          Sign in to your tenant <i class="fas fa-arrow-right"></i>
+        </a>
+        <a href="#how" class="btn btn-secondary btn-lg" style="background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.3);">
+          How it works
+        </a>
+      </div>
+      <div class="cta-tagline">Your tools &middot; Your data &middot; One pane &middot; Audit-ready</div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FOOTER
+       ============================================ -->
+  <footer class="site-footer">
+    <div class="container">
+      <div>
+        <div class="brand" style="color:var(--white);margin-bottom:18px;">
+          <span class="brand-mark"><i class="fas fa-shield-halved"></i></span>
+          <span>URIP</span>
+        </div>
+        <p>Unified Risk Intelligence Platform &mdash; multi-tenant, module-pickable risk-and-compliance for organisations that already own a security stack.</p>
+      </div>
+      <div>
+        <h5>Product</h5>
+        <div class="footer-links">
+          <a href="#how">How it works</a>
+          <a href="#pipeline">Pipeline</a>
+          <a href="#intelligence-engine">Intelligence Engine</a>
+          <a href="#connectors">Connectors</a>
+          <a href="#dashboards">Dashboards</a>
+          <a href="#auto-remediation">Auto-Remediation</a>
+          <a href="#trust-center">Trust Center</a>
+          <a href="#modules">Modules</a>
+          <a href="#architecture">Architecture</a>
+        </div>
+      </div>
+      <div>
+        <h5>Why URIP</h5>
+        <div class="footer-links">
+          <a href="#why-urip">What sets us apart</a>
+          <a href="#audience">Who it&rsquo;s for</a>
+          <a href="#capabilities">Capabilities</a>
+          <a href="#not-us">Honest limitations</a>
+          <a href="#pricing">Pricing model</a>
+        </div>
+      </div>
+      <div>
+        <h5>Get started</h5>
+        <div class="footer-links">
+          <a href="index.html">Customer Sign-in</a>
+          <a href="vendor-login.html">VAPT Vendor Portal</a>
+          <a href="#vapt-portal">How vendor access works</a>
+          <a href="#asks">What you bring</a>
+        </div>
+      </div>
+    </div>
+    <div class="copyright">
+      &copy; 2026 URIP &middot; Unified Risk Intelligence Platform. <em>*Hybrid-SaaS deployment mode.</em>
+    </div>
+  </footer>
+
+  <!-- ============================================
+       JS — scroll, reveal, topbar
+       ============================================ -->
+  <script>
+    // Topbar scroll state
+    const topbar = document.getElementById('topbar');
+    const setBar = () => topbar.classList.toggle('scrolled', window.scrollY > 12);
+    window.addEventListener('scroll', setBar, { passive: true });
+    setBar();
+
+    // Scroll reveal
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          io.unobserve(e.target);
+        }
+      }
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+
+    document.querySelectorAll('.section-head, .onboard-step, .moat-card, .module-card, .deploy-card, .audience-card, .ask-card, .stack-card, .cap-row, .price-card, .not-card, .feed-pill, .formula-card, .contract-card, .intel-card, .auto-rem-step, .exec-hub-card, .trust-card, .truth-table-wrap, .edge-card')
+      .forEach(el => { el.classList.add('reveal'); io.observe(el); });
+
+    // Smooth-scroll offset for fixed nav
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const id = a.getAttribute('href').slice(1);
+        if (!id) return;
+        const t = document.getElementById(id);
+        if (!t) return;
+        e.preventDefault();
+        const top = t.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top, behavior: 'smooth' });
+      });
+    });
+  </script>
+</body>
+</html>

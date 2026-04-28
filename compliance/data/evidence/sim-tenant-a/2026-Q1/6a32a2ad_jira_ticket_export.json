@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:24:24.636693",
+  "tickets": [
+    {
+      "id": "ADV-OPS-2359",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "Done",
+      "assignee": "user-507@adverb.in",
+      "created": "2026-02-06T13:24:24.636697",
+      "resolved": "2026-04-13T13:24:24.636700"
+    },
+    {
+      "id": "ADV-OPS-4634",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "Done",
+      "assignee": "user-851@adverb.in",
+      "created": "2026-02-26T13:24:24.636703",
+      "resolved": "2026-04-14T13:24:24.636706"
+    },
+    {
+      "id": "ADV-OPS-3486",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "Done",
+      "assignee": "user-919@adverb.in",
+      "created": "2026-02-03T13:24:24.636710",
+      "resolved": "2026-04-23T13:24:24.636712"
+    },
+    {
+      "id": "ADV-OPS-9697",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "In Progress",
+      "assignee": "user-262@adverb.in",
+      "created": "2026-03-31T13:24:24.636715",
+      "resolved": "2026-04-16T13:24:24.636717"
+    },
+    {
+      "id": "ADV-OPS-4707",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "To Do",
+      "assignee": "user-978@adverb.in",
+      "created": "2026-03-18T13:24:24.636720",
+      "resolved": "2026-04-20T13:24:24.636722"
+    },
+    {
+      "id": "ADV-OPS-5857",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "To Do",
+      "assignee": "user-587@adverb.in",
+      "created": "2026-02-12T13:24:24.636725",
+      "resolved": "2026-04-15T13:24:24.636727"
+    },
+    {
+      "id": "ADV-OPS-5915",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "Done",
+      "assignee": "user-357@adverb.in",
+      "created": "2026-01-31T13:24:24.636730",
+      "resolved": "2026-04-23T13:24:24.636732"
+    },
+    {
+      "id": "ADV-OPS-2094",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "To Do",
+      "assignee": "user-243@adverb.in",
+      "created": "2026-03-25T13:24:24.636735",
+      "resolved": "2026-04-24T13:24:24.636737"
+    }
+  ]
+}

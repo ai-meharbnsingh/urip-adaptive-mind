@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attack Path Prediction | URIP</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="urip-app">
+  <div id="app-shell" data-page="attack-path">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Attack Path Prediction</h1>
+        <p class="page-subtitle">
+          Critical paths from internet-exposed nodes to tier-1 assets, with MITRE ATT&amp;CK chain overlay.
+          <em style="color:var(--u-fg-3);font-size:.85em;">
+            MVP scaffold — BFS path finder + deterministic risk scoring.
+            Probability-weighted multi-hop scoring is roadmap.
+          </em>
+        </p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-primary" id="btnRecompute"><i class="fas fa-sync-alt"></i> Recompute</button>
+      </div>
+    </div>
+
+    <div class="action-row" id="summaryWidgets">
+      <div class="action-tile">
+        <div class="action-tile-icon icon-fail"><i class="fas fa-fire"></i></div>
+        <div class="action-tile-content">
+          <span class="action-tile-value" id="criticalCount">--</span>
+          <span class="action-tile-label">Critical Paths</span>
+        </div>
+      </div>
+      <div class="action-tile">
+        <div class="action-tile-icon icon-warn"><i class="fas fa-route"></i></div>
+        <div class="action-tile-content">
+          <span class="action-tile-value" id="totalPaths">--</span>
+          <span class="action-tile-label">Total Paths</span>
+        </div>
+      </div>
+      <div class="action-tile">
+        <div class="action-tile-icon icon-info"><i class="fas fa-globe"></i></div>
+        <div class="action-tile-content">
+          <span class="action-tile-value" id="topScore">--</span>
+          <span class="action-tile-label">Top Risk Score</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title"><i class="fas fa-project-diagram" style="color:var(--u-cyan);margin-right:.5rem"></i>Critical Attack Paths</span>
+      </div>
+      <div class="card-body">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Path ID</th><th>Hops</th><th>Risk Score</th><th>MITRE Chain</th><th>Computed At</th><th>Details</th>
+            </tr>
+          </thead>
+          <tbody id="pathsBody"><tr><td colspan="6" class="text-center">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      window.URIP.shell.mount({
+        page: 'attack-path',
+        title: 'Attack Path Prediction',
+        breadcrumb: 'Strategic Modules / Attack Path'
+      });
+    });
+  </script>
+  <script>
+    async function loadAttackPaths() {
+      const body = document.getElementById('pathsBody');
+      if (!body) return;
+      try {
+        const resp = await window.URIP.apiFetch('/attack-paths/critical?only_critical=false&limit=100', { silent: true });
+        const items = resp.items || [];
+        document.getElementById('totalPaths').textContent = items.length;
+        document.getElementById('criticalCount').textContent = items.filter(i => i.is_critical).length;
+        document.getElementById('topScore').textContent = items.length ? items[0].risk_score : '—';
+        body.innerHTML = items.length === 0
+          ? '<tr><td colspan="6" class="text-center">No paths computed yet — click Recompute.</td></tr>'
+          : items.map(p => `
+              <tr>
+                <td title="${p.id}">${p.id.slice(0,8)}…</td>
+                <td>${p.hop_count}</td>
+                <td><span class="badge badge-${p.is_critical ? 'critical' : 'info'}">${p.risk_score}</span></td>
+                <td>${(p.mitre_chain || []).join(' → ') || '—'}</td>
+                <td>${new Date(p.computed_at).toLocaleString()}</td>
+                <td><a class="btn btn-sm btn-ghost" href="/api/attack-paths/${p.id}/details">Details</a></td>
+              </tr>
+            `).join('');
+      } catch (e) {
+        body.innerHTML = `<tr><td colspan="6" class="text-center text-error">Failed: ${e.message}</td></tr>`;
+      }
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      var btn = document.getElementById('btnRecompute');
+      if (btn) btn.addEventListener('click', async () => {
+        try { await window.URIP.apiFetch('/attack-paths/recompute', { method: 'POST', silent: true }); await loadAttackPaths(); } catch (e) {}
+      });
+      loadAttackPaths();
+    });
+  </script>
+</body>
+</html>

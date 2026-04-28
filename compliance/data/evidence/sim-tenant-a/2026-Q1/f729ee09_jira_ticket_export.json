@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:25:36.316493",
+  "tickets": [
+    {
+      "id": "ADV-OPS-3248",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "In Progress",
+      "assignee": "user-193@adverb.in",
+      "created": "2026-02-09T13:25:36.316497",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-9728",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "Done",
+      "assignee": "user-357@adverb.in",
+      "created": "2026-03-09T13:25:36.316500",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-5734",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "Done",
+      "assignee": "user-420@adverb.in",
+      "created": "2026-03-02T13:25:36.316503",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-4133",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "In Progress",
+      "assignee": "user-296@adverb.in",
+      "created": "2026-03-01T13:25:36.316506",
+      "resolved": "2026-04-20T13:25:36.316508"
+    },
+    {
+      "id": "ADV-OPS-5563",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "To Do",
+      "assignee": "user-785@adverb.in",
+      "created": "2026-03-19T13:25:36.316511",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-3281",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-803@adverb.in",
+      "created": "2026-02-25T13:25:36.316514",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-6261",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "To Do",
+      "assignee": "user-695@adverb.in",
+      "created": "2026-02-05T13:25:36.316517",
+      "resolved": "2026-04-15T13:25:36.316519"
+    },
+    {
+      "id": "ADV-OPS-5775",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-712@adverb.in",
+      "created": "2026-02-28T13:25:36.316521",
+      "resolved": "2026-04-16T13:25:36.316523"
+    }
+  ]
+}

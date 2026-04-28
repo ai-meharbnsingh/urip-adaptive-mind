@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risk Overview | URIP</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/app.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body class="urip-app">
+  <div id="app-shell" data-page="risk-overview">
+    <!-- Top score row -->
+    <section class="r-grid-top" id="topRow">
+      <div class="r-bigscore" id="bigscore">
+        <div>
+          <div class="r-bigscore-label">Risk Index</div>
+        </div>
+        <div>
+          <div class="r-bigscore-value" id="overallScore">—</div>
+          <div class="r-bigscore-level" id="overallLevel">Calculating…</div>
+        </div>
+        <div style="font-size:11px;color:var(--u-fg-3);" id="overallSub">All findings, all sources</div>
+      </div>
+
+      <div class="r-subindex" id="subExposure">
+        <div>
+          <div class="r-subindex-label">Exposure</div>
+          <div style="font-size:12px;color:var(--u-fg-3);margin-top:4px">Internet-facing, EASM, attack surface</div>
+        </div>
+        <div>
+          <div class="r-subindex-value" id="exposureValue">—</div>
+          <div class="r-progress"><div class="r-progress-bar" id="exposureBar" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <div class="r-subindex" id="subAttack">
+        <div>
+          <div class="r-subindex-label">Attack</div>
+          <div style="font-size:12px;color:var(--u-fg-3);margin-top:4px">Active threats, IOC matches, KEV</div>
+        </div>
+        <div>
+          <div class="r-subindex-value" id="attackValue">—</div>
+          <div class="r-progress"><div class="r-progress-bar" id="attackBar" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <div class="r-subindex" id="subConfig">
+        <div>
+          <div class="r-subindex-label">Security Config</div>
+          <div style="font-size:12px;color:var(--u-fg-3);margin-top:4px">Misconfigs, hygiene, control posture</div>
+        </div>
+        <div>
+          <div class="r-subindex-value" id="configValue">—</div>
+          <div class="r-progress"><div class="r-progress-bar" id="configBar" style="width:0%"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Domain bucket cards -->
+    <section class="r-bucket-grid" id="bucketRow">
+      <!-- populated by JS -->
+    </section>
+
+    <!-- Trend + factors -->
+    <section class="r-twin">
+      <div class="u-card">
+        <div class="u-card-h">
+          <h3>Risk Trend (last 30 days)</h3>
+          <div class="u-tabs" style="margin:0;border:none">
+            <span class="u-tab is-active" data-range="30">30D</span>
+            <span class="u-tab" data-range="90">90D</span>
+            <span class="u-tab" data-range="180">6M</span>
+          </div>
+        </div>
+        <div class="u-card-b">
+          <div style="height:240px;position:relative"><canvas id="trendChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="u-card">
+        <div class="u-card-h"><h3>Risk Factors</h3></div>
+        <div class="u-card-b" id="factorsBody">
+          <div class="u-skel" style="margin-bottom:12px"></div>
+          <div class="u-skel" style="margin-bottom:12px"></div>
+          <div class="u-skel"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Summary chart + recent activity -->
+    <section class="r-twin">
+      <div class="u-card">
+        <div class="u-card-h"><h3>Risk Summary (6 months)</h3></div>
+        <div class="u-card-b">
+          <div style="height:240px;position:relative"><canvas id="summaryChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="u-card">
+        <div class="u-card-h">
+          <h3>Recent Activity</h3>
+          <a class="u-btn is-ghost is-sm" href="audit-log.html">View all</a>
+        </div>
+        <div class="u-card-b" id="activityBody">
+          <div class="u-skel" style="margin-bottom:10px"></div>
+          <div class="u-skel" style="margin-bottom:10px"></div>
+          <div class="u-skel"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shell.js"></script>
+  <script src="js/risk-overview.js"></script>
+</body>
+</html>

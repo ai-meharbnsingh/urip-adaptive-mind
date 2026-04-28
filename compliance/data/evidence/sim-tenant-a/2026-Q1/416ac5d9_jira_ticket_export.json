@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:24:24.593769",
+  "tickets": [
+    {
+      "id": "ADV-OPS-3813",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "To Do",
+      "assignee": "user-808@adverb.in",
+      "created": "2026-02-20T13:24:24.593773",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-8974",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "In Progress",
+      "assignee": "user-807@adverb.in",
+      "created": "2026-02-21T13:24:24.593776",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-2435",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-114@adverb.in",
+      "created": "2026-03-19T13:24:24.593779",
+      "resolved": "2026-04-26T13:24:24.593781"
+    },
+    {
+      "id": "ADV-OPS-4083",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "Done",
+      "assignee": "user-592@adverb.in",
+      "created": "2026-03-25T13:24:24.593784",
+      "resolved": "2026-04-20T13:24:24.593786"
+    },
+    {
+      "id": "ADV-OPS-9824",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-408@adverb.in",
+      "created": "2026-02-12T13:24:24.593789",
+      "resolved": "2026-04-20T13:24:24.593791"
+    },
+    {
+      "id": "ADV-OPS-1357",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "Done",
+      "assignee": "user-256@adverb.in",
+      "created": "2026-02-15T13:24:24.593794",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-8724",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "To Do",
+      "assignee": "user-699@adverb.in",
+      "created": "2026-03-12T13:24:24.593796",
+      "resolved": "2026-04-17T13:24:24.593798"
+    },
+    {
+      "id": "ADV-OPS-7418",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "In Progress",
+      "assignee": "user-108@adverb.in",
+      "created": "2026-03-30T13:24:24.593801",
+      "resolved": "2026-04-15T13:24:24.593803"
+    }
+  ]
+}

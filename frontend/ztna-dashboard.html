@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZTNA Dashboard | URIP</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="urip-app">
+  <div id="app-shell" data-page="ztna">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Zero Trust Network Access (ZTNA)</h1>
+        <p class="page-subtitle">
+          Read-only ingestion of access posture from Zscaler ZPA / Cloudflare Access / Tailscale / Twingate.
+          <em style="color:var(--u-fg-3);font-size:.85em;">
+            MVP scaffold — URIP integrates ZTNA, we do not sell ZTNA.
+          </em>
+        </p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-outline" id="btnRefresh"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+    </div>
+
+    <div class="action-row" id="summaryWidgets">
+      <div class="action-tile">
+        <div class="action-tile-icon icon-info"><i class="fas fa-shield-alt"></i></div>
+        <div class="action-tile-content">
+          <span class="action-tile-value" id="policyCount">--</span>
+          <span class="action-tile-label">Policies</span>
+        </div>
+      </div>
+      <div class="action-tile">
+        <div class="action-tile-icon icon-warn"><i class="fas fa-ban"></i></div>
+        <div class="action-tile-content">
+          <span class="action-tile-value" id="denyCount">--</span>
+          <span class="action-tile-label">Denied (recent)</span>
+        </div>
+      </div>
+      <div class="action-tile">
+        <div class="action-tile-icon icon-fail"><i class="fas fa-exclamation-triangle"></i></div>
+        <div class="action-tile-content">
+          <span class="action-tile-value" id="postureViolations">--</span>
+          <span class="action-tile-label">Posture Violations</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title"><i class="fas fa-shield-alt" style="color:var(--u-cyan);margin-right:.5rem"></i>Access Policies</span>
+      </div>
+      <div class="card-body">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Policy</th><th>Target App</th><th>Identity?</th><th>MFA?</th><th>Posture Required</th><th>Source</th>
+            </tr>
+          </thead>
+          <tbody id="policiesBody"><tr><td colspan="6" class="text-center">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      window.URIP.shell.mount({
+        page: 'ztna',
+        title: 'ZTNA Dashboard',
+        breadcrumb: 'Strategic Modules / ZTNA'
+      });
+    });
+  </script>
+  <script>
+    (async function() {
+      const body = document.getElementById('policiesBody');
+      if (!body) return;
+      try {
+        const resp = await window.URIP.apiFetch('/ztna/policies', { silent: true });
+        const items = resp.items || [];
+        document.getElementById('policyCount').textContent = resp.total ?? items.length;
+        body.innerHTML = items.length === 0
+          ? '<tr><td colspan="6" class="text-center">No policies ingested yet.</td></tr>'
+          : items.map(p => `
+              <tr>
+                <td>${p.policy_name}</td>
+                <td>${p.target_app}</td>
+                <td>${p.identity_required ? '<i class="fas fa-check"></i>' : '<i class="fas fa-times"></i>'}</td>
+                <td>${p.mfa_required ? '<i class="fas fa-check"></i>' : '<i class="fas fa-times"></i>'}</td>
+                <td>${(p.device_posture_required || []).join(', ') || '—'}</td>
+                <td>${p.source_provider || '—'}</td>
+              </tr>
+            `).join('');
+      } catch (e) {
+        body.innerHTML = `<tr><td colspan="6" class="text-center text-error">Failed: ${e.message}</td></tr>`;
+      }
+
+      try {
+        const dec = await window.URIP.apiFetch('/ztna/access-decisions?decision=deny&limit=100', { silent: true });
+        document.getElementById('denyCount').textContent = dec.total ?? (dec.items || []).length;
+      } catch (e) {}
+
+      try {
+        const pv = await window.URIP.apiFetch('/ztna/posture-violations', { silent: true });
+        document.getElementById('postureViolations').textContent = pv.total ?? (pv.items || []).length;
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

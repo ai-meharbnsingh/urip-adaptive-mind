@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:25:36.301417",
+  "tickets": [
+    {
+      "id": "ADV-OPS-1011",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "To Do",
+      "assignee": "user-580@adverb.in",
+      "created": "2026-03-11T13:25:36.301420",
+      "resolved": "2026-04-16T13:25:36.301422"
+    },
+    {
+      "id": "ADV-OPS-9847",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-589@adverb.in",
+      "created": "2026-02-08T13:25:36.301425",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-4215",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-627@adverb.in",
+      "created": "2026-03-27T13:25:36.301428",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-3336",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-861@adverb.in",
+      "created": "2026-03-31T13:25:36.301431",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-5625",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "Done",
+      "assignee": "user-355@adverb.in",
+      "created": "2026-03-15T13:25:36.301434",
+      "resolved": "2026-04-15T13:25:36.301436"
+    },
+    {
+      "id": "ADV-OPS-5933",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "To Do",
+      "assignee": "user-784@adverb.in",
+      "created": "2026-01-27T13:25:36.301438",
+      "resolved": "2026-04-17T13:25:36.301440"
+    },
+    {
+      "id": "ADV-OPS-5370",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "In Progress",
+      "assignee": "user-532@adverb.in",
+      "created": "2026-02-24T13:25:36.301443",
+      "resolved": "2026-04-17T13:25:36.301445"
+    },
+    {
+      "id": "ADV-OPS-1560",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "Done",
+      "assignee": "user-913@adverb.in",
+      "created": "2026-03-18T13:25:36.301448",
+      "resolved": null
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:24:24.448211",
+  "tickets": [
+    {
+      "id": "ADV-OPS-8680",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-972@adverb.in",
+      "created": "2026-02-22T13:24:24.448215",
+      "resolved": "2026-04-24T13:24:24.448217"
+    },
+    {
+      "id": "ADV-OPS-3683",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-133@adverb.in",
+      "created": "2026-02-19T13:24:24.448220",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-1245",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "To Do",
+      "assignee": "user-327@adverb.in",
+      "created": "2026-03-18T13:24:24.448223",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-2083",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "To Do",
+      "assignee": "user-987@adverb.in",
+      "created": "2026-02-09T13:24:24.448226",
+      "resolved": "2026-04-13T13:24:24.448228"
+    },
+    {
+      "id": "ADV-OPS-8496",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "To Do",
+      "assignee": "user-514@adverb.in",
+      "created": "2026-04-07T13:24:24.448231",
+      "resolved": "2026-04-13T13:24:24.448233"
+    },
+    {
+      "id": "ADV-OPS-7232",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "To Do",
+      "assignee": "user-726@adverb.in",
+      "created": "2026-01-29T13:24:24.448236",
+      "resolved": "2026-04-18T13:24:24.448238"
+    },
+    {
+      "id": "ADV-OPS-1630",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "Done",
+      "assignee": "user-562@adverb.in",
+      "created": "2026-02-13T13:24:24.448241",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-1694",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "To Do",
+      "assignee": "user-852@adverb.in",
+      "created": "2026-04-07T13:24:24.448244",
+      "resolved": "2026-04-18T13:24:24.448246"
+    }
+  ]
+}

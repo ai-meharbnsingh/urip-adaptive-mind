@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workflow Automation | URIP - Unified Risk Intelligence Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/domain-page.css">
+  <link rel="stylesheet" href="css/module-tools.css">
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+    <main class="main-content">
+      <header class="topbar"></header>
+      <div class="content-area">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title"><i class="fas fa-gears" style="color:var(--teal-accent);margin-right:.5rem"></i>Workflow Automation</h1>
+            <p class="page-subtitle">Auto-remediation runs, pending approvals, and bidirectional ticketing sync (Jira / ServiceNow).</p>
+          </div>
+          <div class="flex gap-2">
+            <a class="btn btn-outline" href="acceptance-workflow.html">
+              <i class="fas fa-clipboard-check"></i> Acceptance Workflow
+            </a>
+            <a class="btn btn-primary" href="settings.html#auto-remediation">
+              <i class="fas fa-sliders"></i> Configure Auto-Remediation
+            </a>
+          </div>
+        </div>
+
+        <!-- Available integrations for ticketing & workflow -->
+        <div id="moduleTools" data-modules="ITSM"></div>
+
+        <div class="domain-kpi-strip four">
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:rgba(39,174,96,0.12);color:#27AE60"><i class="fas fa-check-circle"></i></div>
+            <div class="kpi-content">
+              <div class="kpi-value"><span id="kpiRemediated">--</span></div>
+              <div class="kpi-label">Risks Remediated This Week</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon medium"><i class="fas fa-hourglass-half"></i></div>
+            <div class="kpi-content">
+              <div class="kpi-value"><span id="kpiPendingApproval">--</span></div>
+              <div class="kpi-label">Pending Approvals</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:rgba(99,102,241,0.12);color:#6366F1"><i class="fas fa-rotate"></i></div>
+            <div class="kpi-content">
+              <div class="kpi-value"><span id="kpiTicketsSynced">--</span></div>
+              <div class="kpi-label">Tickets Synced</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon critical"><i class="fas fa-rotate-left"></i></div>
+            <div class="kpi-content">
+              <div class="kpi-value"><span id="kpiRollbacks">--</span></div>
+              <div class="kpi-label">Rollbacks</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent auto-remediation executions -->
+        <div class="section-row">
+          <h2>Auto-Remediation Executions (recent 20)</h2>
+          <a class="btn btn-sm btn-outline" href="remediation-tracker.html">View Tracker <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="risk-table-card">
+          <table>
+            <thead><tr><th>Run</th><th>Action</th><th>Asset</th><th>Result</th><th>When</th></tr></thead>
+            <tbody id="autoRemBody"><tr><td colspan="5" style="padding:2rem;text-align:center;color:#94A3B8">Loading…</td></tr></tbody>
+          </table>
+        </div>
+
+        <!-- Pending approvals queue -->
+        <div class="section-row">
+          <h2>Pending Approvals Queue</h2>
+          <a class="btn btn-sm btn-outline" href="acceptance-workflow.html">View Queue <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="card" style="padding:0">
+          <div id="approvalQueue">
+            <div class="workflow-queue-row" style="color:var(--gray-500)"><span>Loading approvals…</span><span></span><span></span></div>
+          </div>
+        </div>
+
+        <!-- Ticket sync status -->
+        <div class="section-row">
+          <h2>Jira / ServiceNow Sync Status</h2>
+        </div>
+        <div class="widget-row">
+          <div class="widget-stat">
+            <div class="stat-icon info"><i class="fab fa-jira"></i></div>
+            <div><div class="stat-value" id="jiraSyncStatus">—</div><div class="stat-label">Jira sync</div></div>
+          </div>
+          <div class="widget-stat">
+            <div class="stat-icon info"><i class="fas fa-ticket"></i></div>
+            <div><div class="stat-value" id="snowSyncStatus">—</div><div class="stat-label">ServiceNow sync</div></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/domain-page.js"></script>
+  <script src="js/module-tools.js"></script>
+  <script>
+    if (typeof checkAuth === 'function') checkAuth();
+    document.addEventListener('DOMContentLoaded', async function () {
+      if (typeof renderSidebar === 'function') renderSidebar('domain-workflow');
+
+      loadModuleTools(['ITSM'], 'moduleTools', {
+        title: 'Available ticketing integrations',
+        subtitle: 'Connect your ITSM platform (ManageEngine SDP, Jira, ServiceNow) for bidirectional ticket sync.',
+        manageHref: 'tool-catalog.html?category=ITSM'
+      });
+
+      var apiFetch = window.URIP && window.URIP.apiFetch;
+      if (!apiFetch) return;
+
+      // Auto-remediation executions — try /api/auto-remediation/runs (best effort).
+      try {
+        var runs = await apiFetch('/auto-remediation/runs?per_page=20', { silent: true });
+        var body = document.getElementById('autoRemBody');
+        body.textContent = '';
+        var items = (runs && (runs.items || runs.runs)) || [];
+        if (!items.length) {
+          var tr = document.createElement('tr');
+          var td = document.createElement('td');
+          td.colSpan = 5;
+          td.style.padding = '1.5rem';
+          td.style.textAlign = 'center';
+          td.style.color = '#94A3B8';
+          td.textContent = 'No auto-remediation runs yet — configure rules in Settings.';
+          tr.appendChild(td);
+          body.appendChild(tr);
+        } else {
+          items.forEach(function (r) {
+            var tr = document.createElement('tr');
+            ['run_id', 'action', 'asset', 'result', 'created_at'].forEach(function (k) {
+              var td = document.createElement('td');
+              var v = r[k];
+              if (k === 'created_at' && v) v = DomainPage.formatRelative(v);
+              if (k === 'result') {
+                var pill = document.createElement('span');
+                pill.className = 'badge badge-' + ((v || 'info').toLowerCase() === 'success' ? 'low' : 'high');
+                pill.textContent = v || '—';
+                td.appendChild(pill);
+              } else {
+                td.textContent = v || '—';
+              }
+              tr.appendChild(td);
+            });
+            body.appendChild(tr);
+          });
+        }
+      } catch (e) {
+        var body2 = document.getElementById('autoRemBody');
+        body2.textContent = '';
+        var tr2 = document.createElement('tr');
+        var td2 = document.createElement('td');
+        td2.colSpan = 5;
+        td2.style.padding = '1.5rem';
+        td2.style.textAlign = 'center';
+        td2.style.color = '#94A3B8';
+        td2.textContent = 'Auto-remediation endpoint not available — feature roadmap.';
+        tr2.appendChild(td2);
+        body2.appendChild(tr2);
+      }
+
+      // Pending approvals
+      try {
+        var ap = await apiFetch('/acceptance?status=pending&per_page=10', { silent: true });
+        var queue = document.getElementById('approvalQueue');
+        queue.textContent = '';
+        var items = (ap && ap.items) || [];
+        document.getElementById('kpiPendingApproval').textContent = String(ap && ap.total != null ? ap.total : items.length);
+        if (!items.length) {
+          var row = document.createElement('div');
+          row.className = 'workflow-queue-row';
+          var lab = document.createElement('span');
+          lab.style.color = 'var(--gray-500)';
+          lab.textContent = 'No approvals pending — all caught up.';
+          row.appendChild(lab);
+          row.appendChild(document.createElement('span'));
+          row.appendChild(document.createElement('span'));
+          queue.appendChild(row);
+        } else {
+          items.forEach(function (a) {
+            var row = document.createElement('div');
+            row.className = 'workflow-queue-row';
+            var name = document.createElement('span');
+            name.textContent = a.finding || a.risk_id || ('Approval #' + (a.id || ''));
+            row.appendChild(name);
+            var when = document.createElement('span');
+            when.className = 'when';
+            when.textContent = a.created_at ? DomainPage.formatRelative(a.created_at) : '—';
+            row.appendChild(when);
+            var btn = document.createElement('a');
+            btn.className = 'btn btn-sm btn-primary';
+            btn.href = 'acceptance-workflow.html#' + (a.id || '');
+            btn.textContent = 'Review';
+            row.appendChild(btn);
+            queue.appendChild(row);
+          });
+        }
+      } catch (e) {
+        document.getElementById('kpiPendingApproval').textContent = '—';
+        var queue2 = document.getElementById('approvalQueue');
+        queue2.textContent = '';
+        var row3 = document.createElement('div');
+        row3.className = 'workflow-queue-row';
+        var lab2 = document.createElement('span');
+        lab2.style.color = 'var(--gray-500)';
+        lab2.textContent = 'Acceptance queue endpoint not reachable.';
+        row3.appendChild(lab2);
+        row3.appendChild(document.createElement('span'));
+        row3.appendChild(document.createElement('span'));
+        queue2.appendChild(row3);
+      }
+
+      // Risks remediated this week (closed in last 7 days)
+      try {
+        var closed = await apiFetch('/risks?status=closed&per_page=100', { silent: true });
+        var items = (closed && closed.items) || [];
+        var weekAgo = Date.now() - 7 * 86400 * 1000;
+        var n = items.filter(function (x) {
+          var t = x.updated_at || x.closed_at;
+          if (!t) return false;
+          return new Date(t).getTime() >= weekAgo;
+        }).length;
+        document.getElementById('kpiRemediated').textContent = String(n);
+      } catch (e) {
+        document.getElementById('kpiRemediated').textContent = '—';
+      }
+
+      // Ticket sync status — try /api/integrations/jira/health and /api/integrations/servicenow/health
+      var jiraEl = document.getElementById('jiraSyncStatus');
+      var snowEl = document.getElementById('snowSyncStatus');
+      try {
+        var jh = await apiFetch('/integrations/jira/health', { silent: true });
+        jiraEl.textContent = (jh && jh.status) ? jh.status : 'Connected';
+      } catch (e) { jiraEl.textContent = 'Not configured'; }
+      try {
+        var sh = await apiFetch('/integrations/servicenow/health', { silent: true });
+        snowEl.textContent = (sh && sh.status) ? sh.status : 'Connected';
+      } catch (e) { snowEl.textContent = 'Not configured'; }
+
+      // Tickets synced + rollbacks (placeholders)
+      document.getElementById('kpiTicketsSynced').textContent = '—';
+      document.getElementById('kpiRollbacks').textContent = '—';
+    });
+  </script>
+</body>
+</html>

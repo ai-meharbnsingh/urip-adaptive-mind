@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:25:36.101748",
+  "tickets": [
+    {
+      "id": "ADV-OPS-3420",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "Done",
+      "assignee": "user-892@adverb.in",
+      "created": "2026-03-29T13:25:36.101751",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-6978",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "In Progress",
+      "assignee": "user-821@adverb.in",
+      "created": "2026-02-21T13:25:36.101754",
+      "resolved": "2026-04-21T13:25:36.101756"
+    },
+    {
+      "id": "ADV-OPS-5944",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-261@adverb.in",
+      "created": "2026-02-16T13:25:36.101759",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-8982",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-824@adverb.in",
+      "created": "2026-01-31T13:25:36.101762",
+      "resolved": "2026-04-17T13:25:36.101764"
+    },
+    {
+      "id": "ADV-OPS-6846",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-487@adverb.in",
+      "created": "2026-03-04T13:25:36.101767",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-5825",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-846@adverb.in",
+      "created": "2026-04-12T13:25:36.101769",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-7415",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "Done",
+      "assignee": "user-286@adverb.in",
+      "created": "2026-03-03T13:25:36.101772",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-4619",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "Done",
+      "assignee": "user-608@adverb.in",
+      "created": "2026-03-25T13:25:36.101775",
+      "resolved": "2026-04-25T13:25:36.101777"
+    }
+  ]
+}

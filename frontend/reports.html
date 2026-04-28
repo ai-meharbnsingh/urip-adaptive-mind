@@ -6,34 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reports | URIP - Unified Risk Intelligence Platform</title>
 
-  <!-- Google Fonts - Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Font Awesome 6 -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-  <!-- Custom CSS -->
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/sidebar.css">
-  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/app.css">
 </head>
-<body>
-  <div class="app-layout">
-    <!-- Sidebar Mount Point -->
-    <div id="sidebar-mount"></div>
-
-    <!-- Main Content -->
-    <main class="main-content">
-      <!-- Top Bar (populated by sidebar.js) -->
-      <header class="topbar"></header>
-
-      <!-- Content Area -->
-      <div class="content-area">
+<body class="urip-app">
+  <div id="app-shell" data-page="reports">
         <!-- Page Header -->
         <div class="page-header">
           <div>
@@ -203,17 +188,16 @@
             </table>
           </div>
         </div>
-      </div>
-    </main>
   </div>
 
   <!-- Scripts -->
+  <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/sidebar.js"></script>
+  <script src="js/shell.js"></script>
   <script src="js/charts.js"></script>
   <script>
-    checkAuth();
+    if (typeof checkAuth === 'function') checkAuth();
 
     // Generate report function
     async function generateReport(type) {
@@ -253,7 +237,11 @@
     }
 
     document.addEventListener('DOMContentLoaded', async function() {
-      renderSidebar('reports');
+      window.URIP.shell.mount({
+        page: 'reports',
+        title: 'Reports',
+        breadcrumb: 'Operations / Reports'
+      });
 
       // Fetch CERT-In advisories
       try {

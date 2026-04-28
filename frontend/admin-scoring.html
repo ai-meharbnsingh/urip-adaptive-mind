@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scoring Weights | URIP - Unified Risk Intelligence Platform</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="urip-app">
+  <div id="app-shell" data-page="admin-scoring">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Scoring Weights</h1>
+            <p class="page-subtitle">Tune the risk-scoring formula for this tenant</p>
+          </div>
+          <div class="flex gap-3">
+            <button class="btn btn-outline" id="btnReload">
+              <i class="fas fa-sync-alt"></i> Reload
+            </button>
+            <button class="btn btn-secondary" id="btnReset">
+              <i class="fas fa-undo"></i> Reset to defaults
+            </button>
+          </div>
+        </div>
+
+        <div id="scoringLoading" class="empty-state">
+          <div class="empty-state-icon"><i class="fas fa-spinner fa-spin"></i></div>
+          <div class="empty-state-title">Loading scoring configuration...</div>
+        </div>
+
+        <div id="scoringError" class="alert alert-danger" style="display:none">
+          <i class="fas fa-exclamation-circle"></i>
+          <span id="scoringErrorMsg">Failed to load scoring configuration.</span>
+        </div>
+
+        <div id="scoringContent" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <strong>Current Formula</strong>
+                <span class="badge badge-info" id="formulaVersion" style="margin-left:0.5rem"></span>
+              </div>
+            </div>
+            <div class="card-body">
+              <code id="formulaText" class="formula-text"></code>
+              <div class="formula-preview" id="formulaPreview"></div>
+            </div>
+          </div>
+
+          <form id="scoringForm" class="card" style="margin-top:1.5rem">
+            <div class="card-header">
+              <strong>Weights (0–10 range)</strong>
+            </div>
+            <div class="card-body">
+              <div class="weights-grid">
+                <div class="form-group">
+                  <label class="form-label" for="w_cvss">CVSS weight</label>
+                  <input class="form-input" id="w_cvss" name="cvss" type="number" min="0" max="10" step="0.05" required>
+                  <div class="form-hint">Multiplier applied to the raw CVSS score.</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="w_epss">EPSS weight</label>
+                  <input class="form-input" id="w_epss" name="epss" type="number" min="0" max="10" step="0.05" required>
+                  <div class="form-hint">Scales the EPSS exploit-probability contribution.</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="w_kev">KEV bonus</label>
+                  <input class="form-input" id="w_kev" name="kev_bonus" type="number" min="0" max="10" step="0.05" required>
+                  <div class="form-hint">Flat bonus when CVE is in CISA KEV.</div>
+                </div>
+              </div>
+
+              <h3 class="section-subtitle">Asset-tier bonuses</h3>
+              <div class="weights-grid">
+                <div class="form-group">
+                  <label class="form-label" for="t_1">Tier 1 (crown-jewel)</label>
+                  <input class="form-input" id="t_1" name="tier_1" type="number" min="-2" max="10" step="0.05" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="t_2">Tier 2 (critical)</label>
+                  <input class="form-input" id="t_2" name="tier_2" type="number" min="-2" max="10" step="0.05" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="t_3">Tier 3 (standard)</label>
+                  <input class="form-input" id="t_3" name="tier_3" type="number" min="-2" max="10" step="0.05" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="t_4">Tier 4 (sandbox)</label>
+                  <input class="form-input" id="t_4" name="tier_4" type="number" min="-2" max="10" step="0.05" required>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer flex justify-between items-center">
+              <span class="form-hint" id="dirtyIndicator"></span>
+              <div class="flex gap-2">
+                <button class="btn btn-outline" type="button" id="btnCancel">Cancel</button>
+                <button class="btn btn-primary" type="submit" id="btnSave">
+                  <i class="fas fa-save"></i> Save changes
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <div class="card" style="margin-top:1.5rem">
+            <div class="card-header">
+              <strong>Read-only reference</strong>
+            </div>
+            <div class="card-body">
+              <div class="ref-grid">
+                <div>
+                  <div class="ref-label">EPSS defaults (when no CVE)</div>
+                  <div class="ref-value" id="epssDefaults"></div>
+                </div>
+                <div>
+                  <div class="ref-label">Exploit thresholds</div>
+                  <div class="ref-value" id="exploitThresholds"></div>
+                </div>
+                <div>
+                  <div class="ref-label">SLA hours</div>
+                  <div class="ref-value" id="slaHours"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    if (typeof checkAuth === 'function') checkAuth();
+    document.addEventListener('DOMContentLoaded', function () {
+      window.URIP.shell.mount({
+        page: 'admin-scoring',
+        title: 'Scoring Weights',
+        breadcrumb: 'Administration / Scoring Weights'
+      });
+    });
+  </script>
+  <script src="js/admin-scoring.js"></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VAPT Vendor Portal | URIP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/vapt-portal.css" />
+</head>
+<body>
+  <div class="vapt-shell">
+    <header class="vapt-topbar">
+      <div class="vapt-brand">
+        <span class="vapt-brand-icon"><i class="fas fa-bug"></i></span>
+        <span>URIP — VAPT Vendor Portal</span>
+      </div>
+      <div class="vapt-brand-tag">Submit findings · Track re-tests</div>
+    </header>
+
+    <main class="vapt-login-wrap">
+      <section class="vapt-login-card">
+        <h1>Activate your access</h1>
+        <p class="vapt-help">
+          Paste the invitation token your customer's CISO sent you. Tokens are
+          single-use and time-bound. After activation you receive a vendor JWT
+          and land on your submissions dashboard.
+        </p>
+
+        <form id="acceptForm" class="vapt-form" autocomplete="off">
+          <label for="token">Invitation token</label>
+          <textarea id="token" name="token" rows="3"
+                    placeholder="Paste your invitation token here"
+                    required spellcheck="false"></textarea>
+
+          <button id="submitBtn" type="submit" class="vapt-btn vapt-btn-primary">
+            <i class="fas fa-key"></i>
+            <span>Activate &amp; sign in</span>
+          </button>
+        </form>
+
+        <div id="errorBanner" class="vapt-alert vapt-alert-danger" style="display:none"></div>
+        <div id="successBanner" class="vapt-alert vapt-alert-success" style="display:none"></div>
+
+        <details class="vapt-faq">
+          <summary>What is the VAPT Vendor Portal?</summary>
+          <p>
+            URIP customers invite their pentest / VAPT vendors here so findings
+            land directly in their unified risk register. Every finding you
+            submit is automatically enriched with EPSS exploit probability,
+            CISA KEV status and remediation steps before the customer's IT team
+            sees it.
+          </p>
+        </details>
+        <details class="vapt-faq">
+          <summary>Why a single-use token?</summary>
+          <p>
+            Invitation tokens act as your credential — single-use makes a leaked
+            link useless. After activation, your session is JWT-based.
+            If you switch devices, ask the customer's CISO for a fresh token.
+          </p>
+        </details>
+      </section>
+    </main>
+
+    <footer class="vapt-footer">
+      <span>URIP · Unified Risk Intelligence Platform</span>
+    </footer>
+  </div>
+
+  <script src="js/vapt-portal-api.js"></script>
+  <script src="js/vapt-portal.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      // Auto-fill from ?token= query param so an invitation link is one-click.
+      var params = new URLSearchParams(window.location.search);
+      var t = params.get('token');
+      if (t) document.getElementById('token').value = t;
+
+      var form = document.getElementById('acceptForm');
+      var errBanner = document.getElementById('errorBanner');
+      var okBanner = document.getElementById('successBanner');
+      var btn = document.getElementById('submitBtn');
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        errBanner.style.display = 'none';
+        okBanner.style.display = 'none';
+        btn.disabled = true;
+
+        var token = document.getElementById('token').value.trim();
+        if (!token) {
+          errBanner.textContent = 'Token is required.';
+          errBanner.style.display = 'block';
+          btn.disabled = false;
+          return;
+        }
+
+        VaptPortalApi.acceptInvitation(token)
+          .then(function (resp) {
+            VaptPortal.saveSession(resp);
+            okBanner.textContent = 'Activated. Redirecting…';
+            okBanner.style.display = 'block';
+            setTimeout(function () {
+              window.location.href = 'vapt-portal-dashboard.html';
+            }, 600);
+          })
+          .catch(function (err) {
+            errBanner.textContent = err.message || 'Activation failed.';
+            errBanner.style.display = 'block';
+            btn.disabled = false;
+          });
+      });
+    })();
+  </script>
+</body>
+</html>

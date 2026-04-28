@@ -8,11 +8,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.database import get_db
 from backend.middleware.auth import get_current_user
+from backend.middleware.module_gate import require_module
+from backend.middleware.tenant import TenantContext
 from backend.models.risk import Risk
 from backend.models.user import User
-from backend.schemas.report import ReportRequest
+from backend.schemas.report import CertInAdvisory, ReportRequest, ScheduledReport
+from backend.services.tenant_query import apply_tenant_filter
 
-router = APIRouter()
+# CRIT-007 — reporting is a CORE platform feature.
+router = APIRouter(dependencies=[Depends(require_module("CORE"))])
 
 
 @router.post("/generate")
@@ -21,8 +25,9 @@ async def generate_report(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    # Query risks based on report type
+    # Tenant-scoped report — only the caller's tenant data ever leaves the box.
     query = select(Risk).where(Risk.status.in_(["open", "in_progress"]))
+    query = apply_tenant_filter(query, Risk)
 
     if data.report_type == "board":
         # Board report excludes accepted risks (already filtered by status)
@@ -145,57 +150,55 @@ async def _generate_pdf(risks, report_type: str) -> StreamingResponse:
     )
 
 
-@router.get("/certin")
+@router.get("/certin", response_model=list[CertInAdvisory])
 async def get_certin_advisories(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    # Return CERT-In related risks as advisories
-    result = await db.execute(
-        select(Risk)
-        .where(Risk.source == "cert_in")
-        .order_by(Risk.created_at.desc())
-        .limit(20)
-    )
+    # Tenant-scoped — only return CERT-In rows belonging to the caller's tenant.
+    query = select(Risk).where(Risk.source == "cert_in")
+    query = apply_tenant_filter(query, Risk)
+    query = query.order_by(Risk.created_at.desc()).limit(20)
+    result = await db.execute(query)
     risks = result.scalars().all()
     return [
-        {
-            "id": str(r.id),
-            "advisory_id": r.cve_id or f"CIVN-2026-{i+1:03d}",
-            "title": r.finding,
-            "published_date": r.created_at.strftime("%b %d, %Y"),
-            "severity": r.severity,
-            "response_status": r.status,
-        }
+        CertInAdvisory(
+            id=str(r.id),
+            advisory_id=r.cve_id or f"CIVN-2026-{i+1:03d}",
+            title=r.finding,
+            published_date=r.created_at.strftime("%b %d, %Y"),
+            severity=r.severity,
+            response_status=r.status,
+        )
         for i, r in enumerate(risks)
     ]
 
 
-@router.get("/scheduled")
+@router.get("/scheduled", response_model=list[ScheduledReport])
 async def get_scheduled_reports(
     current_user: User = Depends(get_current_user),
 ):
     # Static schedule for demo — would be a table in production
     return [
-        {
-            "name": "Weekly Security Summary",
-            "frequency": "Every Monday",
-            "recipients": ["CISO", "IT Lead"],
-            "next_run": "2026-04-14 09:00 AM",
-            "status": "active",
-        },
-        {
-            "name": "Monthly Board Report",
-            "frequency": "1st of Month",
-            "recipients": ["Board Members"],
-            "next_run": "2026-05-01 08:00 AM",
-            "status": "active",
-        },
-        {
-            "name": "CERT-In Response Report",
-            "frequency": "Every Friday",
-            "recipients": ["CISO", "Compliance"],
-            "next_run": "2026-04-11 05:00 PM",
-            "status": "active",
-        },
+        ScheduledReport(
+            name="Weekly Security Summary",
+            frequency="Every Monday",
+            recipients=["CISO", "IT Lead"],
+            next_run="2026-04-14 09:00 AM",
+            status="active",
+        ),
+        ScheduledReport(
+            name="Monthly Board Report",
+            frequency="1st of Month",
+            recipients=["Board Members"],
+            next_run="2026-05-01 08:00 AM",
+            status="active",
+        ),
+        ScheduledReport(
+            name="CERT-In Response Report",
+            frequency="Every Friday",
+            recipients=["CISO", "Compliance"],
+            next_run="2026-04-11 05:00 PM",
+            status="active",
+        ),
     ]

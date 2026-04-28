@@ -15,6 +15,23 @@ services:
       timeout: 5s
       retries: 5
 
+  # ──────────────────────────────────────────────────────────────────────
+  # Redis — broker + result backend for Celery (connector pulls, scoring
+  # recompute, control checks). The URIP backend reads REDIS_URL at boot.
+  # ──────────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - urip_redis_data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   app:
     build: .
     ports:
@@ -22,12 +39,71 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
       - ./frontend:/app/frontend
       - ./backend:/app/backend
     env_file: .env
     environment:
-      DATABASE_URL: postgresql+asyncpg://urip:urip_dev@db:5433/urip
+      DATABASE_URL: postgresql+asyncpg://urip:urip_dev@db:5432/urip
+      REDIS_URL: redis://redis:6379/0
+
+  # ──────────────────────────────────────────────────────────────────────
+  # Celery worker — runs the actual task bodies (connector_pull_task,
+  # scoring_recompute_task, control_check_task). Scale with --scale
+  # celery_worker=N for additional throughput.
+  # ──────────────────────────────────────────────────────────────────────
+  celery_worker:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app/backend
+      - ./connectors:/app/connectors
+      - ./compliance:/app/compliance
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://urip:urip_dev@db:5432/urip
+      REDIS_URL: redis://redis:6379/0
+    command:
+      - celery
+      - -A
+      - backend.services.celery_app
+      - worker
+      - --loglevel=info
+      - --concurrency=4
+
+  # ──────────────────────────────────────────────────────────────────────
+  # Celery beat — schedules the three periodic jobs:
+  #   connector-pull-every-15min     → fan-out to one task per (tenant, connector)
+  #   scoring-recompute-hourly       → RiskScoreSummary refresh
+  #   control-check-every-6h         → compliance ControlEngine sweep
+  # Beat is a SINGLETON — only one instance must run at a time, otherwise
+  # jobs would be queued multiple times. Hence no replicas / scale.
+  # ──────────────────────────────────────────────────────────────────────
+  celery_beat:
+    build: .
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app/backend
+      - ./connectors:/app/connectors
+      - ./compliance:/app/compliance
+    env_file: .env
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    command:
+      - celery
+      - -A
+      - backend.services.celery_app
+      - beat
+      - --loglevel=info
 
 volumes:
   urip_pgdata:
+  urip_redis_data:

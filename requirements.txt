@@ -7,15 +7,28 @@ uvicorn[standard]==0.34.0
 python-multipart==0.0.18
 
 # Database
-sqlalchemy[asyncio]==2.0.36
+# NEW-3 (CritFix-D) — bumped from 2.0.36 to >=2.0.40 for Python 3.14
+# compatibility.  `Mapped[T | None]` with T = uuid.UUID raises TypeError on
+# 3.14 + 2.0.36 (PEP 695 / typing module changes).  Supported Python: 3.11,
+# 3.12, 3.13.  Python 3.14 is supported only with SQLAlchemy >= 2.0.40.
+# Coordination: CritFix-A is touching `python-jose -> PyJWT` lines below.
+# Independent line edits — no conflict expected.
+sqlalchemy[asyncio]>=2.0.40,<2.1
+# slowapi — HIGH-009 rate limiting that survives reverse proxies (CritFix-D).
+slowapi>=0.1.9,<0.2
 asyncpg==0.30.0
 alembic==1.14.1
 
 # Auth
-python-jose[cryptography]==3.3.0
+# CRIT-005 — replaced python-jose 3.3.0 (CVE-2024-33663, CVE-2024-33664,
+# library unmaintained) with PyJWT 2.9+ (cryptography backend, actively
+# maintained, identical HS256 API surface).
+PyJWT>=2.9,<3
 passlib[bcrypt]==1.7.4
 
 # Encryption
+# Used by backend/routers/agent_ingest.py (HKDF key derivation) and the
+# CRIT-005 PyJWT migration. Version pinned to track upstream security fixes.
 cryptography==44.0.0
 
 # Config
@@ -25,11 +38,30 @@ pydantic-settings==2.7.1
 reportlab==4.2.5
 openpyxl==3.1.5
 
+# Cloud SDKs
+# boto3 — required by:
+#   - connectors/aws_cspm/api_client.py (STS/Config/SecurityHub/GuardDuty/Access Analyzer)
+#   - backend/services/trust_center_streaming.py (s3:// URI streaming)
+# Without it the AWS CSPM connector and Trust Center s3 streaming raise at import.
+boto3>=1.35.0,<2
+
+# Async task queue
+# Celery + Redis power the backend/services/celery_app.py worker that runs:
+#   - connector_pull_task (every 15 min)
+#   - scoring_recompute_task (hourly)
+#   - control_check_task (every 6 hours)
+celery[redis]>=5.4.0,<6
+redis>=5.0.0,<6
+
 # Testing
 pytest==8.3.4
 pytest-asyncio==0.25.0
 httpx==0.28.1
 aiosqlite==0.21.0
+# respx — HTTPX mock router used by tests/test_connectors/* to assert outbound
+# vendor API calls without hitting the network (cert_in, siem, m365_collab,
+# bug_bounty, sentinelone, manageengine_mdm, zscaler, etc.).
+respx>=0.21.0,<0.24
 
 # Utilities
 python-dateutil==2.9.0

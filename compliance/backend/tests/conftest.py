@@ -5,6 +5,7 @@ Uses SQLite in-memory for all DB-touching tests so no running Postgres is requir
 The async engine is configured via a module-scoped override of get_async_session.
 """
 import os
+import tempfile
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
@@ -17,8 +18,23 @@ os.environ.setdefault("COMPLIANCE_JWT_SECRET", "test-secret-standalone")
 os.environ.setdefault("COMPLIANCE_AUTH_MODE", "STANDALONE")
 os.environ.setdefault("URIP_JWT_SECRET", "urip-shared-secret-for-test")
 
+# Use a temp dir for filesystem storage in tests — avoids polluting the project dir
+_EVIDENCE_TMPDIR = tempfile.mkdtemp(prefix="compliance_evidence_test_")
+os.environ.setdefault("EVIDENCE_STORAGE_BASE_DIR", _EVIDENCE_TMPDIR)
+
 from compliance_backend.main import app
 from compliance_backend.database import Base, get_async_session
+
+# Ensure new model tables are registered in Base.metadata by importing them explicitly
+import compliance_backend.models.control_run  # noqa: F401
+import compliance_backend.models.evidence  # noqa: F401
+import compliance_backend.models.auditor  # noqa: F401
+import compliance_backend.models.score_snapshot  # noqa: F401
+import compliance_backend.models.tenant_state  # noqa: F401  # CRIT-006 server-side state
+import compliance_backend.models.vendor  # noqa: F401
+import compliance_backend.models.compliance_audit_log  # noqa: F401  # CritFix-B NEW-1
+# Simulator-only TBD models (incidents, assets, access reviews) — promoted later
+import compliance_backend.seeders.simulators.sim_models  # noqa: F401
 
 
 # ---------------------------------------------------------------------------
@@ -57,6 +73,30 @@ async def db_session(session_factory):
     async with session_factory() as session:
         yield session
         await session.rollback()
+
+
+@pytest.fixture(autouse=True)
+def _reset_compliance_rate_limit_state():
+    """
+    HIGH-2 audit fix added a process-wide slowapi limiter. Clear its in-
+    memory storage before every test so test ordering can't cause spurious
+    429s (writes from earlier tests would otherwise fill the per-IP bucket).
+    """
+    try:
+        from compliance_backend.middleware import rate_limit as _rl
+        try:
+            _rl.limiter.limiter.storage.reset()
+        except Exception:
+            for attr in ("storage", "events", "expirations", "locks"):
+                bucket = getattr(_rl.limiter.limiter.storage, attr, None)
+                if bucket is not None and hasattr(bucket, "clear"):
+                    try:
+                        bucket.clear()
+                    except Exception:
+                        pass
+    except Exception:
+        pass
+    yield
 
 
 @pytest_asyncio.fixture()

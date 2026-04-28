@@ -46,6 +46,7 @@ from compliance_backend.database import Base  # noqa: E402
 
 # Import all model modules so their tables are registered on Base.metadata
 import compliance_backend.models.framework  # noqa: F401
+import compliance_backend.models.policy  # noqa: F401
 
 target_metadata = Base.metadata
 

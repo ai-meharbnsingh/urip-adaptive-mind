@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cyber Risk Quantification | URIP</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="urip-app">
+  <div id="app-shell" data-page="risk-quantification">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Cyber Risk Quantification</h1>
+        <p class="page-subtitle">
+          FAIR (Factor Analysis of Information Risk) — translate composite risk into Annual Loss Exposure ($).
+          <em style="color:var(--u-fg-3);font-size:.85em;">
+            MVP scaffold — point-estimate FAIR. Monte Carlo over LEF/LM distributions is roadmap.
+          </em>
+        </p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-outline" id="btnRefresh"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+    </div>
+
+    <div class="action-row">
+      <div class="action-tile" style="flex:2">
+        <div class="action-tile-icon icon-fail"><i class="fas fa-dollar-sign"></i></div>
+        <div class="action-tile-content">
+          <span class="action-tile-value" id="totalAle">--</span>
+          <span class="action-tile-label">Total Annual Loss Exposure (USD)</span>
+        </div>
+      </div>
+      <div class="action-tile">
+        <div class="action-tile-icon icon-info"><i class="fas fa-list-ol"></i></div>
+        <div class="action-tile-content">
+          <span class="action-tile-value" id="riskCount">--</span>
+          <span class="action-tile-label">Quantified Risks</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title"><i class="fas fa-chart-line" style="color:var(--u-cyan);margin-right:.5rem"></i>Top 10 Risks by ALE</span>
+      </div>
+      <div class="card-body">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Risk ID</th><th>Label</th><th>LEF (events / yr)</th><th>LM ($)</th><th>ALE ($)</th><th>Computed</th>
+            </tr>
+          </thead>
+          <tbody id="risksBody"><tr><td colspan="6" class="text-center">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem">
+      <div class="card-header">
+        <span class="card-title"><i class="fas fa-cogs" style="color:var(--u-cyan);margin-right:.5rem"></i>FAIR Assumptions</span>
+      </div>
+      <div class="card-body" id="assumptionsBody">
+        <p class="text-gray">Loading...</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      window.URIP.shell.mount({
+        page: 'risk-quantification',
+        title: 'Cyber Risk Quantification',
+        breadcrumb: 'Strategic Modules / Risk Quantification'
+      });
+    });
+  </script>
+  <script>
+    function fmtUsd(v) {
+      try { return '$' + Number(v).toLocaleString('en-US', { maximumFractionDigits: 2 }); }
+      catch (e) { return '$' + v; }
+    }
+    (async function() {
+      const body = document.getElementById('risksBody');
+      if (!body) return;
+      try {
+        const resp = await window.URIP.apiFetch('/risk-quantification/aggregate?top_n=10', { silent: true });
+        document.getElementById('totalAle').textContent = fmtUsd(resp.total_ale_usd);
+        document.getElementById('riskCount').textContent = resp.risk_count;
+        const items = resp.top_risks || [];
+        body.innerHTML = items.length === 0
+          ? '<tr><td colspan="6" class="text-center">No FAIR assessments yet.</td></tr>'
+          : items.map(r => `
+              <tr>
+                <td>${r.risk_id}</td>
+                <td>${r.risk_label}</td>
+                <td>${r.loss_event_frequency}</td>
+                <td>${fmtUsd(r.loss_magnitude_usd)}</td>
+                <td><strong>${fmtUsd(r.annual_loss_exposure_usd)}</strong></td>
+                <td>${new Date(r.computed_at).toLocaleString()}</td>
+              </tr>
+            `).join('');
+      } catch (e) {
+        body.innerHTML = `<tr><td colspan="6" class="text-center text-error">Failed: ${e.message}</td></tr>`;
+      }
+
+      try {
+        const a = await window.URIP.apiFetch('/risk-quantification/assumptions', { silent: true });
+        document.getElementById('assumptionsBody').innerHTML = `
+          <ul style="line-height:1.8">
+            <li><strong>Data record value:</strong> ${fmtUsd(a.data_record_value_usd)}</li>
+            <li><strong>Breach response cost:</strong> ${fmtUsd(a.breach_response_cost_usd)}</li>
+            <li><strong>Regulatory fine probability:</strong> ${(a.regulatory_fine_probability * 100).toFixed(1)}%</li>
+            <li><strong>Regulatory fine amount:</strong> ${fmtUsd(a.regulatory_fine_amount_usd)}</li>
+            <li><strong>Brand damage estimate:</strong> ${fmtUsd(a.brand_damage_estimate_usd)}</li>
+          </ul>
+        `;
+      } catch (e) {
+        document.getElementById('assumptionsBody').textContent = 'Failed to load assumptions: ' + e.message;
+      }
+    })();
+  </script>
+</body>
+</html>

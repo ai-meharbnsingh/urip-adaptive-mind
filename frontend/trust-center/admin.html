@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Trust Center — Admin</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+         max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+  th, td { padding: 8px 12px; border-bottom: 1px solid #e5e7eb; text-align: left; }
+  th { background: #f3f4f6; font-size: 13px; }
+  button { background: #1f2937; color: #fff; border: 0; padding: 6px 12px;
+           border-radius: 4px; cursor: pointer; font-size: 12px; }
+  .status { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; }
+  .status.pending { background: #fef3c7; color: #92400e; }
+  .status.approved { background: #d1fae5; color: #047857; }
+  .status.denied { background: #fee2e2; color: #b91c1c; }
+  .form-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 16px; }
+  .form-row label { display: flex; flex-direction: column; font-size: 12px; }
+  input, select { padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; }
+  .token-banner { background: #fef3c7; padding: 12px; border-radius: 4px; margin: 12px 0; word-break: break-all; }
+</style>
+</head>
+<body>
+<h1>Trust Center — Admin</h1>
+
+<section>
+  <h2>Publish a document</h2>
+  <form id="pub-form" class="form-row">
+    <label>Title<input name="title" required/></label>
+    <label>Type
+      <select name="doc_type">
+        <option>SOC2_REPORT</option>
+        <option>ISO_CERT</option>
+        <option>PEN_TEST_SUMMARY</option>
+        <option>SECURITY_QUESTIONNAIRE_PREFILLED</option>
+        <option>POLICY</option>
+        <option>OTHER</option>
+      </select>
+    </label>
+    <label>Storage URI<input name="file_storage_uri" placeholder="s3://…" required/></label>
+    <label><input type="checkbox" name="requires_nda" checked/> Requires NDA</label>
+    <button type="submit">Publish</button>
+  </form>
+  <div id="banner"></div>
+</section>
+
+<section>
+  <h2>Documents</h2>
+  <table id="docs-table">
+    <thead><tr><th>Title</th><th>Type</th><th>Published</th><th>NDA</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Access requests</h2>
+  <table id="reqs-table">
+    <thead><tr><th>Email</th><th>Company</th><th>Doc</th><th>Status</th><th>NDA</th><th>Actions</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<script>
+function authHeaders() {
+  return { "Authorization": `Bearer ${localStorage.getItem("token") || ""}`, "Content-Type": "application/json" };
+}
+
+async function loadDocs() {
+  const r = await fetch("/api/trust-center/documents", { headers: authHeaders() });
+  if (!r.ok) return;
+  const docs = await r.json();
+  document.querySelector("#docs-table tbody").innerHTML = docs.map(d =>
+    `<tr><td>${d.title}</td><td>${d.doc_type}</td><td>${d.is_published?'Yes':'No'}</td><td>${d.requires_nda?'Yes':'No'}</td></tr>`
+  ).join("");
+}
+
+async function loadRequests() {
+  const r = await fetch("/api/trust-center/access-requests", { headers: authHeaders() });
+  if (!r.ok) return;
+  const reqs = await r.json();
+  document.querySelector("#reqs-table tbody").innerHTML = reqs.map(req => `
+    <tr>
+      <td>${req.requester_email}</td>
+      <td>${req.requester_company || ""}</td>
+      <td>${req.requesting_doc_id.slice(0,8)}</td>
+      <td><span class="status ${req.status}">${req.status}</span></td>
+      <td>${req.nda_signed_at ? "Signed" : "—"}</td>
+      <td>${req.status === "pending" ? `<button onclick="approve('${req.id}')">Approve</button>
+                                       <button onclick="deny('${req.id}')">Deny</button>` : ""}</td>
+    </tr>
+  `).join("");
+}
+
+async function approve(reqId) {
+  const r = await fetch(`/api/trust-center/access-requests/${reqId}/approve`, { method: "POST", headers: authHeaders() });
+  const out = await r.json();
+  if (r.ok) {
+    document.getElementById("banner").innerHTML =
+      `<div class="token-banner"><strong>Access token (give to buyer):</strong><br/>${out.access_token}</div>`;
+    loadRequests();
+  } else {
+    alert(out.detail);
+  }
+}
+
+async function deny(reqId) {
+  await fetch(`/api/trust-center/access-requests/${reqId}/deny`, { method: "POST", headers: authHeaders() });
+  loadRequests();
+}
+
+document.getElementById("pub-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.target).entries());
+  data.requires_nda = e.target.requires_nda.checked;
+  const r = await fetch("/api/trust-center/documents", {
+    method: "POST", headers: authHeaders(), body: JSON.stringify(data),
+  });
+  if (r.ok) loadDocs();
+  else alert((await r.json()).detail);
+});
+
+loadDocs();
+loadRequests();
+</script>
+</body>
+</html>

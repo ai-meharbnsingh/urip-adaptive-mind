@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:25:36.351070",
+  "tickets": [
+    {
+      "id": "ADV-OPS-1590",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-460@adverb.in",
+      "created": "2026-03-30T13:25:36.351074",
+      "resolved": "2026-04-17T13:25:36.351076"
+    },
+    {
+      "id": "ADV-OPS-5125",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-712@adverb.in",
+      "created": "2026-03-03T13:25:36.351079",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-2792",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "Done",
+      "assignee": "user-276@adverb.in",
+      "created": "2026-03-21T13:25:36.351082",
+      "resolved": "2026-04-19T13:25:36.351084"
+    },
+    {
+      "id": "ADV-OPS-7353",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-325@adverb.in",
+      "created": "2026-01-31T13:25:36.351087",
+      "resolved": "2026-04-24T13:25:36.351089"
+    },
+    {
+      "id": "ADV-OPS-1351",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "In Progress",
+      "assignee": "user-253@adverb.in",
+      "created": "2026-03-25T13:25:36.351091",
+      "resolved": "2026-04-24T13:25:36.351093"
+    },
+    {
+      "id": "ADV-OPS-7174",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "In Progress",
+      "assignee": "user-705@adverb.in",
+      "created": "2026-02-23T13:25:36.351096",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-4151",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-808@adverb.in",
+      "created": "2026-02-02T13:25:36.351101",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-4315",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "In Progress",
+      "assignee": "user-409@adverb.in",
+      "created": "2026-02-15T13:25:36.351103",
+      "resolved": null
+    }
+  ]
+}

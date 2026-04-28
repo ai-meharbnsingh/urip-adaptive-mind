@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Endpoint Security | URIP - Unified Risk Intelligence Platform</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!--
+    Wave A note: when app.css/shell.js land they will replace these per-page imports.
+    Until then, these are the live design system files (main.css + sidebar.css + dashboard.css).
+  -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/domain-page.css">
+  <link rel="stylesheet" href="css/module-tools.css">
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+
+    <main class="main-content">
+      <header class="topbar"></header>
+
+      <div class="content-area">
+        <!-- Page header -->
+        <div class="page-header">
+          <div>
+            <h1 class="page-title"><i class="fas fa-shield-halved" style="color:var(--teal-accent);margin-right:.5rem"></i>Endpoint Security</h1>
+            <p class="page-subtitle">EDR/XDR/UEM coverage across SentinelOne, CrowdStrike Falcon, and ManageEngine Endpoint Central.</p>
+          </div>
+          <div class="flex gap-2">
+            <a class="btn btn-outline" id="btnManageConnectors" href="tool-catalog.html?category=EDR">
+              <i class="fas fa-puzzle-piece"></i> Manage Connectors
+            </a>
+            <button class="btn btn-primary" id="btnRunScan" type="button">
+              <i class="fas fa-play"></i> Run Scan
+            </button>
+          </div>
+        </div>
+
+        <!-- Available integrations for this module -->
+        <div id="moduleTools" data-modules="EDR,VM"></div>
+
+        <!-- KPI strip -->
+        <div class="domain-kpi-strip four">
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:rgba(99,102,241,0.1);color:#6366F1"><i class="fas fa-list"></i></div>
+            <div class="kpi-content">
+              <div class="kpi-value"><span id="kpiTotalRisks">--</span></div>
+              <div class="kpi-label">Total Risks</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon critical"><i class="fas fa-fire"></i></div>
+            <div class="kpi-content">
+              <div class="kpi-value" style="color:#E74C3C"><span id="kpiCriticalCount">--</span></div>
+              <div class="kpi-label">Critical</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon medium"><i class="fas fa-gauge-high"></i></div>
+            <div class="kpi-content">
+              <div class="kpi-value"><span id="kpiMeanScore">--</span></div>
+              <div class="kpi-label">Mean Score</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:rgba(39,174,96,0.1);color:#27AE60"><i class="fas fa-plug-circle-check"></i></div>
+            <div class="kpi-content">
+              <div class="kpi-value"><span id="kpiConnectorsConfigured">--</span></div>
+              <div class="kpi-label">Connectors Configured</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Special widgets -->
+        <div class="widget-row" id="endpointSpecialWidgets">
+          <div class="widget-stat">
+            <div class="stat-icon success"><i class="fas fa-laptop-code"></i></div>
+            <div>
+              <div class="stat-value" id="endpointAgentCoverage">--</div>
+              <div class="stat-label">Endpoint Agent Coverage</div>
+            </div>
+          </div>
+          <div class="widget-stat">
+            <div class="stat-icon critical"><i class="fas fa-bug"></i></div>
+            <div>
+              <div class="stat-value" id="endpointActiveThreats">--</div>
+              <div class="stat-label">Active Threats Detected</div>
+            </div>
+          </div>
+          <div class="widget-stat">
+            <div class="stat-icon warn"><i class="fas fa-clipboard-list"></i></div>
+            <div>
+              <div class="stat-value" id="endpointMissingPatches">--</div>
+              <div class="stat-label">Missing Patches</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connectors -->
+        <div class="section-row">
+          <h2>Connectors in this domain</h2>
+          <a class="btn btn-sm btn-outline" href="tool-catalog.html?category=EDR">
+            <i class="fas fa-plus"></i> Add
+          </a>
+        </div>
+        <div id="connectorGrid" class="connector-grid"></div>
+
+        <!-- Top risks -->
+        <div class="section-row">
+          <h2>Top Risks (last 30 days)</h2>
+          <a class="btn btn-sm btn-outline" href="risk-register.html?domain=endpoint">
+            View All <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+        <div id="riskFallbackBanner" class="fallback-banner" style="display:none">
+          <i class="fas fa-circle-info"></i>
+          Showing risks via source filter — Risk.domain field empty for this tenant.
+        </div>
+        <div class="risk-table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Finding</th>
+                <th>Source</th>
+                <th>Score</th>
+                <th>Severity</th>
+              </tr>
+            </thead>
+            <tbody id="topRisksBody">
+              <tr><td colspan="5" style="padding:2rem;text-align:center;color:#94A3B8">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Activity timeline -->
+        <div class="section-row">
+          <h2>Activity Timeline (last 7 days)</h2>
+        </div>
+        <div id="activityTimeline" class="activity-timeline">
+          <div class="activity-item">
+            <span class="time">—</span>
+            <span>Activity feed not yet populated. Recent scans, threat detections, and remediation events will appear here.</span>
+            <span class="actor">system</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/domain-page.js"></script>
+  <script src="js/module-tools.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      loadModuleTools(['EDR', 'VM'], 'moduleTools', {
+        title: 'Available integrations for Endpoint Security',
+        subtitle: 'Wire up EDR/XDR and VM scanners to start populating endpoint risks.',
+        manageHref: 'tool-catalog.html?category=EDR'
+      });
+    });
+    DomainPage.init({
+      domainSlug: 'domain-endpoint',
+      connectors: ['sentinelone', 'crowdstrike', 'manageengine_ec', 'burp_enterprise'],
+      sources: ['sentinelone', 'crowdstrike', 'manageengine_ec'],
+      domainField: 'endpoint',
+      catalogCategory: 'EDR',
+      onSpecialWidgets: async function (ctx) {
+        // Endpoint coverage = computers known with agent / total computers (best effort).
+        // Fallback: show count of recent endpoint findings.
+        var apiFetch = window.URIP && window.URIP.apiFetch;
+        if (!apiFetch) return;
+        try {
+          var sources = ['sentinelone', 'crowdstrike', 'manageengine_ec'];
+          var calls = sources.map(function (s) {
+            return apiFetch('/risks?source=' + s + '&per_page=100', { silent: true })
+              .catch(function () { return { items: [] }; });
+          });
+          var results = await Promise.all(calls);
+          var allRisks = [];
+          results.forEach(function (r) { if (r && r.items) allRisks = allRisks.concat(r.items); });
+          // Active threats = open critical + high
+          var threats = allRisks.filter(function (x) {
+            var sev = (x.severity || '').toLowerCase();
+            return (sev === 'critical' || sev === 'high') && (x.status || '').toLowerCase() !== 'closed';
+          }).length;
+          document.getElementById('endpointActiveThreats').textContent = String(threats);
+          // Missing patches = risks tagged as patch / vuln from manageengine_ec
+          var patches = allRisks.filter(function (x) {
+            var f = (x.finding || '').toLowerCase();
+            return x.source === 'manageengine_ec' && (f.indexOf('patch') >= 0 || f.indexOf('update') >= 0);
+          }).length;
+          document.getElementById('endpointMissingPatches').textContent = String(patches);
+          // Coverage estimate: # unique assets in findings (stand-in until backend exposes a coverage endpoint)
+          var assets = {};
+          allRisks.forEach(function (r) { if (r.asset) assets[r.asset] = true; });
+          document.getElementById('endpointAgentCoverage').textContent =
+            Object.keys(assets).length ? Object.keys(assets).length + ' assets' : '—';
+        } catch (e) {
+          console.error('endpoint widgets', e);
+        }
+      },
+    });
+  </script>
+</body>
+</html>

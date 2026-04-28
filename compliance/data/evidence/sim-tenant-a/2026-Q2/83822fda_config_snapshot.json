@@ -1,0 +1,9 @@
+{
+  "rule": "manual",
+  "checked_at": "2026-04-27T13:25:36.628545",
+  "config_snapshot": {
+    "compliant": true,
+    "drift_detected": false,
+    "last_change": "2026-03-30T13:25:36.628547"
+  }
+}

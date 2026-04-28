@@ -24,6 +24,7 @@ async def _make_user(db_session, role: str, email: str) -> dict[str, str]:
     # Assertions in these tests remain unchanged — we only fixed the setup so that
     # the auth layer can proceed to the RBAC check rather than stopping at 401.
     from backend.models.tenant import Tenant
+    from backend.models.subscription import TenantSubscription
 
     dummy_tenant_id = uuid.UUID("00000000-0000-0000-0000-000000000001")
 
@@ -41,6 +42,29 @@ async def _make_user(db_session, role: str, email: str) -> dict[str, str]:
         )
         db_session.add(t)
         await db_session.commit()
+
+    # Module gates must pass so these tests actually exercise RBAC (not
+    # subscription gating). Enable CORE + VM for the dummy tenant.
+    for code in ("CORE", "VM"):
+        result = await db_session.execute(
+            select(TenantSubscription).where(
+                TenantSubscription.tenant_id == dummy_tenant_id,
+                TenantSubscription.module_code == code,
+                TenantSubscription.is_enabled.is_(True),
+            )
+        )
+        if result.scalar_one_or_none() is None:
+            db_session.add(
+                TenantSubscription(
+                    id=uuid.uuid4(),
+                    tenant_id=dummy_tenant_id,
+                    module_code=code,
+                    is_enabled=True,
+                    billing_tier="STANDARD",
+                    expires_at=None,
+                )
+            )
+    await db_session.commit()
 
     user = User(
         id=uuid.uuid4(),
@@ -71,14 +95,14 @@ async def test_ciso_can_approve_acceptance(
     """CISO (level 3) can approve acceptance requests."""
     risk_id = seeded_risks[0].risk_id
 
-    # IT team creates the acceptance request
+    # IT team creates the acceptance request (returns 201 — resource created)
     create_resp = await client.post("/api/acceptance", headers=it_team_headers, json={
         "risk_id": risk_id,
         "justification": "Low business impact, compensating controls in place",
         "compensating_controls": ["WAF rule", "rate limiting"],
         "residual_risk": "Minimal",
     })
-    assert create_resp.status_code == 200
+    assert create_resp.status_code == 201
     acceptance_id = create_resp.json()["id"]
 
     # CISO approves
@@ -97,12 +121,12 @@ async def test_it_team_cannot_approve(
     """IT team (level 2) cannot approve acceptance — requires CISO (level 3)."""
     risk_id = seeded_risks[1].risk_id
 
-    # IT team creates the request
+    # IT team creates the request (returns 201 — resource created)
     create_resp = await client.post("/api/acceptance", headers=it_team_headers, json={
         "risk_id": risk_id,
         "justification": "Known issue with mitigating controls",
     })
-    assert create_resp.status_code == 200
+    assert create_resp.status_code == 201
     acceptance_id = create_resp.json()["id"]
 
     # IT team tries to approve — should fail

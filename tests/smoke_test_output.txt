@@ -1,0 +1,163 @@
+Failed to update risk 023be493-2ddc-43d5-b7ae-55b5dc4dd90c with exploitability data
+Traceback (most recent call last):
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/services/exploitability_service.py", line 242, in enrich_risk
+    result = await session.execute(select(Risk).where(Risk.id == risk_id))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/ext/asyncio/session.py", line 449, in execute
+    result = await greenlet_spawn(
+             ^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 201, in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2351, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2239, in _execute_internal
+    conn = self._connection_for_bind(bind)
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2108, in _connection_for_bind
+    return trans._connection_for_bind(engine, execution_options)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 2, in _connection_for_bind
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 1187, in _connection_for_bind
+    conn = bind.connect()
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 3293, in connect
+    return self._connection_cls(self)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 3317, in raw_connection
+    return self.pool.connect()
+           ~~~~~~~~~~~~~~~~~^^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/pool/base.py", line 448, in connect
+    return _ConnectionFairy._checkout(self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/pool/base.py", line 1272, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/pool/base.py", line 712, in checkout
+    rec = pool._do_get()
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/pool/impl.py", line 177, in _do_get
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/util/langhelpers.py", line 121, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/pool/impl.py", line 175, in _do_get
+    return self._create_connection()
+           ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/pool/base.py", line 389, in _create_connection
+    return _ConnectionRecord(self)
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/pool/base.py", line 674, in __init__
+    self.__connect()
+    ~~~~~~~~~~~~~~^^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/pool/base.py", line 900, in __connect
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/util/langhelpers.py", line 121, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/pool/base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/engine/create.py", line 667, in connect
+    return dialect.connect(*cargs_tup, **cparams)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 630, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 955, in connect
+    await_only(creator_fn(*arg, **kw)),
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/asyncpg/connection.py", line 2421, in connect
+    return await connect_utils._connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<20 lines>...
+    )
+    ^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/asyncpg/connect_utils.py", line 1075, in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+    ...<2 lines>...
+    )
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/asyncpg/connect_utils.py", line 1049, in _connect
+    conn = await _connect_addr(
+           ^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/asyncpg/connect_utils.py", line 886, in _connect_addr
+    return await __connect_addr(params, True, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/asyncpg/connect_utils.py", line 931, in __connect_addr
+    tr, pr = await connector
+             ^^^^^^^^^^^^^^^
+  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/asyncpg/connect_utils.py", line 802, in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        host, port)
+        ^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/asyncio/base_events.py", line 1176, in create_connection
+    raise OSError('Multiple exceptions: {}'.format(
+        ', '.join(str(exc) for exc in exceptions)))
+OSError: Multiple exceptions: [Errno 61] Connect call failed ('127.0.0.1', 5433), [Errno 61] Connect call failed ('::1', 5433, 0, 0)
+================================================================================
+GAP 1 + 2 — login JWT contains is_super_admin; /me returns tenant_slug
+================================================================================
+  PASS  POST /api/auth/login (regular)                                status=200 expected=(200,)  body[:200]={"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4NWU1ZjE5ZC1hMjM5LTRlOGItODBmNy05ZTE0ZmZlOGM5NjciLCJyb2xlIjoiY2lzbyIsImV4cCI6MTc3NzMxMzMxNiwiaXNfc3VwZXJfYWRtaW4iOmZhbHNlLCJ0ZW5hbnRfa
+      → user.tenant_slug = smoke, is_super_admin = False
+  PASS  POST /api/auth/login (super-admin)                            status=200 expected=(200,)  body[:200]={"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYjE2NDgzMS1mYjFmLTRhZDEtOWRiYy04ZGU2MjNmMGVjMDIiLCJyb2xlIjoiY2lzbyIsImV4cCI6MTc3NzMxMzMxNiwiaXNfc3VwZXJfYWRtaW4iOnRydWV9.Zd6LJCxDEXij
+      → super-admin user.is_super_admin = True, tenant_slug = None
+  PASS  GET  /api/auth/me (regular)                                   status=200 expected=(200,)  body[:200]={"id": "85e5f19d-a239-4e8b-80f7-9e14ffe8c967", "email": "ciso@smoke.test", "full_name": "Smoke CISO", "role": "ciso", "team": "Security", "is_super_admin": false, "tenant_slug": "smoke"}
+  PASS  GET  /api/auth/me (super-admin)                               status=200 expected=(200,)  body[:200]={"id": "fb164831-fb1f-4ad1-9dbc-8de623f0ec02", "email": "super@smoke.test", "full_name": "Super", "role": "ciso", "team": null, "is_super_admin": true, "tenant_slug": null}
+
+================================================================================
+GAP 3 — public /branding endpoint
+================================================================================
+  PASS  GET  /api/tenants/smoke/branding (own)                        status=200 expected=(200,)  body[:200]={"app_name": "Smoke RiskPanel", "logo_url": "https://cdn.smoke.test/l.png", "primary_color": "#001122", "secondary_color": "#334455"}
+  PASS  GET  /api/tenants/nonexistent/branding                        status=404 expected=(404,)  body[:200]={"detail": "Tenant not found."}
+  PASS  GET  /api/tenants/smoke/branding (super-admin)                status=200 expected=(200,)  body[:200]={"app_name": "Smoke RiskPanel", "logo_url": "https://cdn.smoke.test/l.png", "primary_color": "#001122", "secondary_color": "#334455"}
+  PASS  GET  /api/tenants/smoke/branding (no auth)                    status=403 expected=(401, 403)  body[:200]={"detail": "Not authenticated"}
+
+================================================================================
+GAP 4 — PATCH /api/settings/scoring
+================================================================================
+  PASS  GET  /api/settings/scoring                                    status=200 expected=(200,)  body[:200]={"formula_version": "1.0", "formula": "max(0, min(10, CVSS_WEIGHT*CVSS + EPSS_WEIGHT*EPSS + KEV_bonus + asset_bonus))", "weights": {"cvss": 0.55, "epss": 2.5, "kev_bonus": 2.0}, "tier_bonuses": {"1": 
+  PASS  PATCH /api/settings/scoring (valid)                           status=200 expected=(200,)  body[:200]={"formula_version": "1.0", "formula": "max(0, min(10, CVSS_WEIGHT*CVSS + EPSS_WEIGHT*EPSS + KEV_bonus + asset_bonus))", "weights": {"cvss": 0.65, "epss": 2.1, "kev_bonus": 1.8}, "tier_bonuses": {"1": 
+  PASS  PATCH /api/settings/scoring (negative → 422)                  status=422 expected=(422,)  body[:200]={"detail": [{"type": "greater_than_equal", "loc": ["body", "cvss"], "msg": "Input should be greater than or equal to 0", "input": -1.0, "ctx": {"ge": 0.0}}]}
+  PASS  PATCH /api/settings/scoring (empty → 422)                     status=422 expected=(422,)  body[:200]={"detail": [{"type": "value_error", "loc": ["body"], "msg": "Value error, At least one of {cvss, epss, kev_bonus} must be supplied.", "input": {}, "ctx": {"error": {}}}]}
+
+================================================================================
+GAP 5 — TenantUpdate.secondary_color (super-admin PATCH)
+================================================================================
+  PASS  PATCH /api/admin/tenants/smoke (secondary_color valid)        status=200 expected=(200,)  body[:200]={"id": "2dfb815c-917b-487c-a8c4-c3220f619393", "name": "Smoke Tenant", "slug": "smoke", "domain": "smoke.test", "is_active": true, "settings": {"app_name": "Smoke RiskPanel", "logo_url": "https://cdn.
+  PASS  PATCH /api/admin/tenants/smoke (bad hex → 422)                status=422 expected=(422,)  body[:200]={"detail": [{"type": "value_error", "loc": ["body", "secondary_color"], "msg": "Value error, must be a 6-digit hex color in the form #RRGGBB (e.g. #112233)", "input": "purple", "ctx": {"error": {}}}]}
+
+================================================================================
+REGRESSION SPOTCHECK — endpoints that were tightened
+================================================================================
+  PASS  POST /api/risks (201 created)                                 status=201 expected=(201,)  body[:200]={"id": "023be493-2ddc-43d5-b7ae-55b5dc4dd90c", "risk_id": "RISK-2026-0D73", "finding": "Smoke test risk", "description": "smoke", "source": "vapt", "domain": "application", "cvss_score": 5.5, "severit
+  PASS  GET  /api/risks/RISK-2026-0D73                                status=200 expected=(200,)  body[:200]={"risk": {"id": "023be493-2ddc-43d5-b7ae-55b5dc4dd90c", "risk_id": "RISK-2026-0D73", "finding": "Smoke test risk", "description": "smoke", "source": "vapt", "domain": "application", "cvss_score": 5.5,
+  PASS  POST /api/acceptance (201 created)                            status=201 expected=(201,)  body[:200]={"id": "10405f08-e1ea-448a-a7c5-f3d84009a6ea", "risk_id": "023be493-2ddc-43d5-b7ae-55b5dc4dd90c", "requested_by": "85e5f19d-a239-4e8b-80f7-9e14ffe8c967", "justification": "compensating controls in pla
+  PASS  POST /api/settings/users (201 created)                        status=201 expected=(201,)  body[:200]={"id": "fd950fbf-3d06-4615-a030-ac13a786eea9", "email": "newuser@smoke.test", "full_name": "New User", "role": "it_team", "team": "Ops"}
+  PASS  GET  /api/settings/users (Pydantic + tenant-scoped)           status=200 expected=(200,)  body[:200]=[{"id": "fd950fbf-3d06-4615-a030-ac13a786eea9", "email": "newuser@smoke.test", "full_name": "New User", "role": "it_team", "team": "Ops", "is_active": true, "created_at": "2026-04-27T10:08:36.959634"}
+  PASS  GET  /api/dashboard/kpis                                      status=200 expected=(200,)  body[:200]={"total_open": 1, "critical": 0, "high": 0, "medium": 1, "low": 0, "accepted": 0, "actively_exploited": 0, "ioc_matches": 5, "dark_web_alerts": 5, "sla_breaching": []}
+  PASS  GET  /api/tenants/nonexistent/modules (404 not 403)           status=404 expected=(404,)  body[:200]={"detail": "Tenant 'nonexistent' not found."}
+
+================================================================================
+SMOKE TEST COMPLETE — failures: 0
+================================================================================

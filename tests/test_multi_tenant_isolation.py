@@ -27,6 +27,7 @@ from backend.middleware.auth import create_access_token, hash_password
 from backend.models.tenant import Tenant
 from backend.models.user import User
 from backend.models.risk import Risk
+from backend.models.subscription import TenantSubscription  # noqa: F401
 
 
 # ---------------------------------------------------------------------------
@@ -143,6 +144,17 @@ async def two_tenant_setup(db_session: AsyncSession):
         )
         db_session.add(r)
         risks_b.append(r)
+
+    # VM subscriptions required by @require_module("VM") gate on /api/risks
+    for _t in [tenant_a, tenant_b]:
+        db_session.add(TenantSubscription(
+            id=uuid.uuid4(),
+            tenant_id=_t.id,
+            module_code="VM",
+            is_enabled=True,
+            billing_tier="STANDARD",
+        ))
+        await db_session.flush()
 
     await db_session.commit()
 
@@ -264,7 +276,7 @@ async def test_no_tenant_token_returns_401(isolation_client: AsyncClient, two_te
     # Manually craft a token without tenant_id (simulates pre-migration token)
     from backend.config import settings
     from datetime import timedelta
-    from jose import jwt as jose_jwt
+    import jwt as jose_jwt
 
     expire = datetime.now(timezone.utc) + timedelta(hours=1)
     payload_no_tenant = {

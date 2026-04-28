@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class AcceptanceCreate(BaseModel):
@@ -28,5 +28,24 @@ class AcceptanceRead(BaseModel):
     review_period_days: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AcceptanceRiskDetail(BaseModel):
+    risk_id: str | None = None
+    finding: str | None = None
+    cvss_score: float | None = None
+    severity: str | None = None
+    asset: str | None = None
+    domain: str | None = None
+
+
+class AcceptanceListItem(AcceptanceRead):
+    risk_detail: AcceptanceRiskDetail | None = None
+    requester_name: str | None = None
+    requester_team: str | None = None
+
+
+class AcceptanceActionResponse(BaseModel):
+    status: str
+    acceptance_id: str

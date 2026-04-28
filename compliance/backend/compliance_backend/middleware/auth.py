@@ -23,7 +23,13 @@ from typing import Optional
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from jose import JWTError, jwt, ExpiredSignatureError
+# CRIT-005 (Z2.1) — Migrated from python-jose to PyJWT 2.9+ (jose CVE-2024-33663
+# algorithm-confusion + CVE-2024-33664 DoS; jose is unmaintained).
+#   PyJWT raises ``jwt.InvalidTokenError`` family (parent of all errors) and
+#   ``jwt.ExpiredSignatureError`` for expiry. ``algorithms=["HS256"]`` is
+#   passed on every decode call so ``alg=none`` and HS512 tokens are rejected.
+import jwt
+from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 from compliance_backend.config import settings
 
@@ -44,8 +50,8 @@ def verify_token(token: str) -> dict:
     Verify a JWT and return its claims dict.
 
     Raises:
-        jose.JWTError  — signature invalid or token malformed
-        jose.ExpiredSignatureError — token is expired
+        jwt.InvalidTokenError  — signature invalid, malformed, or alg mismatch
+        jwt.ExpiredSignatureError — token is expired
     """
     secret = _active_secret()
     claims = jwt.decode(token, secret, algorithms=["HS256"])
@@ -76,7 +82,7 @@ async def require_auth(
             detail="Token has expired",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    except JWTError as exc:
+    except InvalidTokenError as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Invalid token: {exc}",
@@ -84,3 +90,47 @@ async def require_auth(
         )
 
     return claims
+
+
+# ---------------------------------------------------------------------------
+# CRIT-008 — compliance-admin gate (centralised)
+# ---------------------------------------------------------------------------
+#
+# The original gate checked claims.get("role") in {"admin","owner","compliance_admin"}.
+# In INTEGRATED mode URIP issues the JWT, and URIP's ROLE_HIERARCHY only contains
+# {"board","executive","it_team","ciso"} — so the legacy gate ALWAYS denied URIP
+# users access to compliance admin routes (entire admin path was unreachable).
+#
+# This helper accepts a user as a compliance admin if ANY of:
+#   - claims["role"] == "ciso"            (highest tenant-level URIP role)
+#   - claims["is_super_admin"] is True    (URIP super-admin bypass)
+#   - claims["is_compliance_admin"] is True
+#       (capability flag URIP backend should add to the JWT — see coordination
+#        note in critfix C report; until backend ships, ciso/super-admin paths
+#        are sufficient)
+#   - claims["role"] == "admin"           (STANDALONE-mode compliance-issued
+#       legacy tokens — kept for backward compat in non-integrated deployments)
+
+
+COMPLIANCE_ADMIN_ROLES: frozenset = frozenset({"ciso", "admin"})
+
+
+def is_compliance_admin(claims: dict) -> bool:
+    """Return True iff the JWT claims authorise compliance-admin operations."""
+    if not isinstance(claims, dict):
+        return False
+    if claims.get("is_super_admin") is True:
+        return True
+    if claims.get("is_compliance_admin") is True:
+        return True
+    role = claims.get("role")
+    return role in COMPLIANCE_ADMIN_ROLES
+
+
+def require_compliance_admin(claims: dict, *, detail: str = "Admin role required.") -> None:
+    """Raise 403 if the caller is not a compliance admin."""
+    if not is_compliance_admin(claims):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=detail,
+        )

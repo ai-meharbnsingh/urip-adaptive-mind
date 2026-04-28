@@ -1,0 +1,9 @@
+{
+  "rule": "totally_unknown_rule_xyz",
+  "checked_at": "2026-04-27T13:25:36.225906",
+  "config_snapshot": {
+    "compliant": true,
+    "drift_detected": false,
+    "last_change": "2026-04-08T13:25:36.225908"
+  }
+}

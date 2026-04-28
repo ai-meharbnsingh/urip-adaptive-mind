@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:24:24.614831",
+  "tickets": [
+    {
+      "id": "ADV-OPS-1484",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "Done",
+      "assignee": "user-630@adverb.in",
+      "created": "2026-02-06T13:24:24.614835",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-4543",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-322@adverb.in",
+      "created": "2026-04-09T13:24:24.614838",
+      "resolved": "2026-04-23T13:24:24.614840"
+    },
+    {
+      "id": "ADV-OPS-2367",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "In Progress",
+      "assignee": "user-380@adverb.in",
+      "created": "2026-02-10T13:24:24.614843",
+      "resolved": "2026-04-25T13:24:24.614845"
+    },
+    {
+      "id": "ADV-OPS-6710",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "In Progress",
+      "assignee": "user-578@adverb.in",
+      "created": "2026-02-08T13:24:24.614849",
+      "resolved": "2026-04-20T13:24:24.614851"
+    },
+    {
+      "id": "ADV-OPS-4163",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-302@adverb.in",
+      "created": "2026-03-08T13:24:24.614854",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-2685",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "In Progress",
+      "assignee": "user-269@adverb.in",
+      "created": "2026-03-17T13:24:24.614857",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-8992",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "To Do",
+      "assignee": "user-533@adverb.in",
+      "created": "2026-03-09T13:24:24.614860",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-2762",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "To Do",
+      "assignee": "user-539@adverb.in",
+      "created": "2026-03-18T13:24:24.614863",
+      "resolved": "2026-04-21T13:24:24.614865"
+    }
+  ]
+}

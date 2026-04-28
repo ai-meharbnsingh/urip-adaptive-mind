@@ -1,0 +1,110 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.0.2, pluggy-1.6.0 -- /opt/homebrew/opt/python@3.14/bin/python3.14
+cachedir: .pytest_cache
+rootdir: /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a
+configfile: pytest.ini
+plugins: anyio-4.12.1, playwright-0.7.2, asyncio-1.3.0, base-url-2.1.0, timeout-2.4.0, respx-0.23.1
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 65 items
+
+tests/test_ticketing/test_jira_provider.py::test_create_ticket_returns_ticket_id_and_url PASSED [  1%]
+tests/test_ticketing/test_jira_provider.py::test_create_ticket_raises_on_4xx PASSED [  3%]
+tests/test_ticketing/test_jira_provider.py::test_get_ticket_status_normalises_done_to_resolved PASSED [  4%]
+tests/test_ticketing/test_jira_provider.py::test_get_ticket_status_normalises_in_progress PASSED [  6%]
+tests/test_ticketing/test_jira_provider.py::test_update_ticket_with_comment_and_transition PASSED [  7%]
+tests/test_ticketing/test_jira_provider.py::test_close_ticket_calls_transition_to_done PASSED [  9%]
+tests/test_ticketing/test_servicenow_provider.py::test_create_ticket_returns_number_and_sys_id PASSED [ 10%]
+tests/test_ticketing/test_servicenow_provider.py::test_create_ticket_raises_on_5xx PASSED [ 12%]
+tests/test_ticketing/test_servicenow_provider.py::test_get_ticket_status_state_6_is_resolved PASSED [ 13%]
+tests/test_ticketing/test_servicenow_provider.py::test_get_ticket_status_state_2_is_in_progress PASSED [ 15%]
+tests/test_ticketing/test_servicenow_provider.py::test_close_ticket_sends_state_7_and_comment PASSED [ 16%]
+tests/test_ticketing/test_ticketing_service.py::test_on_risk_assigned_creates_ticket_and_persists_id PASSED [ 18%]
+tests/test_ticketing/test_ticketing_service.py::test_on_risk_assigned_idempotent_when_ticket_id_already_set PASSED [ 20%]
+tests/test_ticketing/test_ticketing_service.py::test_on_ticket_status_changed_resolved_closes_risk PASSED [ 21%]
+tests/test_ticketing/test_ticketing_service.py::test_on_ticket_status_changed_in_progress_updates_risk PASSED [ 23%]
+tests/test_ticketing/test_ticketing_service.py::test_on_ticket_status_changed_unknown_ticket_noop PASSED [ 24%]
+tests/test_ticketing/test_ticketing_service.py::test_poll_ticket_statuses_picks_up_resolved_in_provider PASSED [ 26%]
+tests/test_ticketing/test_ticketing_service.py::test_poll_ticket_statuses_skips_already_resolved_risks PASSED [ 27%]
+tests/test_ticketing/test_ticketing_webhooks.py::test_jira_webhook_resolves_risk_when_done PASSED [ 29%]
+tests/test_ticketing/test_ticketing_webhooks.py::test_jira_webhook_rejects_bad_signature PASSED [ 30%]
+tests/test_ticketing/test_ticketing_webhooks.py::test_jira_webhook_rejects_unknown_tenant PASSED [ 32%]
+tests/test_ticketing/test_ticketing_webhooks.py::test_servicenow_webhook_resolves_on_state_6 PASSED [ 33%]
+tests/test_ticketing/test_ticketing_webhooks.py::test_servicenow_webhook_unmapped_state_returns_ignored PASSED [ 35%]
+tests/test_trust_center/test_trust_center_routes.py::test_landing_returns_published_docs_only PASSED [ 36%]
+tests/test_trust_center/test_trust_center_routes.py::test_landing_404_for_unknown_slug PASSED [ 38%]
+tests/test_trust_center/test_trust_center_routes.py::test_request_access_endpoint_creates_pending PASSED [ 40%]
+tests/test_trust_center/test_trust_center_routes.py::test_full_flow_publish_request_approve_download PASSED [ 41%]
+tests/test_trust_center/test_trust_center_routes.py::test_download_with_invalid_token_returns_403 PASSED [ 43%]
+tests/test_trust_center/test_trust_center_routes.py::test_admin_endpoints_require_auth PASSED [ 44%]
+tests/test_trust_center/test_trust_center_service.py::test_publish_document_persists_with_defaults PASSED [ 46%]
+tests/test_trust_center/test_trust_center_service.py::test_publish_document_rejects_invalid_type PASSED [ 47%]
+tests/test_trust_center/test_trust_center_service.py::test_list_published_filters_unpublished_and_expired PASSED [ 49%]
+tests/test_trust_center/test_trust_center_service.py::test_request_access_creates_pending_row PASSED [ 50%]
+tests/test_trust_center/test_trust_center_service.py::test_request_access_rejects_bad_email PASSED [ 52%]
+tests/test_trust_center/test_trust_center_service.py::test_request_access_rejects_unpublished_doc PASSED [ 53%]
+tests/test_trust_center/test_trust_center_service.py::test_approve_access_blocks_when_nda_required_but_unsigned PASSED [ 55%]
+tests/test_trust_center/test_trust_center_service.py::test_full_approve_flow_with_nda_signed PASSED [ 56%]
+tests/test_trust_center/test_trust_center_service.py::test_approve_access_no_nda_required PASSED [ 58%]
+tests/test_trust_center/test_trust_center_service.py::test_download_document_succeeds_with_valid_token PASSED [ 60%]
+tests/test_trust_center/test_trust_center_service.py::test_download_rejects_wrong_doc_id PASSED [ 61%]
+tests/test_trust_center/test_trust_center_service.py::test_download_rejects_invalid_token PASSED [ 63%]
+tests/test_trust_center/test_trust_center_service.py::test_deny_access_marks_request_denied PASSED [ 64%]
+tests/test_auto_remediation/test_auto_remediation_service.py::test_select_executor_picks_crowdstrike_for_endpoint_source PASSED [ 66%]
+tests/test_auto_remediation/test_auto_remediation_service.py::test_select_executor_picks_fortinet_for_threat_intel PASSED [ 67%]
+tests/test_auto_remediation/test_auto_remediation_service.py::test_select_executor_picks_cyberark_for_credential_risk PASSED [ 69%]
+tests/test_auto_remediation/test_auto_remediation_service.py::test_execute_blocked_when_no_approver_and_not_preapproved PASSED [ 70%]
+tests/test_auto_remediation/test_auto_remediation_service.py::test_execute_with_explicit_approver_succeeds PASSED [ 72%]
+tests/test_auto_remediation/test_auto_remediation_service.py::test_execute_dry_run_marks_status_dry_run PASSED [ 73%]
+tests/test_auto_remediation/test_auto_remediation_service.py::test_pre_approved_category_runs_without_approver PASSED [ 75%]
+tests/test_auto_remediation/test_auto_remediation_service.py::test_failed_execution_persists_error_message PASSED [ 76%]
+tests/test_auto_remediation/test_auto_remediation_service.py::test_retest_after_execution_closes_risk_when_clean PASSED [ 78%]
+tests/test_auto_remediation/test_auto_remediation_service.py::test_retest_failure_keeps_risk_open PASSED [ 80%]
+tests/test_auto_remediation/test_auto_remediation_service.py::test_list_executions_filters_by_tenant_and_risk PASSED [ 81%]
+tests/test_auto_remediation/test_executors.py::test_crowdstrike_dry_run_does_not_call_api PASSED [ 83%]
+tests/test_auto_remediation/test_executors.py::test_crowdstrike_live_succeeds_on_2xx PASSED [ 84%]
+tests/test_auto_remediation/test_executors.py::test_crowdstrike_live_fails_on_500 PASSED [ 86%]
+tests/test_auto_remediation/test_executors.py::test_crowdstrike_implication_check_reports_no_downtime PASSED [ 87%]
+tests/test_auto_remediation/test_executors.py::test_ansible_dry_run_does_not_invoke_subprocess PASSED [ 89%]
+tests/test_auto_remediation/test_executors.py::test_ansible_live_calls_subprocess_with_playbook_path PASSED [ 90%]
+tests/test_auto_remediation/test_executors.py::test_ansible_live_returncode_nonzero_marks_failure PASSED [ 92%]
+tests/test_auto_remediation/test_executors.py::test_ansible_timeout_returns_failure_without_raising PASSED [ 93%]
+tests/test_auto_remediation/test_executors.py::test_fortinet_blocks_ip_in_addrgrp PASSED [ 95%]
+tests/test_auto_remediation/test_executors.py::test_fortinet_dry_run_returns_would_have_blocked PASSED [ 96%]
+tests/test_auto_remediation/test_executors.py::test_cyberark_rotates_account PASSED [ 98%]
+tests/test_auto_remediation/test_executors.py::test_cyberark_implication_check_predicts_5min_downtime PASSED [100%]
+
+=============================== warnings summary ===============================
+backend/config.py:29
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/config.py:29: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class Settings(BaseSettings):
+
+backend/config.py:157
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/config.py:157: RuntimeWarning: [URIP CONFIG WARNING] JWT_SECRET_KEY is using the dev default (urip-dev-secret-change-in-production). This is acceptable in dev ONLY. You MUST rotate this secret before any prod / staging deployment (set URIP_ENV=production and a real JWT_SECRET_KEY).
+    _enforce_jwt_secret_policy(settings)
+
+backend/schemas/acceptance.py:17
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/schemas/acceptance.py:17: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class AcceptanceRead(BaseModel):
+
+backend/schemas/auth.py:44
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/schemas/auth.py:44: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class UserProfile(BaseModel):
+
+backend/schemas/dashboard.py:41
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/schemas/dashboard.py:41: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class AlertItem(BaseModel):
+
+backend/schemas/remediation.py:23
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/schemas/remediation.py:23: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class RemediationRead(BaseModel):
+
+backend/schemas/report.py:25
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/schemas/report.py:25: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class CertInAdvisory(BaseModel):
+
+backend/schemas/risk.py:30
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/schemas/risk.py:30: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class RiskRead(BaseModel):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 65 passed, 8 warnings in 1.61s ========================

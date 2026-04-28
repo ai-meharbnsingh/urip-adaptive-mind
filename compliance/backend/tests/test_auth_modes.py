@@ -6,7 +6,7 @@ Tests written BEFORE the middleware implementation.
 import os
 import time
 import pytest
-from jose import jwt
+import jwt
 
 
 STANDALONE_SECRET = "test-secret-standalone"

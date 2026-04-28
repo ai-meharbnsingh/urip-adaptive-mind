@@ -103,7 +103,9 @@ async def get_mitre_attack_data() -> dict:
             r.raise_for_status()
             _attack_cache = r.json()
             _attack_loaded_at = time.monotonic()
-    except Exception as exc:
+    except (httpx.HTTPError, httpx.TimeoutException, ValueError) as exc:
+        # L6 (Kimi LOW-002) — narrow catch.  HTTPError covers connect / read /
+        # status_code errors, ValueError covers JSON decode failures.
         logger.warning("Failed to fetch MITRE ATT&CK data: %s", exc)
         if _attack_cache is None:
             _attack_cache = {"objects": []}
@@ -191,7 +193,9 @@ async def get_otx_pulses(limit: int = 50) -> list[dict]:
             else:
                 r.raise_for_status()
                 _otx_cache = r.json().get("results", [])
-    except Exception:
+    except (httpx.HTTPError, httpx.TimeoutException, ValueError) as exc:
+        # L6 (Kimi LOW-002) — narrow catch (network / JSON decode only).
+        logger.warning("OTX feed fetch failed (%s); using synthetic data", type(exc).__name__)
         _otx_cache = _generate_synthetic_otx_pulses()
 
     _otx_loaded_at = time.monotonic()

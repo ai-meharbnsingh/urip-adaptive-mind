@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tenant Detail | URIP - Unified Risk Intelligence Platform</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="urip-app">
+  <div id="app-shell" data-page="admin-tenants">
+        <div class="page-header">
+          <div>
+            <a href="admin-tenants.html" class="back-link">
+              <i class="fas fa-arrow-left"></i> Back to all tenants
+            </a>
+            <h1 class="page-title" id="pageTitle">Tenant</h1>
+            <p class="page-subtitle" id="pageSubtitle"></p>
+          </div>
+          <div class="flex gap-2" id="pageActions">
+            <button class="btn btn-outline" id="btnViewModules" type="button">
+              <i class="fas fa-cubes"></i> Modules
+            </button>
+            <button class="btn btn-outline" id="btnImpersonate" type="button" title="Apply this tenant's branding locally">
+              <i class="fas fa-eye"></i> Preview branding
+            </button>
+          </div>
+        </div>
+
+        <div id="detailLoading" class="empty-state">
+          <div class="empty-state-icon"><i class="fas fa-spinner fa-spin"></i></div>
+          <div class="empty-state-title">Loading tenant...</div>
+        </div>
+
+        <div id="detailError" class="alert alert-danger" style="display:none">
+          <i class="fas fa-exclamation-circle"></i>
+          <span id="detailErrorMsg"></span>
+        </div>
+
+        <div id="detailContent" style="display:none">
+          <!-- Tenant info card -->
+          <div class="card">
+            <div class="card-header">
+              <strong>Tenant info</strong>
+              <span class="badge" id="statusBadge"></span>
+            </div>
+            <div class="card-body">
+              <div class="info-grid">
+                <div>
+                  <div class="info-label">ID</div>
+                  <div class="info-value" id="info_id"></div>
+                </div>
+                <div>
+                  <div class="info-label">Name</div>
+                  <div class="info-value" id="info_name"></div>
+                </div>
+                <div>
+                  <div class="info-label">Slug</div>
+                  <div class="info-value" id="info_slug"></div>
+                </div>
+                <div>
+                  <div class="info-label">Domain</div>
+                  <div class="info-value" id="info_domain"></div>
+                </div>
+                <div>
+                  <div class="info-label">Created</div>
+                  <div class="info-value" id="info_created"></div>
+                </div>
+                <div>
+                  <div class="info-label">Primary contact</div>
+                  <div class="info-value" id="info_contact"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- White-label branding -->
+          <form id="brandingForm" class="card" style="margin-top:1.5rem">
+            <div class="card-header">
+              <strong>White-label branding</strong>
+            </div>
+            <div class="card-body">
+              <div class="branding-grid">
+                <div class="form-group">
+                  <label class="form-label" for="b_app_name">App name</label>
+                  <input class="form-input" id="b_app_name" name="app_name" type="text" maxlength="100" placeholder="e.g. Acme Risk Cloud">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="b_logo_url">Logo URL</label>
+                  <input class="form-input" id="b_logo_url" name="logo_url" type="url" placeholder="https://cdn.example.com/logo.svg">
+                  <div class="form-hint">PNG / SVG, max 32px tall in sidebar.</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="b_primary">Primary color</label>
+                  <div class="color-input-row">
+                    <input class="form-input" id="b_primary" name="primary_color" type="text" placeholder="#1ABC9C" maxlength="32">
+                    <input class="color-swatch" id="b_primary_picker" type="color" value="#1ABC9C" aria-label="Pick primary color">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="b_secondary">Secondary color</label>
+                  <div class="color-input-row">
+                    <input class="form-input" id="b_secondary" name="secondary_color" type="text" placeholder="#0D1B2A" maxlength="32">
+                    <input class="color-swatch" id="b_secondary_picker" type="color" value="#0D1B2A" aria-label="Pick secondary color">
+                  </div>
+                </div>
+              </div>
+
+              <div class="branding-preview" id="brandingPreview">
+                <div class="branding-preview-bar" id="brandingPreviewBar"></div>
+                <div class="branding-preview-content">
+                  <div class="branding-preview-logo" id="brandingPreviewLogo">
+                    <i class="fas fa-shield-alt"></i>
+                  </div>
+                  <div>
+                    <div class="branding-preview-title" id="brandingPreviewTitle">URIP</div>
+                    <div class="branding-preview-tagline">Unified Risk Intelligence</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer flex justify-between items-center">
+              <label class="checkbox-row">
+                <input type="checkbox" id="b_is_active">
+                <span>Tenant is active</span>
+              </label>
+              <div class="flex gap-2">
+                <button class="btn btn-outline" type="button" id="btnResetBranding">Reset</button>
+                <button class="btn btn-primary" type="submit" id="btnSaveBranding">
+                  <i class="fas fa-save"></i> Save branding
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <!-- Provision admin user -->
+          <form id="provisionForm" class="card" style="margin-top:1.5rem">
+            <div class="card-header">
+              <strong>Provision admin user</strong>
+              <span class="form-hint">One-time bootstrap. The new user can log in immediately.</span>
+            </div>
+            <div class="card-body">
+              <div class="branding-grid">
+                <div class="form-group">
+                  <label class="form-label" for="u_email">Email</label>
+                  <input class="form-input" id="u_email" name="email" type="email" required maxlength="255" placeholder="ciso@acme.com">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="u_full_name">Full name</label>
+                  <input class="form-input" id="u_full_name" name="full_name" type="text" required maxlength="150" placeholder="Jane Doe">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="u_password">Initial password</label>
+                  <input class="form-input" id="u_password" name="password" type="password" required minlength="8" placeholder="Min 8 chars">
+                  <div class="form-hint">Share securely; user should change on first login.</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="u_role">Role</label>
+                  <select class="form-input" id="u_role" name="role">
+                    <option value="ciso" selected>CISO</option>
+                    <option value="it_team">IT Team</option>
+                    <option value="executive">Executive</option>
+                    <option value="board">Board</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer flex justify-end">
+              <button class="btn btn-primary" type="submit" id="btnProvision">
+                <i class="fas fa-user-plus"></i> Create admin user
+              </button>
+            </div>
+          </form>
+        </div>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    if (typeof checkAuth === 'function') checkAuth();
+    document.addEventListener('DOMContentLoaded', function () {
+      window.URIP.shell.mount({
+        page: 'admin-tenants',
+        title: 'Tenant Detail',
+        breadcrumb: 'Administration / Tenants / Detail'
+      });
+    });
+  </script>
+  <script src="js/admin-tenant-detail.js"></script>
+</body>
+</html>

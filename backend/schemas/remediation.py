@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class RemediationCreate(BaseModel):
@@ -33,5 +33,23 @@ class RemediationRead(BaseModel):
     completed_at: datetime | None = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
+
+class RemediationRiskDetail(BaseModel):
+    risk_id: str | None = None
+    finding: str | None = None
+    severity: str | None = None
+    asset: str | None = None
+    sla_deadline: str | None = None
+
+
+class RemediationListItem(RemediationRead):
+    risk_detail: RemediationRiskDetail | None = None
+
+
+class RemediationListResponse(BaseModel):
+    items: list[RemediationListItem]
+    total: int
+    page: int
+    pages: int

@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "urip-agent"
+version = "0.1.0"
+description = "URIP Hybrid-SaaS On-Premise Docker Agent — runs API connectors inside the customer network and pushes ONLY aggregate metadata to the cloud."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Semantic Gravity" }]
+license = { text = "Proprietary" }
+keywords = ["urip", "security", "agent", "hybrid-saas"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: System Administrators",
+    "License :: Other/Proprietary License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Security",
+]
+
+dependencies = [
+    # Connector framework lives in the parent `connectors/` package — installed
+    # implicitly when the Docker image is built (PYTHONPATH=/app).  When the
+    # agent is consumed as a stand-alone wheel (e.g. by a CI installer) the
+    # caller must `pip install -e ../` first to make connectors importable.
+    "httpx>=0.28,<1",
+    "cryptography>=44,<46",
+    "sqlalchemy[asyncio]>=2.0.40,<2.1",
+    "asyncpg>=0.30,<1",
+    "pydantic-settings>=2.7,<3",
+]
+
+[project.scripts]
+urip-agent = "agent.agent_main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["agent*"]
+
+[project.urls]
+Homepage = "https://semanticgravity.io"
+Documentation = "https://docs.semanticgravity.io/agent"

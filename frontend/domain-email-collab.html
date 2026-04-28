@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email & Collaboration | URIP - Unified Risk Intelligence Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/domain-page.css">
+  <link rel="stylesheet" href="css/module-tools.css">
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+    <main class="main-content">
+      <header class="topbar"></header>
+      <div class="content-area">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title"><i class="fas fa-envelope" style="color:var(--teal-accent);margin-right:.5rem"></i>Email &amp; Collaboration</h1>
+            <p class="page-subtitle">Phishing volume, BEC alerts, anomalous external sharing, sensitive-doc exposure across Workspace + M365.</p>
+          </div>
+          <div class="flex gap-2">
+            <a class="btn btn-outline" id="btnManageConnectors" href="tool-catalog.html?category=EMAIL">
+              <i class="fas fa-puzzle-piece"></i> Manage Connectors
+            </a>
+            <button class="btn btn-primary" id="btnRunScan" type="button">
+              <i class="fas fa-play"></i> Run Scan
+            </button>
+          </div>
+        </div>
+
+        <!-- Available integrations for this module -->
+        <div id="moduleTools" data-modules="EMAIL_COLLAB,COLLABORATION"></div>
+
+        <div class="domain-kpi-strip four">
+          <div class="kpi-card"><div class="kpi-icon" style="background:rgba(99,102,241,0.1);color:#6366F1"><i class="fas fa-list"></i></div><div class="kpi-content"><div class="kpi-value"><span id="kpiTotalRisks">--</span></div><div class="kpi-label">Total Risks</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon critical"><i class="fas fa-fire"></i></div><div class="kpi-content"><div class="kpi-value" style="color:#E74C3C"><span id="kpiCriticalCount">--</span></div><div class="kpi-label">Critical</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon medium"><i class="fas fa-gauge-high"></i></div><div class="kpi-content"><div class="kpi-value"><span id="kpiMeanScore">--</span></div><div class="kpi-label">Mean Score</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon" style="background:rgba(39,174,96,0.1);color:#27AE60"><i class="fas fa-plug-circle-check"></i></div><div class="kpi-content"><div class="kpi-value"><span id="kpiConnectorsConfigured">--</span></div><div class="kpi-label">Connectors Configured</div></div></div>
+        </div>
+
+        <div class="widget-row">
+          <div class="widget-stat">
+            <div class="stat-icon critical"><i class="fas fa-fish"></i></div>
+            <div><div class="stat-value" id="phishingAlerts">--</div><div class="stat-label">Phishing / BEC Alerts</div></div>
+          </div>
+          <div class="widget-stat">
+            <div class="stat-icon warn"><i class="fas fa-share-nodes"></i></div>
+            <div><div class="stat-value" id="externalSharing">--</div><div class="stat-label">External Sharing Events</div></div>
+          </div>
+          <div class="widget-stat">
+            <div class="stat-icon info"><i class="fas fa-file-shield"></i></div>
+            <div><div class="stat-value" id="sensitiveDocs">--</div><div class="stat-label">Sensitive Doc Exposure</div></div>
+          </div>
+        </div>
+
+        <div class="section-row">
+          <h2>Connectors in this domain</h2>
+          <a class="btn btn-sm btn-outline" href="tool-catalog.html?category=EMAIL"><i class="fas fa-plus"></i> Add</a>
+        </div>
+        <div id="connectorGrid" class="connector-grid"></div>
+
+        <div class="section-row">
+          <h2>Top Risks (last 30 days)</h2>
+          <a class="btn btn-sm btn-outline" href="risk-register.html?domain=email">View All <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div id="riskFallbackBanner" class="fallback-banner" style="display:none">
+          <i class="fas fa-circle-info"></i> Showing risks via source filter — Risk.domain field empty.
+        </div>
+        <div class="risk-table-card">
+          <table>
+            <thead><tr><th>ID</th><th>Finding</th><th>Source</th><th>Score</th><th>Severity</th></tr></thead>
+            <tbody id="topRisksBody"><tr><td colspan="5" style="padding:2rem;text-align:center;color:#94A3B8">Loading…</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="section-row"><h2>Activity Timeline (last 7 days)</h2></div>
+        <div id="activityTimeline" class="activity-timeline">
+          <div class="activity-item">
+            <span class="time">—</span>
+            <span>Email + collab event timeline (phishing reports, sharing audits) not yet populated.</span>
+            <span class="actor">system</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/domain-page.js"></script>
+  <script src="js/module-tools.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      loadModuleTools(['EMAIL_COLLAB', 'COLLABORATION'], 'moduleTools', {
+        title: 'Available integrations for Email & Collaboration',
+        subtitle: 'Wire up email security and collab platforms (M365, Workspace) to track phishing and oversharing.',
+        manageHref: 'tool-catalog.html?category=EMAIL'
+      });
+    });
+    DomainPage.init({
+      domainSlug: 'domain-email-collab',
+      connectors: ['email_security', 'm365_collab'],
+      sources: ['email_security', 'm365_collab'],
+      domainField: 'email',
+      catalogCategory: 'EMAIL',
+      onSpecialWidgets: async function () {
+        var apiFetch = window.URIP && window.URIP.apiFetch;
+        if (!apiFetch) return;
+        try {
+          var [email, collab] = await Promise.all([
+            apiFetch('/risks?source=email_security&per_page=100', { silent: true }).catch(function () { return { items: [] }; }),
+            apiFetch('/risks?source=m365_collab&per_page=100', { silent: true }).catch(function () { return { items: [] }; }),
+          ]);
+          var emailItems = (email && email.items) || [];
+          var collabItems = (collab && collab.items) || [];
+
+          var phish = emailItems.filter(function (x) {
+            var f = (x.finding || '').toLowerCase();
+            return f.indexOf('phish') >= 0 || f.indexOf('bec') >= 0 || f.indexOf('impersonat') >= 0;
+          }).length;
+          document.getElementById('phishingAlerts').textContent = String(phish);
+
+          var sharing = collabItems.filter(function (x) {
+            var f = (x.finding || '').toLowerCase();
+            return f.indexOf('external') >= 0 || f.indexOf('shar') >= 0 || f.indexOf('public') >= 0;
+          }).length;
+          document.getElementById('externalSharing').textContent = String(sharing);
+
+          var sens = collabItems.filter(function (x) {
+            var f = (x.finding || '').toLowerCase();
+            return f.indexOf('sensitive') >= 0 || f.indexOf('confidential') >= 0 || f.indexOf('pii') >= 0;
+          }).length;
+          document.getElementById('sensitiveDocs').textContent = String(sens);
+        } catch (e) { console.error(e); }
+      },
+    });
+  </script>
+</body>
+</html>

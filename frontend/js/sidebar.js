@@ -19,10 +19,53 @@
       ]
     },
     {
+      title: 'Connectors',
+      items: [
+        { label: 'Tool Catalog', href: 'tool-catalog.html', icon: 'fa-puzzle-piece', page: 'tool-catalog' },
+        { label: 'Connector Status', href: 'connector-status.html', icon: 'fa-heartbeat', page: 'connector-status' }
+      ]
+    },
+    {
+      title: 'CSPM',
+      items: [
+        { label: 'Dashboard', href: 'cspm-dashboard.html', icon: 'fa-cloud', page: 'cspm-dashboard' },
+        { label: 'Findings', href: 'cspm-findings.html', icon: 'fa-exclamation-triangle', page: 'cspm-findings' },
+        { label: 'Controls', href: 'cspm-control-detail.html', icon: 'fa-list-check', page: 'cspm-control-detail' },
+        { label: 'Connected Clouds', href: 'cspm-dashboard.html?tab=clouds', icon: 'fa-server', page: 'cspm-clouds' }
+      ]
+    },
+    {
       title: 'Analytics',
       items: [
         { label: 'Reports', href: 'reports.html', icon: 'fa-chart-bar', page: 'reports' },
         { label: 'Audit Log', href: 'audit-log.html', icon: 'fa-history', page: 'audit-log' }
+      ]
+    },
+    {
+      title: 'Administration',
+      items: [
+        { label: 'Tenants', href: 'admin-tenants.html', icon: 'fa-building', page: 'admin-tenants' },
+        { label: 'Modules', href: 'admin-modules.html', icon: 'fa-cubes', page: 'admin-modules' },
+        { label: 'Scoring Weights', href: 'admin-scoring.html', icon: 'fa-sliders', page: 'admin-scoring' },
+        { label: 'VAPT Vendors', href: 'admin-vapt.html', icon: 'fa-user-shield', page: 'admin-vapt' }
+      ]
+    },
+    {
+      title: 'Strategic Modules',
+      items: [
+        { label: 'DSPM', href: 'dspm-dashboard.html', icon: 'fa-database', page: 'dspm-dashboard', module_code: 'DSPM' },
+        { label: 'AI Security', href: 'ai-security-dashboard.html', icon: 'fa-robot', page: 'ai-security-dashboard', module_code: 'AI_SECURITY' },
+        { label: 'ZTNA', href: 'ztna-dashboard.html', icon: 'fa-lock', page: 'ztna-dashboard', module_code: 'ZTNA' },
+        { label: 'Attack Path', href: 'attack-path.html', icon: 'fa-project-diagram', page: 'attack-path', module_code: 'ATTACK_PATH' },
+        { label: 'Risk Quantification (FAIR)', href: 'risk-quantification.html', icon: 'fa-calculator', page: 'risk-quantification', module_code: 'RISK_QUANT' }
+      ]
+    },
+    {
+      title: 'Compliance',
+      items: [
+        { label: 'Compliance Dashboard', href: 'domain-compliance-summary.html', icon: 'fa-clipboard-list', page: 'domain-compliance-summary', module_code: 'COMPLIANCE' },
+        { label: 'Trust Center', href: 'trust-center/index.html', icon: 'fa-shield-alt', page: 'trust-center', module_code: 'COMPLIANCE' },
+        { label: 'Auditor Portal', href: '../compliance/frontend/auditor_portal.html', icon: 'fa-user-tie', page: 'auditor-portal', module_code: 'COMPLIANCE', adminOnly: true }
       ]
     },
     {
@@ -88,26 +131,41 @@
     });
     sidebar.appendChild(toggle);
 
-    // Header / Logo
+    // Header / Logo — pull from URIP.branding (set by theming.js); fallback to defaults
+    var brand = (window.URIP && window.URIP.branding) || {};
+    var brandAppName = brand.app_name || 'Semantic Gravity';
+    var brandTagline = brand.app_tagline || 'Unified Risk Intelligence';
+    var brandLogoUrl = brand.logo_url || null;
+
     var header = el('div', 'sidebar-header');
     var logoLink = document.createElement('a');
     logoLink.href = 'dashboard.html';
     logoLink.className = 'sidebar-logo';
 
     var logoIcon = el('div', 'sidebar-logo-icon');
-    logoIcon.appendChild(faIcon('fa-shield-alt'));
+    if (brandLogoUrl && /^https?:\/\//.test(brandLogoUrl)) {
+      var logoImg = document.createElement('img');
+      logoImg.src = brandLogoUrl;
+      logoImg.alt = brandAppName + ' logo';
+      logoImg.style.cssText = 'max-width:100%;max-height:32px;display:block';
+      logoImg.addEventListener('error', function () {
+        // Fallback to FA icon if logo URL fails to load
+        logoIcon.textContent = '';
+        logoIcon.appendChild(faIcon('fa-shield-alt'));
+      });
+      logoIcon.appendChild(logoImg);
+    } else {
+      logoIcon.appendChild(faIcon('fa-shield-alt'));
+    }
     logoLink.appendChild(logoIcon);
 
     var logoText = el('div', 'sidebar-logo-text');
 
     var logoTitle = el('div', 'sidebar-logo-title');
-    logoTitle.appendChild(document.createTextNode('Semantic '));
-    var gravitySpan = document.createElement('span');
-    gravitySpan.textContent = 'Gravity';
-    logoTitle.appendChild(gravitySpan);
+    logoTitle.textContent = brandAppName;
     logoText.appendChild(logoTitle);
 
-    var logoSubtitle = el('div', 'sidebar-logo-subtitle', 'Unified Risk Intelligence');
+    var logoSubtitle = el('div', 'sidebar-logo-subtitle', brandTagline);
     logoText.appendChild(logoSubtitle);
 
     logoLink.appendChild(logoText);
@@ -263,11 +321,13 @@
     // Clear existing topbar
     existingTopbar.textContent = '';
 
-    // Left side - org name
+    // Left side - org name (branded)
+    var brand2 = (window.URIP && window.URIP.branding) || {};
+    var orgLabel = brand2.app_name || 'Royal Enfield';
     var topbarLeft = el('div', 'topbar-left');
     var orgName = el('span', 'org-name');
     orgName.appendChild(faIcon('fa-building'));
-    orgName.appendChild(document.createTextNode(' Royal Enfield'));
+    orgName.appendChild(document.createTextNode(' ' + orgLabel));
     topbarLeft.appendChild(orgName);
     existingTopbar.appendChild(topbarLeft);
 
@@ -316,6 +376,20 @@
     topbarRight.appendChild(userMenu);
     existingTopbar.appendChild(topbarRight);
   }
+
+  // Re-render sidebar when branding arrives async (after the initial render).
+  // We track the active page so re-render preserves the highlight.
+  var _lastActivePage = null;
+  var _origRender = renderSidebar;
+  renderSidebar = function (activePage) {
+    _lastActivePage = activePage;
+    return _origRender(activePage);
+  };
+  document.addEventListener('urip:branding-applied', function () {
+    if (_lastActivePage !== null) {
+      _origRender(_lastActivePage);
+    }
+  });
 
   // Expose
   window.renderSidebar = renderSidebar;

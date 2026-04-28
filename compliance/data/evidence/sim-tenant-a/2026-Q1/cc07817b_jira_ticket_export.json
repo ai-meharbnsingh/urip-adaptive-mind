@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:25:36.271625",
+  "tickets": [
+    {
+      "id": "ADV-OPS-6866",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-831@adverb.in",
+      "created": "2026-04-08T13:25:36.271628",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-9721",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "To Do",
+      "assignee": "user-813@adverb.in",
+      "created": "2026-04-06T13:25:36.271631",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-9566",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "To Do",
+      "assignee": "user-806@adverb.in",
+      "created": "2026-03-04T13:25:36.271635",
+      "resolved": "2026-04-17T13:25:36.271636"
+    },
+    {
+      "id": "ADV-OPS-1076",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "To Do",
+      "assignee": "user-885@adverb.in",
+      "created": "2026-03-18T13:25:36.271639",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-7138",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-193@adverb.in",
+      "created": "2026-04-10T13:25:36.271642",
+      "resolved": "2026-04-26T13:25:36.271644"
+    },
+    {
+      "id": "ADV-OPS-6523",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-325@adverb.in",
+      "created": "2026-03-31T13:25:36.271647",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-3750",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-525@adverb.in",
+      "created": "2026-02-06T13:25:36.271650",
+      "resolved": "2026-04-21T13:25:36.271652"
+    },
+    {
+      "id": "ADV-OPS-6286",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "Done",
+      "assignee": "user-739@adverb.in",
+      "created": "2026-03-17T13:25:36.271654",
+      "resolved": null
+    }
+  ]
+}

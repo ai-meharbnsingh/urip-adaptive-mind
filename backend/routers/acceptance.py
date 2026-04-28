@@ -6,16 +6,28 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.database import get_db
 from backend.middleware.auth import get_current_user
+from backend.middleware.module_gate import require_module
 from backend.middleware.rbac import role_required
+from backend.middleware.tenant import TenantContext
 from backend.models.acceptance import AcceptanceRequest
 from backend.models.audit_log import AuditLog
 from backend.models.risk import Risk, RiskHistory
 from backend.models.user import User
-from backend.schemas.acceptance import AcceptanceAction, AcceptanceCreate, AcceptanceRead
+from backend.schemas.acceptance import (
+    AcceptanceAction,
+    AcceptanceActionResponse,
+    AcceptanceCreate,
+    AcceptanceListItem,
+    AcceptanceRead,
+    AcceptanceRiskDetail,
+)
+from backend.services.tenant_query import apply_tenant_filter
 from backend.services.threat_intel_service import get_apt_for_cve
 from backend.utils import parse_uuid
 
-router = APIRouter()
+# CRIT-007 — acceptance shares the VM module with risks (an acceptance is
+# always tied to a risk).  Router-level gate ensures every endpoint is covered.
+router = APIRouter(dependencies=[Depends(require_module("VM"))])
 
 
 def acceptance_to_read(a: AcceptanceRequest) -> AcceptanceRead:
@@ -35,13 +47,15 @@ def acceptance_to_read(a: AcceptanceRequest) -> AcceptanceRead:
     )
 
 
-@router.get("")
+@router.get("", response_model=list[AcceptanceListItem])
 async def list_acceptance_requests(
     status: str | None = Query(default=None),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    # Tenant-scoped — only return acceptance rows belonging to the caller's tenant
     query = select(AcceptanceRequest)
+    query = apply_tenant_filter(query, AcceptanceRequest)
     if status:
         query = query.where(AcceptanceRequest.status == status.lower())
     query = query.order_by(AcceptanceRequest.created_at.desc())
@@ -49,54 +63,78 @@ async def list_acceptance_requests(
     result = await db.execute(query)
     requests = result.scalars().all()
 
-    # Batch-fetch related risks and users to avoid N+1 queries
+    if not requests:
+        return []
+
+    # Batch-fetch related risks (already tenant-scoped via FK chain) and users.
+    #
+    # H4 (Codex Apr 28 audit) — defence-in-depth tenant filter on the Risk and
+    # User joins.  Mirrors the pattern in audit_log.py:86-89.  Even if a
+    # corrupted acceptance row references a risk_id or user_id from another
+    # tenant, the enrichment never loads the foreign row.
     risk_ids = [a.risk_id for a in requests]
     user_ids = [a.requested_by for a in requests]
 
-    risk_result = await db.execute(select(Risk).where(Risk.id.in_(risk_ids)))
+    caller_tenant_id = TenantContext.get_or_none()
+
+    risk_query = select(Risk).where(Risk.id.in_(risk_ids))
+    if caller_tenant_id is not None and hasattr(Risk, "tenant_id"):
+        risk_query = risk_query.where(Risk.tenant_id == caller_tenant_id)
+    risk_result = await db.execute(risk_query)
     risks_map = {r.id: r for r in risk_result.scalars().all()}
 
-    user_result = await db.execute(select(User).where(User.id.in_(user_ids)))
+    user_query = select(User).where(User.id.in_(user_ids))
+    if caller_tenant_id is not None and hasattr(User, "tenant_id"):
+        user_query = user_query.where(User.tenant_id == caller_tenant_id)
+    user_result = await db.execute(user_query)
     users_map = {u.id: u for u in user_result.scalars().all()}
 
-    # Enrich with risk details
-    enriched = []
+    enriched: list[AcceptanceListItem] = []
     for a in requests:
         risk = risks_map.get(a.risk_id)
         requester = users_map.get(a.requested_by)
-
-        enriched.append({
-            **acceptance_to_read(a).model_dump(),
-            "risk_detail": {
-                "risk_id": risk.risk_id if risk else None,
-                "finding": risk.finding if risk else None,
-                "cvss_score": float(risk.cvss_score) if risk else None,
-                "severity": risk.severity if risk else None,
-                "asset": risk.asset if risk else None,
-                "domain": risk.domain if risk else None,
-            } if risk else None,
-            "requester_name": requester.full_name if requester else None,
-            "requester_team": requester.team if requester else None,
-        })
+        base = acceptance_to_read(a)
+        item = AcceptanceListItem(
+            **base.model_dump(),
+            risk_detail=AcceptanceRiskDetail(
+                risk_id=risk.risk_id if risk else None,
+                finding=risk.finding if risk else None,
+                cvss_score=float(risk.cvss_score) if risk else None,
+                severity=risk.severity if risk else None,
+                asset=risk.asset if risk else None,
+                domain=risk.domain if risk else None,
+            ) if risk else None,
+            requester_name=requester.full_name if requester else None,
+            requester_team=requester.team if requester else None,
+        )
+        enriched.append(item)
 
     return enriched
 
 
-@router.post("")
+@router.post("", response_model=AcceptanceRead, status_code=201)
 async def create_acceptance_request(
     data: AcceptanceCreate,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(role_required("it_team")),
 ):
-    # Find risk by risk_id string
-    result = await db.execute(select(Risk).where(Risk.risk_id == data.risk_id))
+    # Tenant-scope risk lookup — prevents cross-tenant acceptance creation
+    result = await db.execute(
+        select(Risk).where(
+            Risk.risk_id == data.risk_id,
+            Risk.tenant_id == TenantContext.get(),
+        )
+    )
     risk = result.scalar_one_or_none()
     if not risk:
         raise HTTPException(status_code=404, detail="Risk not found")
 
-    # Check if already exists
+    # Check duplicate within the same tenant
     existing = await db.execute(
-        select(AcceptanceRequest).where(AcceptanceRequest.risk_id == risk.id)
+        select(AcceptanceRequest).where(
+            AcceptanceRequest.risk_id == risk.id,
+            AcceptanceRequest.tenant_id == TenantContext.get(),
+        )
     )
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=409, detail="Acceptance request already exists for this risk")
@@ -106,7 +144,6 @@ async def create_acceptance_request(
         f"CVSS {risk.cvss_score} ({risk.severity}). Re-review in 90 days."
     )
 
-    # Add APT warning if CVE has known threat actor associations
     apt_groups = get_apt_for_cve(risk.cve_id) if risk.cve_id else []
     if apt_groups:
         group_names = ", ".join(g["name"] for g in apt_groups)
@@ -127,6 +164,7 @@ async def create_acceptance_request(
         residual_risk=data.residual_risk,
         recommendation=recommendation,
         status="pending",
+        tenant_id=TenantContext.get(),
     )
     db.add(ar)
 
@@ -136,6 +174,7 @@ async def create_acceptance_request(
         resource_type="acceptance",
         resource_id=ar.id,
         details={"risk_id": data.risk_id},
+        tenant_id=TenantContext.get(),
     ))
 
     await db.commit()
@@ -143,14 +182,18 @@ async def create_acceptance_request(
     return acceptance_to_read(ar)
 
 
-@router.post("/{acceptance_id}/approve")
+@router.post("/{acceptance_id}/approve", response_model=AcceptanceActionResponse)
 async def approve_acceptance(
     acceptance_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(role_required("ciso")),
 ):
+    # Tenant-scope by joining tenant_id — cross-tenant approval impossible (404)
     result = await db.execute(
-        select(AcceptanceRequest).where(AcceptanceRequest.id == parse_uuid(acceptance_id, "acceptance_id"))
+        select(AcceptanceRequest).where(
+            AcceptanceRequest.id == parse_uuid(acceptance_id, "acceptance_id"),
+            AcceptanceRequest.tenant_id == TenantContext.get(),
+        )
     )
     ar = result.scalar_one_or_none()
     if not ar:
@@ -160,8 +203,9 @@ async def approve_acceptance(
     ar.reviewed_by = current_user.id
     ar.review_date = datetime.now(timezone.utc)
 
-    # Update risk status to accepted
-    risk_result = await db.execute(select(Risk).where(Risk.id == ar.risk_id))
+    risk_result = await db.execute(
+        select(Risk).where(Risk.id == ar.risk_id, Risk.tenant_id == TenantContext.get())
+    )
     risk = risk_result.scalar_one_or_none()
     if risk:
         db.add(RiskHistory(
@@ -179,13 +223,14 @@ async def approve_acceptance(
         resource_type="acceptance",
         resource_id=ar.id,
         details={"risk_id": str(ar.risk_id)},
+        tenant_id=TenantContext.get(),
     ))
 
     await db.commit()
-    return {"status": "approved", "acceptance_id": str(ar.id)}
+    return AcceptanceActionResponse(status="approved", acceptance_id=str(ar.id))
 
 
-@router.post("/{acceptance_id}/reject")
+@router.post("/{acceptance_id}/reject", response_model=AcceptanceActionResponse)
 async def reject_acceptance(
     acceptance_id: str,
     data: AcceptanceAction,
@@ -193,7 +238,10 @@ async def reject_acceptance(
     current_user: User = Depends(role_required("ciso")),
 ):
     result = await db.execute(
-        select(AcceptanceRequest).where(AcceptanceRequest.id == parse_uuid(acceptance_id, "acceptance_id"))
+        select(AcceptanceRequest).where(
+            AcceptanceRequest.id == parse_uuid(acceptance_id, "acceptance_id"),
+            AcceptanceRequest.tenant_id == TenantContext.get(),
+        )
     )
     ar = result.scalar_one_or_none()
     if not ar:
@@ -209,7 +257,8 @@ async def reject_acceptance(
         resource_type="acceptance",
         resource_id=ar.id,
         details={"reason": data.reason},
+        tenant_id=TenantContext.get(),
     ))
 
     await db.commit()
-    return {"status": "rejected", "acceptance_id": str(ar.id)}
+    return AcceptanceActionResponse(status="rejected", acceptance_id=str(ar.id))

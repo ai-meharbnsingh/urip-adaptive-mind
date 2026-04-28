@@ -6,7 +6,7 @@ Requires auth token to access protected routes.
 """
 import time
 import pytest
-from jose import jwt
+import jwt
 from sqlalchemy import select
 
 from compliance_backend.models.framework import Framework, FrameworkVersion, Control

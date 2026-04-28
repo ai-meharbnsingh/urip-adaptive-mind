@@ -1,0 +1,414 @@
+<svg width="2560" height="1097" viewBox="0 0 2560 1097" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- ── Blurs ── -->
+    <filter id="blurSoft"  x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="22"/></filter>
+    <filter id="blurMed"   x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="12"/></filter>
+    <filter id="glow"      x="-70%" y="-70%" width="240%" height="240%">
+      <feGaussianBlur stdDeviation="8" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="bigGlow"   x="-120%" y="-120%" width="340%" height="340%">
+      <feGaussianBlur stdDeviation="28" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="megaGlow"  x="-150%" y="-150%" width="400%" height="400%">
+      <feGaussianBlur stdDeviation="45" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <!-- ── Beam gradients ── -->
+    <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="12%"  stop-color="#E0FFFF" stop-opacity="0.75"/>
+      <stop offset="45%"  stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="72%"  stop-color="#A0FFF0" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.50"/>
+    </linearGradient>
+
+    <linearGradient id="beamCore" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#00F0FF" stop-opacity="0"/>
+      <stop offset="20%"  stop-color="#00F0FF" stop-opacity="0.35"/>
+      <stop offset="50%"  stop-color="#00F0FF" stop-opacity="0.65"/>
+      <stop offset="80%"  stop-color="#00F0FF" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#00F0FF" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- ── Glass gradients ── -->
+    <radialGradient id="glass" cx="35%" cy="30%" r="75%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="35%"  stop-color="#A0F0FF" stop-opacity="0.15"/>
+      <stop offset="70%"  stop-color="#00F0FF" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.30"/>
+    </radialGradient>
+
+    <radialGradient id="glassAmber" cx="35%" cy="30%" r="75%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.50"/>
+      <stop offset="35%"  stop-color="#FFE8A0" stop-opacity="0.15"/>
+      <stop offset="70%"  stop-color="#FBBF24" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#FFE8A0" stop-opacity="0.28"/>
+    </radialGradient>
+
+    <radialGradient id="glassViolet" cx="35%" cy="30%" r="75%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.50"/>
+      <stop offset="35%"  stop-color="#D8CCFF" stop-opacity="0.15"/>
+      <stop offset="70%"  stop-color="#A78BFA" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#D8CCFF" stop-opacity="0.28"/>
+    </radialGradient>
+
+    <!-- ── Floor reflection fade ── -->
+    <linearGradient id="floorFade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.18"/>
+      <stop offset="40%"  stop-color="#ffffff" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- ── Arrow markers ── -->
+    <marker id="arrowRed"  markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,1 L12,6 L0,11 Z" fill="#FF4D7D"/>
+    </marker>
+    <marker id="arrowGold" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,1 L12,6 L0,11 Z" fill="#FBBF24"/>
+    </marker>
+    <marker id="arrowCyan" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,1 L12,6 L0,11 Z" fill="#00F0FF"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,1 L12,6 L0,11 Z" fill="#60A5FA"/>
+    </marker>
+
+    <!-- ── Caustic refraction pattern ── -->
+    <pattern id="caustic" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M10,0 Q20,20 30,0 M0,20 Q20,30 0,40 M40,20 Q20,30 40,40" stroke="#ffffff" stroke-width="0.5" opacity="0.15" fill="none"/>
+    </pattern>
+  </defs>
+
+  <!-- ═══════════════════════════════════════════════
+       ENVIRONMENT & ATMOSPHERE
+       ═══════════════════════════════════════════════ -->
+
+  <!-- Deep ambient haze behind everything -->
+  <ellipse cx="1280" cy="520" rx="1220" ry="380" fill="#00F0FF" opacity="0.035" filter="url(#blurSoft)"/>
+  <ellipse cx="1280" cy="560" rx="1000" ry="280" fill="#5EEAD4" opacity="0.025" filter="url(#megaGlow)"/>
+
+  <!-- Floor plane (mirror-like base) -->
+  <rect x="0" y="640" width="2560" height="457" fill="#03080F" opacity="0.6"/>
+  <line x1="0" y1="640" x2="2560" y2="640" stroke="#00F0FF" stroke-width="1" opacity="0.12"/>
+
+  <!-- Floor grid lines (perspective hint) -->
+  <g stroke="#00F0FF" stroke-width="0.8" opacity="0.08">
+    <line x1="200" y1="640" x2="-100" y2="1097"/>
+    <line x1="600" y1="640" x2="400" y2="1097"/>
+    <line x1="1000" y1="640" x2="1000" y2="1097"/>
+    <line x1="1400" y1="640" x2="1600" y2="1097"/>
+    <line x1="1800" y1="640" x2="2200" y2="1097"/>
+    <line x1="2200" y1="640" x2="2660" y2="1097"/>
+  </g>
+  <g stroke="#00F0FF" stroke-width="0.5" opacity="0.06">
+    <line x1="0" y1="720" x2="2560" y2="720"/>
+    <line x1="0" y1="830" x2="2560" y2="830"/>
+    <line x1="0" y1="970" x2="2560" y2="970"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════
+       MAIN LIGHT BEAM (multi-layer for depth)
+       ═══════════════════════════════════════════════ -->
+
+  <!-- Outer beam halo -->
+  <rect x="0" y="498" width="1775" height="100" fill="url(#beam)" opacity="0.22" filter="url(#blurSoft)"/>
+  <!-- Mid beam glow -->
+  <rect x="0" y="522" width="1775" height="52" fill="url(#beam)" opacity="0.55" filter="url(#glow)"/>
+  <!-- Core beam -->
+  <rect x="0" y="535" width="1775" height="26" fill="url(#beam)" opacity="0.92"/>
+  <!-- Cyan core accent -->
+  <rect x="0" y="540" width="1775" height="16" fill="url(#beamCore)" opacity="0.55" filter="url(#glow)"/>
+  <!-- Bright center line -->
+  <line x1="0" y1="548" x2="1775" y2="548" stroke="#FFFFFF" stroke-width="5" opacity="0.9" filter="url(#glow)"/>
+  <line x1="0" y1="548" x2="1775" y2="548" stroke="#00F0FF" stroke-width="2" opacity="0.6" filter="url(#bigGlow)"/>
+
+  <!-- ELECTRICAL CURRENT — bright travelling pulse -->
+  <line x1="0" y1="548" x2="1775" y2="548" stroke="#FFFFFF" stroke-width="11" opacity="0.90"
+        stroke-linecap="round" stroke-dasharray="140 1700" filter="url(#megaGlow)">
+    <animate attributeName="stroke-dashoffset" from="1840" to="0" dur="2.4s" repeatCount="indefinite"/>
+  </line>
+  <line x1="0" y1="548" x2="1775" y2="548" stroke="#E0FFFF" stroke-width="5" opacity="0.95"
+        stroke-linecap="round" stroke-dasharray="80 1760" filter="url(#bigGlow)">
+    <animate attributeName="stroke-dashoffset" from="1840" to="0" dur="2.4s" repeatCount="indefinite"/>
+  </line>
+
+  <!-- Particle motes floating in beam -->
+  <g opacity="0.35" fill="#ffffff" filter="url(#glow)">
+    <circle cx="240" cy="530" r="1.5"><animate attributeName="cx" from="0" to="1775" dur="3.2s" repeatCount="indefinite"/></circle>
+    <circle cx="480" cy="565" r="1"><animate attributeName="cx" from="0" to="1775" dur="4.1s" repeatCount="indefinite"/></circle>
+    <circle cx="720" cy="538" r="2"><animate attributeName="cx" from="0" to="1775" dur="2.8s" repeatCount="indefinite"/></circle>
+    <circle cx="960" cy="558" r="1.2"><animate attributeName="cx" from="0" to="1775" dur="3.6s" repeatCount="indefinite"/></circle>
+    <circle cx="1200" cy="528" r="1.8"><animate attributeName="cx" from="0" to="1775" dur="2.5s" repeatCount="indefinite"/></circle>
+    <circle cx="1440" cy="562" r="1"><animate attributeName="cx" from="0" to="1775" dur="4.4s" repeatCount="indefinite"/></circle>
+    <circle cx="1680" cy="542" r="1.5"><animate attributeName="cx" from="0" to="1775" dur="3.0s" repeatCount="indefinite"/></circle>
+  </g>
+
+  <!-- Light streaks inside beam (speed lines) -->
+  <g opacity="0.30" stroke="#ffffff" stroke-linecap="round">
+    <line x1="100" y1="530" x2="360" y2="530" stroke-width="2"/>
+    <line x1="185" y1="570" x2="500" y2="570" stroke-width="2"/>
+    <line x1="570" y1="522" x2="900" y2="522" stroke-width="2"/>
+    <line x1="780" y1="575" x2="1170" y2="575" stroke-width="2"/>
+    <line x1="1030" y1="537" x2="1450" y2="537" stroke-width="2"/>
+    <line x1="1300" y1="568" x2="1600" y2="568" stroke-width="1.5"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════
+       5 GLASS LENS RINGS
+       ═══════════════════════════════════════════════ -->
+
+  <g id="rings">
+
+    <!-- ══ Ring 1 — white / silver ══ -->
+    <g transform="translate(390 548)">
+      <!-- Breathing ambient halo -->
+      <ellipse cx="0" cy="0" rx="108" ry="278" fill="#EAF6FF" opacity="0.10" filter="url(#blurSoft)">
+        <animate attributeName="opacity" values="0.08;0.14;0.08" dur="4s" repeatCount="indefinite"/>
+      </ellipse>
+      <!-- Thick outer glow rim -->
+      <ellipse cx="0" cy="0" rx="94" ry="254" fill="none" stroke="#EAF6FF" stroke-width="16" opacity="0.50" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.45;0.60;0.45" dur="3.5s" repeatCount="indefinite"/>
+      </ellipse>
+      <!-- Crisp outer rim -->
+      <ellipse cx="0" cy="0" rx="94" ry="254" fill="none" stroke="#FFFFFF" stroke-width="3.5" opacity="0.95"/>
+      <!-- Inner glass body (caustic pattern + gradient tint) -->
+      <ellipse cx="0" cy="0" rx="80" ry="228" fill="url(#glass)" opacity="0.35"/>
+      <ellipse cx="0" cy="0" rx="80" ry="228" fill="url(#caustic)" opacity="0.12"/>
+      <!-- Inner rim (back surface visible through glass) -->
+      <ellipse cx="0" cy="0" rx="68" ry="204" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.55"/>
+      <!-- Depth ring -->
+      <ellipse cx="0" cy="0" rx="44" ry="150" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.30"/>
+      <!-- Animated specular highlight — sweeps across the lens -->
+      <path d="M-92 -120 Q-100 0 -92 120" fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.70" stroke-linecap="round">
+        <animate attributeName="opacity" values="0.50;0.95;0.50" dur="3s" repeatCount="indefinite"/>
+      </path>
+      <!-- Top rim specular highlight -->
+      <path d="M-40 -248 Q-12 -258 24 -250" fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.85" stroke-linecap="round">
+        <animate attributeName="opacity" values="0.70;0.95;0.70" dur="2.5s" repeatCount="indefinite"/>
+      </path>
+      <!-- Bottom rim specular -->
+      <path d="M-28 250 Q4 258 34 246" fill="none" stroke="#EAF6FF" stroke-width="1.5" opacity="0.40" stroke-linecap="round"/>
+      <!-- Center core glow -->
+      <circle cx="0" cy="0" r="28" fill="#FFFFFF" opacity="0.92" filter="url(#bigGlow)"/>
+      <!-- Bright inner highlight -->
+      <circle cx="-5" cy="-7" r="8" fill="#FFFFFF" opacity="0.98"/>
+      <!-- Vertical pedestal connector -->
+      <line x1="0" y1="254" x2="0" y2="316" stroke="#EAF6FF" stroke-width="3" opacity="0.6"/>
+      <!-- Pedestal base (glassmorphism card look) -->
+      <rect x="-70" y="316" width="140" height="48" rx="10" fill="rgba(7,17,29,0.85)" stroke="#EAF6FF" stroke-width="2" opacity="0.92"/>
+      <rect x="-52" y="310" width="104" height="30" rx="5" fill="#EAF6FF" opacity="0.45" filter="url(#glow)"/>
+      <rect x="-48" y="314" width="96" height="22" rx="3" fill="none" stroke="#FFFFFF" stroke-width="0.5" opacity="0.3"/>
+      <!-- Floor reflection -->
+      <ellipse cx="0" cy="380" rx="62" ry="7" fill="#EAF6FF" opacity="0.20" filter="url(#blurSoft)"/>
+      <ellipse cx="0" cy="380" rx="40" ry="4" fill="#ffffff" opacity="0.08" filter="url(#glow)"/>
+    </g>
+
+    <!-- ══ Ring 2 — neon cyan / teal ══ -->
+    <g transform="translate(780 548)">
+      <ellipse cx="0" cy="0" rx="108" ry="278" fill="#00F0FF" opacity="0.12" filter="url(#blurSoft)">
+        <animate attributeName="opacity" values="0.10;0.18;0.10" dur="4.2s" repeatCount="indefinite"/>
+      </ellipse>
+      <ellipse cx="0" cy="0" rx="94" ry="254" fill="none" stroke="#00F0FF" stroke-width="16" opacity="0.60" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.55;0.75;0.55" dur="3.3s" repeatCount="indefinite"/>
+      </ellipse>
+      <ellipse cx="0" cy="0" rx="94" ry="254" fill="none" stroke="#BFFFF7" stroke-width="3.5" opacity="0.95"/>
+      <ellipse cx="0" cy="0" rx="80" ry="228" fill="url(#glass)" opacity="0.30"/>
+      <ellipse cx="0" cy="0" rx="80" ry="228" fill="url(#caustic)" opacity="0.12"/>
+      <ellipse cx="0" cy="0" rx="68" ry="204" fill="none" stroke="#BFFFF7" stroke-width="2" opacity="0.60"/>
+      <ellipse cx="0" cy="0" rx="44" ry="150" fill="none" stroke="#00F0FF" stroke-width="1" opacity="0.32"/>
+      <path d="M-92 -120 Q-100 0 -92 120" fill="none" stroke="#DFFFFB" stroke-width="3" opacity="0.75" stroke-linecap="round">
+        <animate attributeName="opacity" values="0.55;0.95;0.55" dur="3.2s" repeatCount="indefinite"/>
+      </path>
+      <path d="M-40 -248 Q-12 -258 24 -250" fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.85" stroke-linecap="round">
+        <animate attributeName="opacity" values="0.70;0.95;0.70" dur="2.7s" repeatCount="indefinite"/>
+      </path>
+      <path d="M-28 250 Q4 258 34 246" fill="none" stroke="#00F0FF" stroke-width="1.5" opacity="0.45" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="28" fill="#DFFFFB" opacity="0.95" filter="url(#bigGlow)"/>
+      <circle cx="-5" cy="-7" r="8" fill="#FFFFFF" opacity="0.98"/>
+      <line x1="0" y1="254" x2="0" y2="316" stroke="#00F0FF" stroke-width="3" opacity="0.65"/>
+      <rect x="-70" y="316" width="140" height="48" rx="10" fill="rgba(6,27,32,0.85)" stroke="#00F0FF" stroke-width="2" opacity="0.92"/>
+      <rect x="-52" y="310" width="104" height="30" rx="5" fill="#00F0FF" opacity="0.50" filter="url(#glow)"/>
+      <rect x="-48" y="314" width="96" height="22" rx="3" fill="none" stroke="#FFFFFF" stroke-width="0.5" opacity="0.25"/>
+      <ellipse cx="0" cy="380" rx="62" ry="7" fill="#00F0FF" opacity="0.28" filter="url(#blurSoft)"/>
+      <ellipse cx="0" cy="380" rx="40" ry="4" fill="#00F0FF" opacity="0.12" filter="url(#glow)"/>
+    </g>
+
+    <!-- ══ Ring 3 — amber / gold (weaponised pulse) ══ -->
+    <g transform="translate(1165 548)">
+      <ellipse cx="0" cy="0" rx="108" ry="278" fill="#FBBF24" opacity="0.12" filter="url(#blurSoft)">
+        <animate attributeName="opacity" values="0.10;0.18;0.10" dur="3.8s" repeatCount="indefinite"/>
+      </ellipse>
+      <ellipse cx="0" cy="0" rx="94" ry="254" fill="none" stroke="#FBBF24" stroke-width="16" opacity="0.60" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.55;0.75;0.55" dur="3.0s" repeatCount="indefinite"/>
+      </ellipse>
+      <ellipse cx="0" cy="0" rx="94" ry="254" fill="none" stroke="#FFE5A2" stroke-width="3.5" opacity="0.95"/>
+      <ellipse cx="0" cy="0" rx="80" ry="228" fill="url(#glassAmber)" opacity="0.30"/>
+      <ellipse cx="0" cy="0" rx="80" ry="228" fill="url(#caustic)" opacity="0.10"/>
+      <ellipse cx="0" cy="0" rx="68" ry="204" fill="none" stroke="#FFE5A2" stroke-width="2" opacity="0.60"/>
+      <ellipse cx="0" cy="0" rx="44" ry="150" fill="none" stroke="#FBBF24" stroke-width="1" opacity="0.34"/>
+      <!-- Red 'weaponised' ghost ring — pulses -->
+      <ellipse cx="14" cy="0" rx="102" ry="272" fill="none" stroke="#FF4D4D" stroke-width="3" opacity="0.25" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.15;0.45;0.15" dur="1.8s" repeatCount="indefinite"/>
+      </ellipse>
+      <path d="M-92 -120 Q-100 0 -92 120" fill="none" stroke="#FFF1B8" stroke-width="3" opacity="0.75" stroke-linecap="round">
+        <animate attributeName="opacity" values="0.55;0.95;0.55" dur="2.8s" repeatCount="indefinite"/>
+      </path>
+      <path d="M-40 -248 Q-12 -258 24 -250" fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.85" stroke-linecap="round">
+        <animate attributeName="opacity" values="0.70;0.95;0.70" dur="2.3s" repeatCount="indefinite"/>
+      </path>
+      <path d="M-28 250 Q4 258 34 246" fill="none" stroke="#FBBF24" stroke-width="1.5" opacity="0.50" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="30" fill="#FFF1B8" opacity="0.96" filter="url(#bigGlow)"/>
+      <circle cx="-5" cy="-7" r="8" fill="#FFFFFF" opacity="0.98"/>
+      <line x1="0" y1="254" x2="0" y2="316" stroke="#FBBF24" stroke-width="3" opacity="0.65"/>
+      <rect x="-70" y="316" width="140" height="48" rx="10" fill="rgba(30,22,5,0.85)" stroke="#FBBF24" stroke-width="2" opacity="0.92"/>
+      <rect x="-52" y="310" width="104" height="30" rx="5" fill="#FBBF24" opacity="0.55" filter="url(#glow)"/>
+      <rect x="-48" y="314" width="96" height="22" rx="3" fill="none" stroke="#FFFFFF" stroke-width="0.5" opacity="0.25"/>
+      <ellipse cx="0" cy="380" rx="62" ry="7" fill="#FBBF24" opacity="0.30" filter="url(#blurSoft)"/>
+      <ellipse cx="0" cy="380" rx="40" ry="4" fill="#FBBF24" opacity="0.12" filter="url(#glow)"/>
+    </g>
+
+    <!-- ══ Ring 4 — royal blue ══ -->
+    <g transform="translate(1545 548)">
+      <ellipse cx="0" cy="0" rx="108" ry="278" fill="#60A5FA" opacity="0.12" filter="url(#blurSoft)">
+        <animate attributeName="opacity" values="0.10;0.18;0.10" dur="4.5s" repeatCount="indefinite"/>
+      </ellipse>
+      <ellipse cx="0" cy="0" rx="94" ry="254" fill="none" stroke="#60A5FA" stroke-width="16" opacity="0.65" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.60;0.80;0.60" dur="3.7s" repeatCount="indefinite"/>
+      </ellipse>
+      <ellipse cx="0" cy="0" rx="94" ry="254" fill="none" stroke="#B8D8FF" stroke-width="3.5" opacity="0.95"/>
+      <ellipse cx="0" cy="0" rx="80" ry="228" fill="url(#glass)" opacity="0.25"/>
+      <ellipse cx="0" cy="0" rx="80" ry="228" fill="url(#caustic)" opacity="0.10"/>
+      <ellipse cx="0" cy="0" rx="68" ry="204" fill="none" stroke="#B8D8FF" stroke-width="2" opacity="0.60"/>
+      <ellipse cx="0" cy="0" rx="44" ry="150" fill="none" stroke="#60A5FA" stroke-width="1" opacity="0.34"/>
+      <path d="M-92 -120 Q-100 0 -92 120" fill="none" stroke="#DDEEFF" stroke-width="3" opacity="0.75" stroke-linecap="round">
+        <animate attributeName="opacity" values="0.55;0.95;0.55" dur="3.1s" repeatCount="indefinite"/>
+      </path>
+      <path d="M-40 -248 Q-12 -258 24 -250" fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.85" stroke-linecap="round">
+        <animate attributeName="opacity" values="0.70;0.95;0.70" dur="2.6s" repeatCount="indefinite"/>
+      </path>
+      <path d="M-28 250 Q4 258 34 246" fill="none" stroke="#60A5FA" stroke-width="1.5" opacity="0.50" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="29" fill="#DDEEFF" opacity="0.95" filter="url(#bigGlow)"/>
+      <circle cx="-5" cy="-7" r="8" fill="#FFFFFF" opacity="0.98"/>
+      <line x1="0" y1="254" x2="0" y2="316" stroke="#60A5FA" stroke-width="3" opacity="0.65"/>
+      <rect x="-70" y="316" width="140" height="48" rx="10" fill="rgba(6,17,36,0.85)" stroke="#60A5FA" stroke-width="2" opacity="0.92"/>
+      <rect x="-52" y="310" width="104" height="30" rx="5" fill="#60A5FA" opacity="0.55" filter="url(#glow)"/>
+      <rect x="-48" y="314" width="96" height="22" rx="3" fill="none" stroke="#FFFFFF" stroke-width="0.5" opacity="0.25"/>
+      <ellipse cx="0" cy="380" rx="62" ry="7" fill="#60A5FA" opacity="0.30" filter="url(#blurSoft)"/>
+      <ellipse cx="0" cy="380" rx="40" ry="4" fill="#60A5FA" opacity="0.12" filter="url(#glow)"/>
+    </g>
+
+    <!-- ══ Ring 5 — violet / prismatic (final, largest, most dramatic) ══ -->
+    <g transform="translate(1910 548)">
+      <ellipse cx="0" cy="0" rx="112" ry="282" fill="#A78BFA" opacity="0.16" filter="url(#blurSoft)">
+        <animate attributeName="opacity" values="0.13;0.22;0.13" dur="4.0s" repeatCount="indefinite"/>
+      </ellipse>
+      <ellipse cx="0" cy="0" rx="96" ry="258" fill="none" stroke="#A78BFA" stroke-width="16" opacity="0.70" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.65;0.85;0.65" dur="3.4s" repeatCount="indefinite"/>
+      </ellipse>
+      <ellipse cx="0" cy="0" rx="96" ry="258" fill="none" stroke="#D8CCFF" stroke-width="3.5" opacity="0.97"/>
+      <ellipse cx="0" cy="0" rx="82" ry="232" fill="url(#glassViolet)" opacity="0.30"/>
+      <ellipse cx="0" cy="0" rx="82" ry="232" fill="url(#caustic)" opacity="0.12"/>
+      <ellipse cx="0" cy="0" rx="70" ry="208" fill="none" stroke="#D8CCFF" stroke-width="2" opacity="0.62"/>
+      <ellipse cx="0" cy="0" rx="46" ry="154" fill="none" stroke="#A78BFA" stroke-width="1" opacity="0.36"/>
+      <!-- Prismatic refraction streaks — chromatic dispersion -->
+      <path d="M-28,-158 C50,-96 -44,-52 38,0 C-44,56 56,96 -20,158" stroke="#FF6FAE" stroke-width="3" fill="none" opacity="0.55" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.35;0.70;0.35" dur="2.2s" repeatCount="indefinite"/>
+      </path>
+      <path d="M24,-158 C-50,-96 44,-52 -38,0 C44,56 -56,96 20,158" stroke="#00F0FF" stroke-width="3" fill="none" opacity="0.50" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.30;0.65;0.30" dur="2.6s" repeatCount="indefinite"/>
+      </path>
+      <path d="M-92 -120 Q-100 0 -92 120" fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.80" stroke-linecap="round">
+        <animate attributeName="opacity" values="0.60;0.95;0.60" dur="2.9s" repeatCount="indefinite"/>
+      </path>
+      <path d="M-40 -248 Q-12 -258 24 -250" fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.90" stroke-linecap="round">
+        <animate attributeName="opacity" values="0.75;0.95;0.75" dur="2.4s" repeatCount="indefinite"/>
+      </path>
+      <path d="M-28 250 Q4 258 34 246" fill="none" stroke="#A78BFA" stroke-width="1.5" opacity="0.55" stroke-linecap="round"/>
+      <!-- Extra-bright core for the final lens -->
+      <circle cx="0" cy="0" r="34" fill="#FFFFFF" opacity="1" filter="url(#bigGlow)"/>
+      <circle cx="0" cy="0" r="18" fill="#E8E0FF" opacity="0.95" filter="url(#megaGlow)"/>
+      <circle cx="-6" cy="-8" r="10" fill="#FFFFFF" opacity="1"/>
+      <line x1="0" y1="258" x2="0" y2="316" stroke="#A78BFA" stroke-width="3" opacity="0.70"/>
+      <rect x="-70" y="316" width="140" height="48" rx="10" fill="rgba(19,10,38,0.85)" stroke="#A78BFA" stroke-width="2" opacity="0.92"/>
+      <rect x="-52" y="310" width="104" height="30" rx="5" fill="#A78BFA" opacity="0.60" filter="url(#glow)"/>
+      <rect x="-48" y="314" width="96" height="22" rx="3" fill="none" stroke="#FFFFFF" stroke-width="0.5" opacity="0.25"/>
+      <ellipse cx="0" cy="380" rx="64" ry="8" fill="#A78BFA" opacity="0.32" filter="url(#blurSoft)"/>
+      <ellipse cx="0" cy="380" rx="42" ry="5" fill="#A78BFA" opacity="0.14" filter="url(#glow)"/>
+    </g>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════
+       BRAIDED STREAMS (converging into lens 5)
+       ═══════════════════════════════════════════════ -->
+
+  <g fill="none" stroke-linecap="round" filter="url(#glow)">
+    <path d="M1545 548 C1630 470 1715 626 1910 548" stroke="#00F0FF" stroke-width="9" opacity="0.72">
+      <animate attributeName="opacity" values="0.55;0.85;0.55" dur="2.0s" repeatCount="indefinite"/>
+    </path>
+    <path d="M1545 548 C1630 626 1715 470 1910 548" stroke="#60A5FA" stroke-width="9" opacity="0.72">
+      <animate attributeName="opacity" values="0.55;0.85;0.55" dur="2.4s" repeatCount="indefinite"/>
+    </path>
+    <path d="M1600 548 C1690 506 1760 590 1910 548" stroke="#FBBF24" stroke-width="6" opacity="0.52">
+      <animate attributeName="opacity" values="0.35;0.70;0.35" dur="1.8s" repeatCount="indefinite"/>
+    </path>
+    <path d="M1600 548 C1690 590 1760 506 1910 548" stroke="#FF4D7D" stroke-width="6" opacity="0.52">
+      <animate attributeName="opacity" values="0.35;0.70;0.35" dur="2.2s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- Traveling current pulses along braided paths -->
+  <g fill="none" stroke-linecap="round" stroke-width="6" filter="url(#glow)">
+    <path d="M1545 548 C1630 470 1715 626 1910 548" stroke="#DAFFF7" opacity="0.85" stroke-dasharray="50 480">
+      <animate attributeName="stroke-dashoffset" from="530" to="0" dur="2.0s" repeatCount="indefinite"/>
+    </path>
+    <path d="M1545 548 C1630 626 1715 470 1910 548" stroke="#DCEDFF" opacity="0.85" stroke-dasharray="50 480">
+      <animate attributeName="stroke-dashoffset" from="530" to="0" dur="2.4s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════
+       PRISMATIC ARROW FAN (4 verdict outputs)
+       ═══════════════════════════════════════════════ -->
+
+  <g fill="none" stroke-linecap="round" filter="url(#glow)">
+    <path d="M1910 548 C2000 490 2120 425 2310 360" stroke="#FF4D7D" stroke-width="4" marker-end="url(#arrowRed)"  opacity="0.9"/>
+    <path d="M1910 548 C2010 522 2130 478 2310 448" stroke="#FBBF24" stroke-width="4" marker-end="url(#arrowGold)" opacity="0.9"/>
+    <path d="M1910 548 C2020 548 2160 548 2310 548" stroke="#00F0FF" stroke-width="4" marker-end="url(#arrowCyan)" opacity="0.95"/>
+    <path d="M1910 548 C2010 578 2130 615 2310 648" stroke="#60A5FA" stroke-width="4" marker-end="url(#arrowBlue)" opacity="0.9"/>
+  </g>
+
+  <!-- Traveling current pulses along each arrow -->
+  <g fill="none" stroke-linecap="round" stroke-width="6" filter="url(#glow)">
+    <path d="M1910 548 C2000 490 2120 425 2310 360" stroke="#FFE2EC" opacity="0.90" stroke-dasharray="65 540">
+      <animate attributeName="stroke-dashoffset" from="605" to="0" dur="2.4s" begin="0s"    repeatCount="indefinite"/>
+    </path>
+    <path d="M1910 548 C2010 522 2130 478 2310 448" stroke="#FFF3C2" opacity="0.90" stroke-dasharray="65 540">
+      <animate attributeName="stroke-dashoffset" from="605" to="0" dur="2.4s" begin="0.06s" repeatCount="indefinite"/>
+    </path>
+    <path d="M1910 548 C2020 548 2160 548 2310 548" stroke="#DAFFF7" opacity="0.95" stroke-dasharray="65 540">
+      <animate attributeName="stroke-dashoffset" from="605" to="0" dur="2.4s" begin="0.12s" repeatCount="indefinite"/>
+    </path>
+    <path d="M1910 548 C2010 578 2130 615 2310 648" stroke="#DCEDFF" opacity="0.90" stroke-dasharray="65 540">
+      <animate attributeName="stroke-dashoffset" from="605" to="0" dur="2.4s" begin="0.18s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════
+       FINAL BURST (where beam splits)
+       ═══════════════════════════════════════════════ -->
+
+  <circle cx="1910" cy="548" r="30" fill="#ffffff" opacity="0.70" filter="url(#megaGlow)"/>
+  <circle cx="1910" cy="548" r="18" fill="#EFFFFF" opacity="0.90" filter="url(#bigGlow)"/>
+  <circle cx="1910" cy="548" r="8" fill="#ffffff" opacity="1"/>
+
+  <!-- Subtle sparkle particles near burst -->
+  <g fill="#ffffff" opacity="0.6" filter="url(#glow)">
+    <circle cx="1935" cy="520" r="1.5"><animate attributeName="opacity" values="0;0.8;0" dur="1.5s" repeatCount="indefinite"/></circle>
+    <circle cx="1890" cy="575" r="2"><animate attributeName="opacity" values="0;0.7;0" dur="2.0s" begin="0.3s" repeatCount="indefinite"/></circle>
+    <circle cx="1945" cy="555" r="1"><animate attributeName="opacity" values="0;0.9;0" dur="1.8s" begin="0.6s" repeatCount="indefinite"/></circle>
+    <circle cx="1885" cy="535" r="1.5"><animate attributeName="opacity" values="0;0.6;0" dur="2.2s" begin="0.9s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSPM Findings | URIP</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="urip-app">
+  <div id="app-shell" data-page="cspm-dashboard">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">CSPM Findings</h1>
+        <p class="page-subtitle">Filterable list of cloud security posture findings</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="flex gap-2">
+          <select id="filterStatus" class="form-input" style="width:auto">
+            <option value="">All Statuses</option>
+            <option value="fail">Fail</option>
+            <option value="pass">Pass</option>
+            <option value="inconclusive">Inconclusive</option>
+          </select>
+          <select id="filterSeverity" class="form-input" style="width:auto">
+            <option value="">All Severities</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+          <select id="filterCloud" class="form-input" style="width:auto">
+            <option value="">All Clouds</option>
+            <option value="aws">AWS</option>
+            <option value="azure">Azure</option>
+            <option value="gcp">GCP</option>
+          </select>
+          <button class="btn btn-outline" id="btnFilter"><i class="fas fa-filter"></i> Filter</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <table class="data-table" id="findingsTable">
+          <thead><tr><th>Control</th><th>Title</th><th>Severity</th><th>Status</th><th>Run At</th></tr></thead>
+          <tbody id="findingsBody"><tr><td colspan="5" class="text-center">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      window.URIP.shell.mount({
+        page: 'cspm-dashboard',
+        title: 'CSPM Findings',
+        breadcrumb: 'Strategic Modules / CSPM / Findings'
+      });
+    });
+  </script>
+  <script src="js/cspm-findings.js"></script>
+</body>
+</html>

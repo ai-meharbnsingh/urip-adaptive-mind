@@ -1,0 +1,17 @@
+# Don't ship dev / source-of-truth artefacts
+node_modules/
+.DS_Store
+*.swp
+*.bak
+*~
+.git/
+.env
+.env.*
+README.md
+
+# Don't ship pages that hard-require the backend (until a live API is wired)
+# Comment any line below to ship that page as a demo:
+# admin-*.html
+# dashboard.html
+# audit-log.html
+# acceptance-workflow.html

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSPM Dashboard | URIP</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="urip-app">
+  <div id="app-shell" data-page="dspm-dashboard">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">DSPM Dashboard</h1>
+        <p class="page-subtitle">
+          Data Security Posture Management — discovered data stores + sensitive findings.
+          <em style="color:var(--u-fg-3);font-size:.85em;">
+            MVP scaffold — content classifier and lineage graph are roadmap.
+          </em>
+        </p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-outline" id="btnRefresh"><i class="fas fa-sync-alt"></i> Refresh</button>
+        <button class="btn btn-primary" id="btnScan"><i class="fas fa-search"></i> Scan from CSPM</button>
+      </div>
+    </div>
+
+    <div class="action-row" id="summaryWidgets">
+      <div class="action-tile">
+        <div class="action-tile-icon icon-info"><i class="fas fa-database"></i></div>
+        <div class="action-tile-content">
+          <span class="action-tile-value" id="totalAssets">--</span>
+          <span class="action-tile-label">Data Assets</span>
+        </div>
+      </div>
+      <div class="action-tile">
+        <div class="action-tile-icon icon-warn"><i class="fas fa-shield-virus"></i></div>
+        <div class="action-tile-content">
+          <span class="action-tile-value" id="sensitiveCount">--</span>
+          <span class="action-tile-label">Sensitive Findings</span>
+        </div>
+      </div>
+      <div class="action-tile">
+        <div class="action-tile-icon icon-fail"><i class="fas fa-key"></i></div>
+        <div class="action-tile-content">
+          <span class="action-tile-value" id="restrictedCount">--</span>
+          <span class="action-tile-label">Restricted-class Stores</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title"><i class="fas fa-database" style="color:var(--u-cyan);margin-right:.5rem"></i>Data Assets</span>
+      </div>
+      <div class="card-body">
+        <table class="data-table" id="assetsTable">
+          <thead>
+            <tr>
+              <th>Location</th>
+              <th>Store Type</th>
+              <th>Classification</th>
+              <th>Sensitive Types</th>
+              <th>Owner</th>
+              <th>Last Scanned</th>
+            </tr>
+          </thead>
+          <tbody id="assetsBody">
+            <tr><td colspan="6" class="text-center">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      window.URIP.shell.mount({
+        page: 'dspm-dashboard',
+        title: 'DSPM Dashboard',
+        breadcrumb: 'Strategic Modules / DSPM'
+      });
+    });
+  </script>
+  <script>
+    (async function() {
+      // Wait briefly for shell to mount before grabbing tbody (mount is sync at DOMContentLoaded)
+      const tbody = document.getElementById('assetsBody');
+      if (!tbody) return;
+      try {
+        const resp = await window.URIP.apiFetch('/dspm/data-assets', { silent: true });
+        const items = resp.items || [];
+        document.getElementById('totalAssets').textContent = resp.total ?? items.length;
+        document.getElementById('restrictedCount').textContent =
+          items.filter(a => a.data_classification === 'restricted').length;
+        if (items.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="text-center">No data assets discovered yet — run "Scan from CSPM" to seed.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = items.map(a => `
+          <tr>
+            <td>${a.location}</td>
+            <td>${a.store_type}</td>
+            <td><span class="badge badge-${a.data_classification === 'restricted' ? 'critical' : 'info'}">${a.data_classification}</span></td>
+            <td>${(a.sensitive_data_types || []).join(', ') || '—'}</td>
+            <td>${a.owner || '—'}</td>
+            <td>${a.last_scanned_at ? new Date(a.last_scanned_at).toLocaleString() : '—'}</td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-error">Failed to load: ${e.message}</td></tr>`;
+      }
+
+      try {
+        const resp = await window.URIP.apiFetch('/dspm/sensitive-discoveries', { silent: true });
+        document.getElementById('sensitiveCount').textContent = resp.total ?? (resp.items || []).length;
+      } catch (e) { /* non-blocking */ }
+    })();
+  </script>
+</body>
+</html>

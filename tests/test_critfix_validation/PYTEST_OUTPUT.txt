@@ -1,0 +1,38 @@
+/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+collecting ... collected 23 items
+
+tests/test_critfix_validation/test_high004_sort_allowlist.py::test_invalid_sort_by_returns_422[asyncio] PASSED [  4%]
+tests/test_critfix_validation/test_high004_sort_allowlist.py::test_attribute_probe_blocked[asyncio] PASSED [  8%]
+tests/test_critfix_validation/test_high004_sort_allowlist.py::test_valid_sort_by_returns_200[asyncio] PASSED [ 13%]
+tests/test_critfix_validation/test_high004_sort_allowlist.py::test_default_sort_still_works[asyncio] PASSED [ 17%]
+tests/test_critfix_validation/test_high004_sort_allowlist.py::test_invalid_sort_by_lists_allowed_values[asyncio] PASSED [ 21%]
+tests/test_critfix_validation/test_high009_rate_limit.py::test_login_rate_limit_per_real_client_ip[asyncio] PASSED [ 26%]
+tests/test_critfix_validation/test_high009_rate_limit.py::test_login_rate_limit_isolated_per_ip[asyncio] PASSED [ 30%]
+tests/test_critfix_validation/test_high009_rate_limit.py::test_x_forwarded_for_ignored_when_proxy_not_trusted[asyncio] PASSED [ 34%]
+tests/test_critfix_validation/test_high012_taxonomy_regex.py::test_post_taxonomy_rejects_regex_metacharacters[asyncio] PASSED [ 39%]
+tests/test_critfix_validation/test_high012_taxonomy_regex.py::test_post_taxonomy_accepts_literal_keyword[asyncio] PASSED [ 43%]
+tests/test_critfix_validation/test_high012_taxonomy_regex.py::test_bulk_taxonomy_rejects_regex_metacharacters[asyncio] PASSED [ 47%]
+tests/test_critfix_validation/test_high012_taxonomy_regex.py::test_patch_taxonomy_rejects_regex_metacharacters[asyncio] PASSED [ 52%]
+tests/test_critfix_validation/test_new3_sqlalchemy_pin.py::test_sqlalchemy_runtime_version_at_least_2_0_40 PASSED [ 56%]
+tests/test_critfix_validation/test_new3_sqlalchemy_pin.py::test_requirements_txt_pins_sqlalchemy_at_least_2_0_40 PASSED [ 60%]
+tests/test_critfix_validation/test_new3_sqlalchemy_pin.py::test_pyproject_toml_pins_sqlalchemy_compatible_version PASSED [ 65%]
+tests/test_critfix_validation/test_new3_sqlalchemy_pin.py::test_risk_model_imports_cleanly_on_current_python PASSED [ 69%]
+tests/test_critfix_validation/test_new5_fernet_key_param.py::test_simulator_signature_accepts_fernet_key PASSED [ 73%]
+tests/test_critfix_validation/test_new5_fernet_key_param.py::test_explicit_fernet_key_drives_encryption[asyncio] PASSED [ 78%]
+tests/test_critfix_validation/test_new5_fernet_key_param.py::test_env_var_fallback_still_works[asyncio] PASSED [ 82%]
+tests/test_seed_simulators_credentials.py::test_creates_credential_rows_for_all_connectors[asyncio] PASSED [ 86%]
+tests/test_seed_simulators_credentials.py::test_encrypted_blob_is_bytes_not_plaintext[asyncio] PASSED [ 91%]
+tests/test_seed_simulators_credentials.py::test_unique_constraint_per_tenant_connector[asyncio] PASSED [ 95%]
+tests/test_seed_simulators_credentials.py::test_tenant_isolation[asyncio] PASSED [100%]
+
+=============================== warnings summary ===============================
+backend/config.py:154
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/backend/config.py:154: RuntimeWarning: [URIP CONFIG WARNING] JWT_SECRET_KEY is using the dev default (urip-dev-secret-change-in-production). This is acceptable in dev ONLY. You MUST rotate this secret before any prod / staging deployment (set URIP_ENV=production and a real JWT_SECRET_KEY).
+    _enforce_jwt_secret_policy(settings)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 23 passed, 1 warning in 2.04s =========================

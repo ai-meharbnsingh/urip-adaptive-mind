@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Integer, Numeric, String, Text
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Index, Integer, Numeric, String, Text
+from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from backend.database import Base
@@ -34,6 +34,12 @@ class Risk(Base):
     status: Mapped[str] = mapped_column(String(15), nullable=False, default="open")
     sla_deadline: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     jira_ticket: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    # Project_33a Roadmap-1: bidirectional ticketing.
+    # `ticket_id` is provider-agnostic — Jira "URIP-42" or ServiceNow
+    # "INC0010234" — and `ticket_provider` records which provider created it
+    # so webhooks / pollers know how to look it up later.
+    ticket_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    ticket_provider: Mapped[str | None] = mapped_column(String(20), nullable=True)
     cve_id: Mapped[str | None] = mapped_column(String(30), nullable=True)
     # Exploitability Intelligence fields
     epss_score: Mapped[float | None] = mapped_column(Numeric(6, 5), nullable=True)
@@ -43,11 +49,35 @@ class Risk(Base):
     # Asset criticality
     asset_tier: Mapped[int | None] = mapped_column(Integer, nullable=True)  # 1=Critical, 2=High, 3=Medium, 4=Low
     composite_score: Mapped[float | None] = mapped_column(Numeric(4, 1), nullable=True)
-    # Multi-tenant FK
-    tenant_id: Mapped[uuid.UUID | None] = mapped_column(
+    # Universal Intelligence Engine (v3 §3.4–§4.1)
+    fingerprint_key: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    sources_attributed: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list, server_default="[]")
+    advisory_status: Mapped[str | None] = mapped_column(
+        Enum("valid", "patch_available", "expired", "redundant", name="advisory_status_enum"),
+        nullable=True,
+    )
+    remediation_steps: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list, server_default="[]")
+    # M6 (Gemini HIGH-G5 → MEDIUM, Kimi MED-011) — tenant_id is now NOT NULL.
+    # All Risk rows MUST belong to a tenant — there is no concept of an
+    # "untenanted" risk in URIP.  The application layer always stamps tenant_id
+    # via TenantContext.get() on insert; this constraint catches any future
+    # code path that forgets.
+    tenant_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("tenants.id", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    # P33a — Asset model integration. Links each Risk to its first-class
+    # Asset row.  Nullable so existing rows are not broken; new ingest path
+    # populates this via asset_service.upsert_asset().  ondelete="SET NULL"
+    # because deleting an Asset (rare, admin-only) should not cascade to
+    # historical risks — they keep the asset hostname string in `asset` for
+    # audit purposes.
+    asset_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("assets.id", ondelete="SET NULL"),
         nullable=True,
+        index=True,
     )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(

@@ -1,0 +1,24 @@
+/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+collecting ... collected 15 items
+
+tests/test_critfix_uploads/test_high011_evidence_upload.py::test_oversize_upload_rejected_413 PASSED [  6%]
+tests/test_critfix_uploads/test_high011_evidence_upload.py::test_under_size_cap_accepted PASSED [ 13%]
+tests/test_critfix_uploads/test_high011_evidence_upload.py::test_executable_upload_rejected_422 PASSED [ 20%]
+tests/test_critfix_uploads/test_high011_evidence_upload.py::test_allowlisted_content_types_accepted[image/png-screenshot.png] PASSED [ 26%]
+tests/test_critfix_uploads/test_high011_evidence_upload.py::test_allowlisted_content_types_accepted[image/jpeg-photo.jpg] PASSED [ 33%]
+tests/test_critfix_uploads/test_high011_evidence_upload.py::test_allowlisted_content_types_accepted[application/pdf-policy.pdf] PASSED [ 40%]
+tests/test_critfix_uploads/test_high011_evidence_upload.py::test_allowlisted_content_types_accepted[application/json-config.json] PASSED [ 46%]
+tests/test_critfix_uploads/test_high011_evidence_upload.py::test_allowlisted_content_types_accepted[text/csv-data.csv] PASSED [ 53%]
+tests/test_critfix_uploads/test_high011_evidence_upload.py::test_allowlisted_content_types_accepted[text/plain-log.txt] PASSED [ 60%]
+tests/test_critfix_uploads/test_high011_evidence_upload.py::test_allowlisted_content_types_accepted[application/zip-bundle.zip] PASSED [ 66%]
+tests/test_critfix_uploads/test_high011_evidence_upload.py::test_directory_traversal_filename_sanitised PASSED [ 73%]
+tests/test_critfix_uploads/test_high011_evidence_upload.py::test_filename_uuid_prefix_prevents_collision PASSED [ 80%]
+tests/test_critfix_uploads/test_high011_vendor_upload.py::test_vendor_doc_oversize_413 PASSED [ 86%]
+tests/test_critfix_uploads/test_high011_vendor_upload.py::test_vendor_doc_disallowed_type_422 PASSED [ 93%]
+tests/test_critfix_uploads/test_high011_vendor_upload.py::test_vendor_doc_filename_sanitised PASSED [100%]
+
+============================== 15 passed in 0.34s ==============================

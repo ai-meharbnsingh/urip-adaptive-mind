@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Trust Center</title>
+<link rel="stylesheet" href="/css/main.css"/>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+         max-width: 920px; margin: 0 auto; padding: 32px 24px; color: #1a1a1a; }
+  header { padding-bottom: 24px; border-bottom: 1px solid #e5e7eb; margin-bottom: 32px; }
+  h1 { margin: 0 0 8px 0; font-size: 28px; }
+  .doc-card { padding: 16px; border: 1px solid #e5e7eb; border-radius: 6px;
+              margin-bottom: 12px; display: flex; justify-content: space-between; }
+  .doc-card .meta { color: #6b7280; font-size: 14px; margin-top: 4px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px;
+           font-size: 12px; background: #fef3c7; color: #92400e; }
+  button { background: #1f2937; color: #fff; border: 0; padding: 8px 16px;
+           border-radius: 4px; cursor: pointer; font-size: 14px; }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="brand-name">Trust Center</h1>
+  <p style="color:#6b7280">Security documents and certifications. Documents marked
+    "NDA required" need an electronic signature before access.</p>
+</header>
+<main id="docs"></main>
+<script>
+async function load() {
+  const slug = location.pathname.split("/").filter(Boolean).pop() || "demo";
+  const resp = await fetch(`/trust/${slug}`);
+  if (!resp.ok) {
+    document.getElementById("docs").innerHTML = "<p>Trust Center not found.</p>";
+    return;
+  }
+  const data = await resp.json();
+  document.getElementById("brand-name").textContent = `${data.tenant.name} — Trust Center`;
+  const html = data.documents.map(d => `
+    <div class="doc-card">
+      <div>
+        <strong>${d.title}</strong>
+        <div class="meta">${d.doc_type}${d.requires_nda ? ' · <span class="badge">NDA required</span>' : ''}</div>
+      </div>
+      <a href="/trust-center/request.html?slug=${slug}&doc=${d.id}"><button>Request access</button></a>
+    </div>
+  `).join("");
+  document.getElementById("docs").innerHTML = html || "<p>No published documents yet.</p>";
+}
+load();
+</script>
+</body>
+</html>

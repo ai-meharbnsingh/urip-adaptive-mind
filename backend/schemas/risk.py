@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class RiskCreate(BaseModel):
@@ -53,8 +53,7 @@ class RiskRead(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RiskListResponse(BaseModel):
@@ -66,3 +65,16 @@ class RiskListResponse(BaseModel):
 
 class AssignRequest(BaseModel):
     user_id: str
+
+
+class RiskHistoryEntry(BaseModel):
+    field_changed: str
+    old_value: str | None = None
+    new_value: str | None = None
+    changed_by: str
+    created_at: str
+
+
+class RiskDetailResponse(BaseModel):
+    risk: RiskRead
+    history: list[RiskHistoryEntry]

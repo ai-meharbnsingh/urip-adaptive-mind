@@ -19,9 +19,9 @@ class Tenant(Base):
     Fields
     ------
     id          : UUID primary key
-    name        : Human-readable display name, e.g. "Adverb Technologies"
-    slug        : URL-safe unique identifier, e.g. "adverb" — used in subdomain routing
-    domain      : Primary email domain for this tenant, e.g. "adverb.com"
+    name        : Human-readable display name, e.g. "Acme Corp"
+    slug        : URL-safe unique identifier, e.g. "acme" — used in subdomain routing
+    domain      : Primary email domain for this tenant, e.g. "example.com"
     is_active   : Soft-disable without deleting (blocks logins, API calls)
     settings    : Arbitrary JSON for branding (logo, colors), scoring weights,
                   module flags, SLA overrides, etc.  Compliance layer reads this too.
@@ -36,6 +36,12 @@ class Tenant(Base):
     domain: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, server_default="true")
     settings: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict, server_default="{}")
+    # Hybrid-SaaS Phase 4: license key issued by us, used by Docker agent
+    # to register itself against the cloud portal.  Constant-time compared
+    # in /api/agent-ingest/register.  Nullable on existing rows for backward-compat.
+    license_key: Mapped[str | None] = mapped_column(
+        String(128), unique=True, nullable=True, index=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,

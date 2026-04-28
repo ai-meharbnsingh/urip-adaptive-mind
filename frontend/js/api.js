@@ -24,6 +24,8 @@
     options = options || {};
     var silent = options.silent || false;
     delete options.silent;
+    var retries = (typeof options.retries === 'number') ? options.retries : 2; // up to 3 attempts incl. first
+    delete options.retries;
     var headers = options.headers || {};
 
     var token = localStorage.getItem('urip_token');
@@ -39,20 +41,47 @@
 
     var url = API_BASE + path;
     var response;
-    try {
-      response = await fetch(url, options);
-    } catch (err) {
-      if (!silent) {
-        showNotification('Network Error', 'Unable to reach the server. Please check your connection.', 'error');
+    var attempt = 0;
+    while (true) {
+      try {
+        response = await fetch(url, options);
+        break;
+      } catch (err) {
+        attempt++;
+        if (attempt > retries) {
+          if (!silent) {
+            showNotification('Network Error', 'Unable to reach the server. Please check your connection.', 'error');
+          }
+          throw err;
+        }
+        // Backoff: 250ms, 500ms, 1000ms
+        await new Promise(function (r) { setTimeout(r, 250 * Math.pow(2, attempt - 1)); });
       }
-      throw err;
     }
 
     if (response.status === 401) {
       localStorage.removeItem('urip_token');
       localStorage.removeItem('urip_user');
-      window.location.href = 'index.html';
-      return;
+      // Avoid infinite loop on /auth/me at boot of login page
+      if (window.location.pathname.indexOf('index.html') === -1 &&
+          window.location.pathname !== '/' && !silent) {
+        window.location.href = 'index.html';
+      }
+      var err401 = new Error('Unauthorized');
+      err401.status = 401;
+      throw err401;
+    }
+
+    if (response.status === 403) {
+      var bodyTxt;
+      try { bodyTxt = await response.json(); } catch (_e) { bodyTxt = { detail: 'Module not enabled' }; }
+      if (!silent) {
+        showNotification('Module not enabled', bodyTxt.detail || 'You don\'t have access to this module.', 'error');
+      }
+      var e403 = new Error(bodyTxt.detail || 'Forbidden');
+      e403.status = 403;
+      e403.body = bodyTxt;
+      throw e403;
     }
 
     if (!response.ok) {
@@ -74,6 +103,41 @@
     }
 
     return response.json();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Cached current user — populated by getCurrentUser(); refreshed on demand
+  // ---------------------------------------------------------------------------
+  var _userCache = null;
+
+  async function getCurrentUser(opts) {
+    opts = opts || {};
+    if (_userCache && !opts.refresh) return _userCache;
+    // Prefer fresh /auth/me when JWT is present
+    var token = null;
+    try { token = localStorage.getItem('urip_token'); } catch (_e) { /* ignore */ }
+    if (!token) {
+      // Fallback to whatever is in storage (legacy)
+      try { _userCache = JSON.parse(localStorage.getItem('urip_user') || 'null'); }
+      catch (_e) { _userCache = null; }
+      return _userCache;
+    }
+    try {
+      var me = await apiFetch('/auth/me', { silent: true });
+      if (me && (me.email || me.full_name)) {
+        _userCache = me;
+        try { localStorage.setItem('urip_user', JSON.stringify(me)); } catch (_e) {}
+      }
+    } catch (_err) {
+      // Fall back to cached storage value if /auth/me unavailable
+      try { _userCache = JSON.parse(localStorage.getItem('urip_user') || 'null'); }
+      catch (_e) { _userCache = null; }
+    }
+    return _userCache;
+  }
+
+  function getTenantBranding() {
+    return (URIP.branding) || null;
   }
 
   /**
@@ -150,5 +214,8 @@
 
   URIP.apiFetch = apiFetch;
   URIP.showNotification = showNotification;
+  URIP.getCurrentUser = getCurrentUser;
+  URIP.getTenantBranding = getTenantBranding;
+  URIP.API_BASE = API_BASE;
   window.URIP = URIP;
 })();

@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:24:24.456378",
+  "tickets": [
+    {
+      "id": "ADV-OPS-5648",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "To Do",
+      "assignee": "user-808@adverb.in",
+      "created": "2026-03-27T13:24:24.456381",
+      "resolved": "2026-04-16T13:24:24.456383"
+    },
+    {
+      "id": "ADV-OPS-5439",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "To Do",
+      "assignee": "user-521@adverb.in",
+      "created": "2026-03-13T13:24:24.456386",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-1616",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "Done",
+      "assignee": "user-834@adverb.in",
+      "created": "2026-02-08T13:24:24.456389",
+      "resolved": "2026-04-25T13:24:24.456391"
+    },
+    {
+      "id": "ADV-OPS-5934",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "To Do",
+      "assignee": "user-104@adverb.in",
+      "created": "2026-01-31T13:24:24.456394",
+      "resolved": "2026-04-25T13:24:24.456395"
+    },
+    {
+      "id": "ADV-OPS-9686",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "In Progress",
+      "assignee": "user-983@adverb.in",
+      "created": "2026-02-02T13:24:24.456398",
+      "resolved": "2026-04-19T13:24:24.456400"
+    },
+    {
+      "id": "ADV-OPS-4409",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-298@adverb.in",
+      "created": "2026-03-29T13:24:24.456403",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-8772",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "Done",
+      "assignee": "user-263@adverb.in",
+      "created": "2026-04-07T13:24:24.456406",
+      "resolved": "2026-04-21T13:24:24.456408"
+    },
+    {
+      "id": "ADV-OPS-5670",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "To Do",
+      "assignee": "user-357@adverb.in",
+      "created": "2026-03-01T13:24:24.456410",
+      "resolved": "2026-04-14T13:24:24.456412"
+    }
+  ]
+}

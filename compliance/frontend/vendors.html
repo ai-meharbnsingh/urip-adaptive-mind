@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vendors | Adverb Compliance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+    <main class="main-content">
+      <header class="topbar"></header>
+      <div class="content-area">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title" id="pageTitle">Vendors</h1>
+            <p class="page-subtitle" id="pageSubtitle">Third-party inventory with risk scoring, questionnaires, and document tracking.</p>
+          </div>
+          <div class="page-actions">
+            <a href="vendors.html" class="btn btn-outline" id="btnBack" style="display:none">
+              <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <button class="btn btn-primary" id="btnAdd">
+              <i class="fas fa-plus"></i> Add Vendor
+            </button>
+          </div>
+        </div>
+
+        <!-- LIST view -->
+        <div id="listView">
+          <!-- Expiring docs alert -->
+          <div class="card mb-6" id="expiringAlert" style="display:none;border-left:3px solid var(--inconclusive-amber)">
+            <div class="card-body">
+              <div class="flex items-center gap-3">
+                <div style="width:40px;height:40px;border-radius:8px;background:var(--inconclusive-amber-bg);color:var(--inconclusive-amber);display:flex;align-items:center;justify-content:center"><i class="fas fa-clock"></i></div>
+                <div class="flex-1">
+                  <strong id="expiringText">—</strong>
+                  <div class="text-xs text-gray" id="expiringDetail"></div>
+                </div>
+                <button class="btn btn-sm btn-outline" id="btnExpiringList">View all</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-bar">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" id="filterText" placeholder="Filter vendors…" />
+            </div>
+            <div class="filter-group">
+              <span class="filter-label">Criticality:</span>
+              <select class="form-select" id="filterCrit" style="width:auto">
+                <option value="">All</option>
+                <option value="critical">Critical</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title" id="listMeta">Loading…</span>
+            </div>
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Vendor</th>
+                    <th>Criticality</th>
+                    <th>Risk score</th>
+                    <th>Status</th>
+                    <th>Next review</th>
+                    <th>Expiring docs</th>
+                  </tr>
+                </thead>
+                <tbody id="listBody">
+                  <tr><td colspan="6"><div class="skeleton skeleton-row"></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- DETAIL view -->
+        <div id="detailView" class="hidden">
+          <div class="split-3">
+            <div>
+              <div class="card mb-6">
+                <div class="card-body">
+                  <div class="flex items-center justify-between flex-wrap gap-4">
+                    <div>
+                      <div class="flex items-center gap-2 mb-2">
+                        <span class="status-pill" id="dCrit">—</span>
+                        <span class="badge badge-default" id="dStatus">—</span>
+                      </div>
+                      <h2 id="dName" style="margin-bottom:.25rem">—</h2>
+                      <p class="text-sm text-gray" id="dContact">—</p>
+                    </div>
+                    <div style="text-align:right">
+                      <div class="text-xs text-gray">Risk score</div>
+                      <div id="dScore" style="font-size:2rem;font-weight:700;color:var(--gray-900)">—</div>
+                      <div class="text-xs text-gray" id="dScoreMeta"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-6">
+                <div class="card-header">
+                  <span class="card-title">Documents</span>
+                </div>
+                <div class="table-container">
+                  <table class="table">
+                    <thead>
+                      <tr><th>Type</th><th>Filename</th><th>Valid until</th><th>Uploaded</th></tr>
+                    </thead>
+                    <tbody id="dDocsBody">
+                      <tr><td colspan="4"><div class="skeleton skeleton-row"></div></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <span class="card-title">Questionnaires</span>
+                </div>
+                <div class="table-container">
+                  <table class="table">
+                    <thead>
+                      <tr><th>Template</th><th>Sent</th><th>Due</th><th>Status</th></tr>
+                    </thead>
+                    <tbody id="dQBody">
+                      <tr><td colspan="4"><div class="skeleton skeleton-row"></div></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <aside>
+              <div class="card mb-6">
+                <div class="card-header">
+                  <span class="card-title">Actions</span>
+                </div>
+                <div class="card-body" style="display:flex;flex-direction:column;gap:.5rem">
+                  <button class="btn btn-primary w-full" id="btnSendQ">
+                    <i class="fas fa-paper-plane"></i> Send questionnaire
+                  </button>
+                  <button class="btn btn-outline w-full" id="btnRecompute">
+                    <i class="fas fa-calculator"></i> Recalculate risk score
+                  </button>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <span class="card-title">Risk score breakdown</span>
+                </div>
+                <div class="card-body">
+                  <pre id="dFactors" style="font-family:'SF Mono',monospace;font-size:.75rem;background:var(--gray-50);padding:.75rem;border-radius:var(--radius-md);overflow-x:auto;color:var(--gray-700)">—</pre>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/theming.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      checkAuth();
+      var C = window.COMPLIANCE;
+      function getQueryParam(name) {
+        var match = location.search.match(new RegExp('[?&]' + name + '=([^&]+)'));
+        return match ? decodeURIComponent(match[1]) : null;
+      }
+
+      var allVendors = [];
+      var expiringByVendor = {};
+
+      async function loadList() {
+        try {
+          var [vendors, expiring] = await Promise.all([
+            C.apiFetch('/vendors', { silent: true }),
+            C.apiFetch('/vendors/expiring-documents?days=60', { silent: true }).catch(function () { return []; })
+          ]);
+          allVendors = vendors || [];
+          (expiring || []).forEach(function (e) {
+            var name = e.vendor_name;
+            expiringByVendor[name] = (expiringByVendor[name] || 0) + 1;
+          });
+          if (expiring && expiring.length) {
+            document.getElementById('expiringAlert').style.display = '';
+            document.getElementById('expiringText').textContent = expiring.length + ' vendor document(s) expire within 60 days';
+            document.getElementById('expiringDetail').textContent =
+              expiring.slice(0, 3).map(function (e) { return e.vendor_name + ' (' + e.document.document_type + ')'; }).join(', ') +
+              (expiring.length > 3 ? '…' : '');
+          }
+
+          // Load risk scores per vendor in parallel (best effort)
+          var scoreLookup = {};
+          await Promise.all(allVendors.map(function (v) {
+            return C.apiFetch('/vendors/' + v.id + '/score', { silent: true })
+              .then(function (s) { scoreLookup[v.id] = s; })
+              .catch(function () { /* none */ });
+          }));
+          allVendors.forEach(function (v) { v._score = scoreLookup[v.id] || null; });
+
+          applyFilters();
+        } catch (e) {
+          C.showNotification('Failed to load vendors', e.message || '', 'error');
+        }
+      }
+
+      function applyFilters() {
+        var text = document.getElementById('filterText').value.toLowerCase();
+        var critF = document.getElementById('filterCrit').value;
+        var rows = allVendors.filter(function (v) {
+          if (critF && v.criticality !== critF) return false;
+          if (text && v.name.toLowerCase().indexOf(text) === -1) return false;
+          return true;
+        });
+        document.getElementById('listMeta').textContent = rows.length + ' vendor(s)';
+
+        var body = document.getElementById('listBody');
+        body.innerHTML = '';
+        if (!rows.length) {
+          var tr = document.createElement('tr');
+          var td = document.createElement('td'); td.colSpan = 6; td.style.padding = 0;
+          var w = document.createElement('div');
+          C.renderEmptyState(w, 'fa-handshake', 'No vendors yet', 'Add one with the Add Vendor button.');
+          td.appendChild(w); tr.appendChild(td); body.appendChild(tr);
+          return;
+        }
+        rows.forEach(function (v) {
+          var tr = document.createElement('tr'); tr.className = 'row-clickable';
+          tr.addEventListener('click', function () { window.location.search = '?id=' + v.id; });
+          var score = v._score && v._score.score;
+          var scoreColor = score == null ? 'var(--gray-400)' :
+                           score >= 70 ? 'var(--fail-red)' :
+                           score >= 40 ? 'var(--inconclusive-amber)' :
+                           'var(--pass-green)';
+          tr.innerHTML =
+            '<td><strong>' + C.escapeHtml(v.name) + '</strong>' +
+            (v.contact_email ? '<div class="text-xs text-gray">' + C.escapeHtml(v.contact_email) + '</div>' : '') + '</td>' +
+            '<td><span class="status-pill crit-' + (v.criticality || 'low') + '">' + C.escapeHtml(v.criticality) + '</span></td>' +
+            '<td><strong style="color:' + scoreColor + '">' + (score != null ? score : '—') + '</strong></td>' +
+            '<td><span class="badge badge-default">' + C.escapeHtml(v.status) + '</span></td>' +
+            '<td style="font-size:.8125rem">' + (v.next_review_at ? C.formatDateOnly(v.next_review_at) : '—') + '</td>' +
+            '<td>' + (expiringByVendor[v.name] ? '<span class="badge badge-warn">' + expiringByVendor[v.name] + '</span>' : '<span class="text-xs text-gray">0</span>') + '</td>';
+          body.appendChild(tr);
+        });
+      }
+
+      async function loadDetail(vendorId) {
+        document.getElementById('listView').classList.add('hidden');
+        document.getElementById('detailView').classList.remove('hidden');
+        document.getElementById('btnBack').style.display = '';
+        document.getElementById('btnBack').onclick = function (e) { e.preventDefault(); window.history.back(); };
+        document.getElementById('pageTitle').textContent = 'Vendor Detail';
+
+        try {
+          var v = await C.apiFetch('/vendors/' + vendorId);
+          document.getElementById('dName').textContent = v.name;
+          document.getElementById('dContact').textContent =
+            (v.contact_name || '') + (v.contact_email ? ' · ' + v.contact_email : '');
+          document.getElementById('dCrit').className = 'status-pill crit-' + (v.criticality || 'low');
+          document.getElementById('dCrit').textContent = v.criticality;
+          document.getElementById('dStatus').textContent = v.status;
+
+          // Score
+          try {
+            var s = await C.apiFetch('/vendors/' + vendorId + '/score', { silent: true });
+            document.getElementById('dScore').textContent = s.score;
+            document.getElementById('dScore').style.color =
+              s.score >= 70 ? 'var(--fail-red)' :
+              s.score >= 40 ? 'var(--inconclusive-amber)' : 'var(--pass-green)';
+            document.getElementById('dScoreMeta').textContent = 'Computed ' + C.relativeTime(s.calculated_at);
+            document.getElementById('dFactors').textContent = JSON.stringify(s.factors_json || {}, null, 2);
+          } catch (_) {
+            document.getElementById('dScore').textContent = '—';
+            document.getElementById('dFactors').textContent = '(no risk score yet — click Recalculate)';
+          }
+
+          // Documents
+          var docs = await C.apiFetch('/vendors/' + vendorId + '/documents', { silent: true });
+          var dBody = document.getElementById('dDocsBody');
+          dBody.innerHTML = '';
+          if (!docs || !docs.length) {
+            dBody.innerHTML = '<tr><td colspan="4"><div style="padding:1rem;color:var(--gray-500);font-size:.875rem;text-align:center">No documents uploaded yet.</div></td></tr>';
+          } else {
+            docs.forEach(function (d) {
+              var tr = document.createElement('tr');
+              tr.innerHTML =
+                '<td><span class="badge badge-info">' + C.escapeHtml(d.document_type) + '</span></td>' +
+                '<td style="font-family:\'SF Mono\',monospace;font-size:.75rem">' + C.escapeHtml(d.filename) + '</td>' +
+                '<td style="font-size:.8125rem">' + (d.valid_until ? C.formatDateOnly(d.valid_until) : '—') + '</td>' +
+                '<td style="font-size:.8125rem;color:var(--gray-500)">' + C.relativeTime(d.uploaded_at) + '</td>';
+              dBody.appendChild(tr);
+            });
+          }
+
+          // Questionnaires — there's no GET /vendors/{id}/questionnaires endpoint; the backend
+          // only has POST. Placeholder:
+          var qBody = document.getElementById('dQBody');
+          qBody.innerHTML = '<tr><td colspan="4"><div style="padding:1rem;color:var(--gray-500);font-size:.875rem;text-align:center">Questionnaire list endpoint not yet exposed (backend gap).</div></td></tr>';
+
+          document.getElementById('btnSendQ').onclick = function () { promptSendQ(vendorId); };
+          document.getElementById('btnRecompute').onclick = async function () {
+            var b = this; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Computing…';
+            try {
+              await C.apiFetch('/vendors/' + vendorId + '/calculate-score', { method: 'POST', body: {} });
+              C.showNotification('Recomputed', 'Risk score updated.', 'success');
+              loadDetail(vendorId);
+            } catch (e) {
+              C.showNotification('Failed', e.message || '', 'error');
+            } finally { b.disabled = false; b.innerHTML = '<i class="fas fa-calculator"></i> Recalculate risk score'; }
+          };
+        } catch (e) {
+          C.showNotification('Not found', e.message || 'Vendor not loaded.', 'error');
+        }
+      }
+
+      function promptSendQ(vendorId) {
+        var inner = document.createElement('div');
+        inner.innerHTML =
+          '<div class="form-group"><label class="form-label">Template name</label>' +
+          '<select class="form-select" id="qTemplate">' +
+            '<option value="generic_vendor_v1">Generic vendor questionnaire (v1)</option>' +
+            '<option value="cloud_provider_v1">Cloud provider</option>' +
+            '<option value="data_processor_v1">Data processor (DPA)</option>' +
+          '</select></div>';
+        var cancel = document.createElement('button'); cancel.className = 'btn btn-secondary'; cancel.textContent = 'Cancel';
+        var go = document.createElement('button'); go.className = 'btn btn-primary'; go.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+        var modal = C.openModal({ title: 'Send questionnaire', body: inner, footer: [cancel, go] });
+        cancel.addEventListener('click', modal.close);
+        go.addEventListener('click', async function () {
+          var tpl = document.getElementById('qTemplate').value;
+          go.disabled = true; go.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending…';
+          try {
+            await C.apiFetch('/vendors/' + vendorId + '/questionnaires', { method: 'POST', body: { template_name: tpl } });
+            C.showNotification('Sent', 'Questionnaire sent.', 'success');
+            modal.close();
+            loadDetail(vendorId);
+          } catch (e) {
+            C.showNotification('Failed', e.message || '', 'error');
+            go.disabled = false; go.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+          }
+        });
+      }
+
+      function promptAdd() {
+        var inner = document.createElement('div');
+        inner.innerHTML =
+          '<div class="form-group"><label class="form-label">Vendor name</label>' +
+          '<input class="form-input" id="vName" /></div>' +
+          '<div class="form-group"><label class="form-label">Criticality</label>' +
+          '<select class="form-select" id="vCrit">' +
+            '<option value="low">Low</option><option value="medium">Medium</option>' +
+            '<option value="high">High</option><option value="critical">Critical</option>' +
+          '</select></div>' +
+          '<div class="form-group"><label class="form-label">Contact email</label>' +
+          '<input class="form-input" id="vEmail" type="email" /></div>' +
+          '<div class="form-group"><label class="form-label">Contact name</label>' +
+          '<input class="form-input" id="vName2" /></div>';
+        var cancel = document.createElement('button'); cancel.className = 'btn btn-secondary'; cancel.textContent = 'Cancel';
+        var go = document.createElement('button'); go.className = 'btn btn-primary'; go.innerHTML = '<i class="fas fa-plus"></i> Add';
+        var modal = C.openModal({ title: 'Add vendor', body: inner, footer: [cancel, go] });
+        cancel.addEventListener('click', modal.close);
+        go.addEventListener('click', async function () {
+          var name = document.getElementById('vName').value.trim();
+          var crit = document.getElementById('vCrit').value;
+          var email = document.getElementById('vEmail').value.trim() || null;
+          var contact = document.getElementById('vName2').value.trim() || null;
+          if (!name) { C.showNotification('Validation', 'Name required.', 'error'); return; }
+          go.disabled = true; go.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding…';
+          try {
+            await C.apiFetch('/vendors', { method: 'POST', body: { name: name, criticality: crit, contact_email: email, contact_name: contact } });
+            C.showNotification('Added', 'Vendor created.', 'success');
+            modal.close();
+            loadList();
+          } catch (e) {
+            C.showNotification('Failed', e.message || '', 'error');
+            go.disabled = false; go.innerHTML = '<i class="fas fa-plus"></i> Add';
+          }
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        renderSidebar('vendors');
+        document.getElementById('filterText').addEventListener('input', applyFilters);
+        document.getElementById('filterCrit').addEventListener('change', applyFilters);
+        document.getElementById('btnAdd').addEventListener('click', promptAdd);
+        document.getElementById('btnExpiringList').addEventListener('click', function () {
+          C.showNotification('Tip', 'Filter the table by status or use the dashboard for the full list.', 'info');
+        });
+        var id = getQueryParam('id');
+        loadList().then(function () { if (id) loadDetail(id); });
+      });
+    })();
+  </script>
+</body>
+</html>

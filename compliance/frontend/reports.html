@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports | Adverb Compliance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+  <style>
+    .reports-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.125rem;
+    }
+    .report-card {
+      background-color: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column;
+      transition: all var(--transition-fast);
+    }
+    .report-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .report-icon {
+      width: 56px; height: 56px;
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .report-meta { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--gray-500); margin: .75rem 0; padding-top: .75rem; border-top: 1px solid var(--gray-100); }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+    <main class="main-content">
+      <header class="topbar"></header>
+      <div class="content-area">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Reports</h1>
+            <p class="page-subtitle">Framework-specific PDF reports for management review and external audits.</p>
+          </div>
+        </div>
+
+        <div class="reports-grid" id="reportsGrid"></div>
+
+        <div class="card mt-4">
+          <div class="card-header"><span class="card-title">Report history</span></div>
+          <div class="card-body">
+            <div id="historyList"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/theming.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      checkAuth();
+      var C = window.COMPLIANCE;
+
+      var REPORTS = [
+        { code: 'SOC2',     title: 'SOC 2 Management Report',  desc: 'TSC mapping with control test results, exceptions, and remediation status.', icon: 'fa-shield-halved', color: '#1ABC9C' },
+        { code: 'ISO27001', title: 'ISO 27001 SoA',            desc: 'Statement of Applicability with all 93 Annex A controls + control owner sign-off.', icon: 'fa-certificate', color: '#3498DB' },
+        { code: 'HIPAA',    title: 'HIPAA Risk Analysis',      desc: 'Required risk analysis covering PHI, administrative, physical, and technical safeguards.', icon: 'fa-heart-pulse', color: '#E74C3C' },
+        { code: 'GDPR',     title: 'GDPR Article 30 Record',   desc: 'Record of processing activities — data subject categories, lawful basis, retention.', icon: 'fa-globe-europe', color: '#9B59B6' },
+        { code: 'PCIDSS',   title: 'PCI DSS AOC Inputs',       desc: 'Self-assessment artifacts feeding into the AOC. Not a substitute for QSA review.', icon: 'fa-credit-card', color: '#E67E22' },
+        { code: 'DPDP',     title: 'India DPDP DPIA',          desc: 'Data Protection Impact Assessment for India DPDP Act 2023 compliance.', icon: 'fa-flag', color: '#16A34A' },
+        { code: 'NIST',     title: 'NIST CSF 2.0 Profile',     desc: 'Current vs Target profile with gap analysis across 6 functions.', icon: 'fa-landmark', color: '#6366F1' }
+      ];
+
+      function renderCards() {
+        var grid = document.getElementById('reportsGrid');
+        grid.innerHTML = '';
+        REPORTS.forEach(function (r) {
+          var card = document.createElement('div');
+          card.className = 'report-card';
+          card.innerHTML =
+            '<div class="report-icon" style="background:' + r.color + '20;color:' + r.color + '">' +
+              '<i class="fas ' + r.icon + '"></i></div>' +
+            '<h3 style="margin-bottom:.5rem;font-size:1.0625rem">' + C.escapeHtml(r.title) + '</h3>' +
+            '<p style="font-size:.8125rem;color:var(--gray-600);line-height:1.5;flex:1">' + C.escapeHtml(r.desc) + '</p>' +
+            '<div class="report-meta">' +
+              '<span><i class="fas fa-file-pdf"></i> PDF</span>' +
+              '<span id="meta-' + r.code + '">Loading…</span>' +
+            '</div>' +
+            '<button class="btn btn-primary" data-code="' + r.code + '">' +
+              '<i class="fas fa-file-pdf"></i> Generate' +
+            '</button>';
+          grid.appendChild(card);
+        });
+        // Wire generate buttons
+        grid.querySelectorAll('button[data-code]').forEach(function (b) {
+          b.addEventListener('click', function () { generate(b.getAttribute('data-code'), b); });
+        });
+
+        // Load score meta per framework (best effort)
+        REPORTS.forEach(function (r) {
+          C.apiFetch('/compliance-score/' + r.code, { silent: true })
+            .then(function (s) {
+              if (s && s.summary) {
+                var el = document.getElementById('meta-' + r.code);
+                if (el) el.textContent = Math.round(s.summary.score) + '% · ' + s.summary.total_applicable + ' controls';
+              }
+            })
+            .catch(function () { /* leave loading */ });
+        });
+      }
+
+      async function generate(code, btn) {
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating…';
+        // BACKEND GAP: there is no /reports endpoint yet. Try it; if 404, fall back to
+        // a client-side summary print/export of compliance-score data.
+        try {
+          var resp = await C.apiFetch('/reports/' + code, { method: 'POST', raw: true, silent: true });
+          if (resp.status === 404) throw new Error('not_implemented');
+          if (!resp.ok) throw new Error('HTTP ' + resp.status);
+          var blob = await resp.blob();
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url; a.download = code + '_report.pdf';
+          document.body.appendChild(a); a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          C.showNotification('Generated', code + ' report downloaded.', 'success');
+          recordHistory(code);
+        } catch (e) {
+          // Fallback — pull score detail and print a summary
+          try {
+            var s = await C.apiFetch('/compliance-score/' + code);
+            var w = window.open('', '_blank');
+            if (!w) {
+              C.showNotification('Pop-up blocked', 'Allow pop-ups to view report preview.', 'error');
+              return;
+            }
+            w.document.title = code + ' summary';
+            w.document.body.innerHTML = renderSummaryHtml(code, s);
+            w.print();
+            C.showNotification('Preview opened', 'Backend /reports/' + code + ' not implemented — printable summary opened in a new tab.', 'warning');
+            recordHistory(code, 'preview');
+          } catch (err2) {
+            C.showNotification('Failed', err2.message || 'Could not generate report', 'error');
+          }
+        } finally {
+          btn.disabled = false; btn.innerHTML = '<i class="fas fa-file-pdf"></i> Generate';
+        }
+      }
+
+      function renderSummaryHtml(code, s) {
+        var summary = s.summary || {};
+        var cats = (s.categories || []).map(function (c) {
+          return '<tr><td>' + esc(c.category) + '</td><td>' + Math.round(c.score) + '%</td><td>' + c.pass_count + '</td><td>' + c.fail_count + '</td><td>' + c.inconclusive_count + '</td></tr>';
+        }).join('');
+        function esc(x) { return String(x).replace(/[<>&"']/g, function (c) { return ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' })[c]; }); }
+        return (
+          '<style>body{font-family:Inter,sans-serif;padding:2rem;color:#1E293B}h1{margin:0 0 .5rem}h2{margin-top:2rem}table{width:100%;border-collapse:collapse;margin-top:1rem}th,td{padding:8px 12px;border-bottom:1px solid #E2E8F0;text-align:left}th{background:#F8FAFC}</style>' +
+          '<h1>' + code + ' — Compliance Summary</h1>' +
+          '<p>Generated ' + new Date().toLocaleString() + '</p>' +
+          '<h2>Overall</h2>' +
+          '<p><strong>' + Math.round(summary.score || 0) + '%</strong> compliance score</p>' +
+          '<p>' + summary.pass_count + ' pass · ' + summary.fail_count + ' fail · ' + summary.inconclusive_count + ' inconclusive · ' + summary.total_applicable + ' applicable controls</p>' +
+          '<h2>By category</h2>' +
+          '<table><thead><tr><th>Category</th><th>Score</th><th>Pass</th><th>Fail</th><th>Inconclusive</th></tr></thead><tbody>' + cats + '</tbody></table>'
+        );
+      }
+
+      function recordHistory(code, kind) {
+        var hist = JSON.parse(localStorage.getItem('compliance_report_history') || '[]');
+        hist.unshift({ code: code, kind: kind || 'pdf', at: new Date().toISOString() });
+        hist = hist.slice(0, 20);
+        localStorage.setItem('compliance_report_history', JSON.stringify(hist));
+        renderHistory();
+      }
+
+      function renderHistory() {
+        var hist = JSON.parse(localStorage.getItem('compliance_report_history') || '[]');
+        var list = document.getElementById('historyList');
+        if (!hist.length) {
+          C.renderEmptyState(list, 'fa-clock-rotate-left', 'No reports generated yet', 'Click Generate on any framework above.');
+          return;
+        }
+        list.innerHTML = '';
+        hist.forEach(function (h) {
+          var row = document.createElement('div');
+          row.style.cssText = 'display:flex;justify-content:space-between;padding:.625rem 0;border-bottom:1px solid var(--gray-100)';
+          row.innerHTML =
+            '<div>' +
+              '<strong>' + h.code + '</strong> ' +
+              '<span class="badge badge-' + (h.kind === 'preview' ? 'warn' : 'info') + '">' + h.kind + '</span>' +
+            '</div>' +
+            '<div class="text-xs text-gray">' + C.relativeTime(h.at) + '</div>';
+          list.appendChild(row);
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        renderSidebar('reports');
+        renderCards();
+        renderHistory();
+      });
+    })();
+  </script>
+</body>
+</html>

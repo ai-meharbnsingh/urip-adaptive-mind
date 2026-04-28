@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit Finding | VAPT Vendor Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/vapt-portal.css" />
+</head>
+<body>
+  <div class="vapt-shell">
+    <header class="vapt-topbar">
+      <div class="vapt-brand">
+        <span class="vapt-brand-icon"><i class="fas fa-bug"></i></span>
+        <span>URIP — VAPT Vendor Portal</span>
+      </div>
+      <nav class="vapt-tabs">
+        <a href="vapt-portal-dashboard.html" class="vapt-tab">My submissions</a>
+        <a href="vapt-portal-submit.html" class="vapt-tab active">New submission</a>
+      </nav>
+      <div class="vapt-user">
+        <span id="vendorName">…</span>
+        <button id="logoutBtn" class="vapt-btn vapt-btn-ghost">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="vapt-content vapt-content-form">
+      <a href="vapt-portal-dashboard.html" class="vapt-back-link">
+        <i class="fas fa-arrow-left"></i> Back to submissions
+      </a>
+      <h1>Submit a finding</h1>
+      <p class="vapt-help">
+        Once submitted, the customer's URIP backend automatically creates a
+        unified Risk record, fetches EPSS exploit probability, checks the CISA
+        KEV catalog, and notifies the IT team.
+      </p>
+
+      <form id="submitForm" class="vapt-form" enctype="multipart/form-data">
+        <div class="vapt-grid">
+          <label class="vapt-field vapt-field-wide">
+            <span>Vulnerability name <span class="vapt-req">*</span></span>
+            <input type="text" name="finding_title" maxlength="500" required
+                   placeholder="e.g. RCE in /admin/login (Spring Security bypass)" />
+          </label>
+
+          <label class="vapt-field">
+            <span>CVE ID</span>
+            <input type="text" name="cve_id" maxlength="30"
+                   placeholder="CVE-2024-12345" pattern="^CVE-\d{4}-\d{4,7}$" />
+            <span class="vapt-hint">Format: CVE-YYYY-NNNNN</span>
+          </label>
+
+          <label class="vapt-field">
+            <span>CVSS score <span class="vapt-req">*</span></span>
+            <input type="number" name="cvss_score" min="0" max="10" step="0.1"
+                   required placeholder="0.0 – 10.0" />
+          </label>
+
+          <label class="vapt-field">
+            <span>Severity <span class="vapt-req">*</span></span>
+            <select name="severity" required>
+              <option value="">Choose…</option>
+              <option value="critical">Critical</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </label>
+
+          <label class="vapt-field">
+            <span>Exploit maturity</span>
+            <select name="exploit_maturity">
+              <option value="">Unknown</option>
+              <option value="poc">PoC available</option>
+              <option value="functional">Functional exploit</option>
+              <option value="weaponized">Weaponized / in the wild</option>
+            </select>
+          </label>
+
+          <label class="vapt-field">
+            <span>Affected hostname</span>
+            <input type="text" name="affected_asset_hostname" maxlength="255"
+                   placeholder="api.customer.example.com" />
+          </label>
+
+          <label class="vapt-field">
+            <span>Affected IP</span>
+            <input type="text" name="affected_asset_ip" maxlength="45"
+                   placeholder="10.0.0.42 (or IPv6)" />
+          </label>
+
+          <label class="vapt-field vapt-field-wide">
+            <span>Description</span>
+            <textarea name="description" rows="5"
+                      placeholder="Markdown allowed. Step-by-step reproduction is best."></textarea>
+          </label>
+
+          <label class="vapt-field vapt-field-wide">
+            <span>Remediation recommendation</span>
+            <textarea name="remediation_recommendation" rows="4"
+                      placeholder="What should the customer's IT team do? Markdown allowed."></textarea>
+          </label>
+
+          <div class="vapt-field vapt-field-wide">
+            <span>PoC evidence (file upload)</span>
+            <div id="dropzone" class="vapt-dropzone">
+              <i class="fas fa-cloud-arrow-up"></i>
+              <span class="vapt-drop-prompt">Drag &amp; drop a file or click to browse</span>
+              <span class="vapt-hint">PDF, image, ZIP, JSON, CSV, or text. Max 50 MB.</span>
+              <input id="evidenceInput" type="file" name="evidence"
+                     accept=".pdf,.png,.jpg,.jpeg,.gif,.webp,.bmp,.zip,.json,.csv,.txt" />
+              <div id="filename" class="vapt-filename"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="submitError" class="vapt-alert vapt-alert-danger" style="display:none"></div>
+
+        <div class="vapt-form-actions">
+          <a href="vapt-portal-dashboard.html" class="vapt-btn vapt-btn-ghost">Cancel</a>
+          <button id="submitBtn" type="submit" class="vapt-btn vapt-btn-primary">
+            <i class="fas fa-paper-plane"></i> Submit finding
+          </button>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script src="js/vapt-portal-api.js"></script>
+  <script src="js/vapt-portal.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      VaptPortal.requireSession();
+      VaptPortal.setupChrome();
+
+      var form = document.getElementById('submitForm');
+      var btn = document.getElementById('submitBtn');
+      var errBanner = document.getElementById('submitError');
+      var fileInput = document.getElementById('evidenceInput');
+      var fileLabel = document.getElementById('filename');
+      var dropzone = document.getElementById('dropzone');
+
+      function showFilename() {
+        if (fileInput.files && fileInput.files[0]) {
+          fileLabel.textContent = fileInput.files[0].name +
+              ' (' + Math.round(fileInput.files[0].size / 1024) + ' KB)';
+        } else {
+          fileLabel.textContent = '';
+        }
+      }
+      fileInput.addEventListener('change', showFilename);
+
+      // Drag-drop
+      ['dragenter', 'dragover'].forEach(function (ev) {
+        dropzone.addEventListener(ev, function (e) {
+          e.preventDefault();
+          dropzone.classList.add('drag');
+        });
+      });
+      ['dragleave', 'drop'].forEach(function (ev) {
+        dropzone.addEventListener(ev, function (e) {
+          e.preventDefault();
+          dropzone.classList.remove('drag');
+        });
+      });
+      dropzone.addEventListener('drop', function (e) {
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          fileInput.files = e.dataTransfer.files;
+          showFilename();
+        }
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        errBanner.style.display = 'none';
+        btn.disabled = true;
+
+        var fd = new FormData(form);
+        VaptPortalApi.submitFinding(fd)
+          .then(function (resp) {
+            window.location.href = 'vapt-portal-submission-detail.html?id=' +
+                encodeURIComponent(resp.id) + '&new=1';
+          })
+          .catch(function (err) {
+            errBanner.textContent = err.message || 'Submission failed.';
+            errBanner.style.display = 'block';
+            btn.disabled = false;
+          });
+      });
+    })();
+  </script>
+</body>
+</html>

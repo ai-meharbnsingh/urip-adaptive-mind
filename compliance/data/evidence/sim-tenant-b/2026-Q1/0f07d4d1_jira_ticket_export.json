@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:25:36.741737",
+  "tickets": [
+    {
+      "id": "ADV-OPS-8259",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "In Progress",
+      "assignee": "user-846@adverb.in",
+      "created": "2026-02-18T13:25:36.741740",
+      "resolved": "2026-04-25T13:25:36.741743"
+    },
+    {
+      "id": "ADV-OPS-4079",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "Done",
+      "assignee": "user-943@adverb.in",
+      "created": "2026-02-19T13:25:36.741746",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-9462",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-627@adverb.in",
+      "created": "2026-03-23T13:25:36.741749",
+      "resolved": "2026-04-15T13:25:36.741751"
+    },
+    {
+      "id": "ADV-OPS-9303",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "Done",
+      "assignee": "user-899@adverb.in",
+      "created": "2026-02-04T13:25:36.741754",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-1474",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-996@adverb.in",
+      "created": "2026-03-18T13:25:36.741757",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-5087",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "To Do",
+      "assignee": "user-151@adverb.in",
+      "created": "2026-02-25T13:25:36.741760",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-5488",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "To Do",
+      "assignee": "user-617@adverb.in",
+      "created": "2026-02-21T13:25:36.741763",
+      "resolved": "2026-04-25T13:25:36.741765"
+    },
+    {
+      "id": "ADV-OPS-1500",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "In Progress",
+      "assignee": "user-600@adverb.in",
+      "created": "2026-02-14T13:25:36.741769",
+      "resolved": "2026-04-13T13:25:36.741771"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:25:36.338399",
+  "tickets": [
+    {
+      "id": "ADV-OPS-6871",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "Done",
+      "assignee": "user-921@adverb.in",
+      "created": "2026-03-09T13:25:36.338402",
+      "resolved": "2026-04-15T13:25:36.338404"
+    },
+    {
+      "id": "ADV-OPS-7693",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-753@adverb.in",
+      "created": "2026-02-17T13:25:36.338407",
+      "resolved": "2026-04-15T13:25:36.338409"
+    },
+    {
+      "id": "ADV-OPS-2817",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-308@adverb.in",
+      "created": "2026-02-04T13:25:36.338412",
+      "resolved": "2026-04-15T13:25:36.338414"
+    },
+    {
+      "id": "ADV-OPS-8843",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-540@adverb.in",
+      "created": "2026-02-27T13:25:36.338418",
+      "resolved": "2026-04-15T13:25:36.338420"
+    },
+    {
+      "id": "ADV-OPS-7322",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "Done",
+      "assignee": "user-572@adverb.in",
+      "created": "2026-02-01T13:25:36.338423",
+      "resolved": "2026-04-13T13:25:36.338424"
+    },
+    {
+      "id": "ADV-OPS-3765",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "In Progress",
+      "assignee": "user-626@adverb.in",
+      "created": "2026-03-21T13:25:36.338427",
+      "resolved": "2026-04-25T13:25:36.338429"
+    },
+    {
+      "id": "ADV-OPS-4810",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "In Progress",
+      "assignee": "user-999@adverb.in",
+      "created": "2026-03-11T13:25:36.338432",
+      "resolved": "2026-04-14T13:25:36.338434"
+    },
+    {
+      "id": "ADV-OPS-5396",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "Done",
+      "assignee": "user-792@adverb.in",
+      "created": "2026-02-17T13:25:36.338436",
+      "resolved": "2026-04-16T13:25:36.338438"
+    }
+  ]
+}

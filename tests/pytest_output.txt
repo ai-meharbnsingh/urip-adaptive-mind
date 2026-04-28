@@ -1,0 +1,15 @@
+tests/test_module_subscription.py: 16 warnings
+tests/test_multi_tenant_isolation.py: 4 warnings
+tests/test_multi_tenant_isolation_extended.py: 7 warnings
+tests/test_multi_tenant_model.py: 8 warnings
+tests/test_rbac.py: 4 warnings
+tests/test_remediation.py: 3 warnings
+tests/test_reports.py: 4 warnings
+tests/test_risks.py: 8 warnings
+tests/test_shared/test_redis_client.py: 3 warnings
+tests/test_tenant_onboarding.py: 13 warnings
+  /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_33a/.venv/lib/python3.14/site-packages/pytest_asyncio/plugin.py:940: DeprecationWarning: 'asyncio.get_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    policy = asyncio.get_event_loop_policy()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+321 passed, 3 skipped, 1659 warnings in 60.67s (0:01:00)

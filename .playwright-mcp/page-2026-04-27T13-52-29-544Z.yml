@@ -1,0 +1,873 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link " URIP" [ref=e4] [cursor=pointer]:
+        - /url: "#top"
+        - generic [ref=e6]: 
+        - generic [ref=e7]: URIP
+      - list [ref=e8]:
+        - listitem [ref=e9]:
+          - link "How it works" [ref=e10] [cursor=pointer]:
+            - /url: "#how"
+        - listitem [ref=e11]:
+          - link "Dashboards" [ref=e12] [cursor=pointer]:
+            - /url: "#dashboards"
+        - listitem [ref=e13]:
+          - link "Connectors" [ref=e14] [cursor=pointer]:
+            - /url: "#connectors"
+        - listitem [ref=e15]:
+          - link "Modules" [ref=e16] [cursor=pointer]:
+            - /url: "#modules"
+        - listitem [ref=e17]:
+          - link "Architecture" [ref=e18] [cursor=pointer]:
+            - /url: "#architecture"
+        - listitem [ref=e19]:
+          - link "Why URIP" [ref=e20] [cursor=pointer]:
+            - /url: "#why-urip"
+      - generic [ref=e21]:
+        - link "Login" [ref=e22] [cursor=pointer]:
+          - /url: index.html
+        - link " Sign in" [ref=e23] [cursor=pointer]:
+          - /url: index.html
+          - generic [ref=e24]: 
+          - text: Sign in
+        - text: 
+  - banner [ref=e25]:
+    - generic [ref=e26]:
+      - generic [ref=e27]:
+        - generic [ref=e28]: Unified Risk & Compliance · SaaS / On‑Prem / Hybrid
+        - heading "Your CISO and your auditor finally look at the same screen." [level=1] [ref=e30]
+        - paragraph [ref=e31]: URIP is a multi-tenant platform that turns any company’s existing security tools into one live risk dashboard and one continuously audit-ready compliance dashboard — on the same data layer. Pick the tools you own. Enter API keys. Watch eleven consoles collapse into one pane.
+        - generic [ref=e32]:
+          - link "Sign in " [ref=e33] [cursor=pointer]:
+            - /url: index.html
+            - text: Sign in
+            - generic [ref=e34]: 
+          - link " See how it works" [ref=e35] [cursor=pointer]:
+            - /url: "#how"
+            - generic [ref=e36]: 
+            - text: See how it works
+        - generic [ref=e37]: Your tools · Your data · One pane · Audit-ready
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - generic [ref=e42]:
+            - generic [ref=e43]: 
+            - text: URIP Risk Intelligence
+          - generic [ref=e48]:
+            - generic [ref=e49]:
+              - generic [ref=e50]: Open Risks
+              - generic [ref=e51]: 2,847
+              - generic [ref=e52]:
+                - generic [ref=e53]: 
+                - text: "12"
+            - generic [ref=e54]:
+              - generic [ref=e55]: Critical
+              - generic [ref=e56]: "38"
+              - generic [ref=e57]: "+4"
+            - generic [ref=e58]:
+              - generic [ref=e59]: IOC Hits
+              - generic [ref=e60]: "17"
+              - generic [ref=e61]:
+                - generic [ref=e62]: 
+                - text: "3"
+          - generic [ref=e63]:
+            - generic [ref=e64]:
+              - generic [ref=e66]: CVE-2026-0142 · Tenable · T1 Asset
+              - generic [ref=e67]: "9.7"
+            - generic [ref=e68]:
+              - generic [ref=e70]: APT41 · Zscaler C2 match
+              - generic [ref=e71]: "9.4"
+            - generic [ref=e72]:
+              - generic [ref=e74]: Risky sign-in · MS Entra
+              - generic [ref=e75]: "8.1"
+            - generic [ref=e76]:
+              - generic [ref=e78]: Endpoint quarantine · SentinelOne
+              - generic [ref=e79]: "7.6"
+            - generic [ref=e80]:
+              - generic [ref=e82]: Policy drift · Netskope
+              - generic [ref=e83]: "6.0"
+        - generic [ref=e84]:
+          - generic [ref=e86]:
+            - generic [ref=e87]: 
+            - text: Compliance · Audit-Ready
+          - generic [ref=e92]:
+            - generic [ref=e93]:
+              - generic [ref=e94]:
+                - img [ref=e95]
+                - generic [ref=e98]: 89%
+              - generic [ref=e99]:
+                - generic [ref=e100]: SOC 2 · TSC 2022
+                - generic [ref=e101]: 152 / 171 controls
+            - generic [ref=e102]:
+              - generic [ref=e103]:
+                - img [ref=e104]
+                - generic [ref=e107]: 77%
+              - generic [ref=e108]:
+                - generic [ref=e109]: ISO 27001:2022
+                - generic [ref=e110]: 71 / 93 controls
+            - generic [ref=e111]:
+              - generic [ref=e112]:
+                - img [ref=e113]
+                - generic [ref=e116]: 62%
+              - generic [ref=e117]:
+                - generic [ref=e118]: PCI DSS v4.0
+                - generic [ref=e119]: 155 / 250 controls
+            - generic [ref=e120]:
+              - generic [ref=e121]:
+                - img [ref=e122]
+                - generic [ref=e125]: 84%
+              - generic [ref=e126]:
+                - generic [ref=e127]: HIPAA
+                - generic [ref=e128]: 42 / 50 safeguards
+          - generic [ref=e129]:
+            - generic [ref=e130]:
+              - generic [ref=e132]: "CC7.1 Threat Detection — FAIL (root: CVE-2026-0142)"
+              - generic [ref=e133]: view
+            - generic [ref=e134]:
+              - generic [ref=e136]: A.8.8 Vulnerability Mgmt — FAIL (3 CVEs)
+              - generic [ref=e137]: view
+            - generic [ref=e138]:
+              - generic [ref=e140]: CC6.1 Logical Access — INCONCLUSIVE
+              - generic [ref=e141]: view
+  - generic [ref=e144]:
+    - generic [ref=e145]:
+      - generic [ref=e146]: "12"
+      - generic [ref=e147]: Production Connectors
+    - generic [ref=e148]:
+      - generic [ref=e149]: "7"
+      - generic [ref=e150]: Compliance Frameworks
+    - generic [ref=e151]:
+      - generic [ref=e152]: ~424
+      - generic [ref=e153]: Pre-seeded Controls
+    - generic [ref=e154]:
+      - generic [ref=e155]: "4"
+      - generic [ref=e156]: Live Threat Feeds
+    - generic [ref=e157]:
+      - generic [ref=e158]: 9 + 1
+      - generic [ref=e159]: Modular License Tiers
+    - generic [ref=e160]:
+      - generic [ref=e161]: "3"
+      - generic [ref=e162]: Deployment Modes
+    - generic [ref=e163]:
+      - generic [ref=e164]: 1000+
+      - generic [ref=e165]: Tests Across Services
+    - generic [ref=e166]:
+      - generic [ref=e167]: "0"
+      - generic [ref=e168]: Sensitive Data Leaves Network*
+  - generic [ref=e170]:
+    - generic [ref=e171]:
+      - generic [ref=e172]: What URIP Is
+      - heading "Two dashboards. One data layer. One pane." [level=2] [ref=e173]
+      - paragraph [ref=e174]: URIP (Unified Risk Intelligence Platform) aggregates findings from your existing security stack, enriches every finding with live exploit and threat-actor intelligence, and renders the result as two linked dashboards on a single tenant.
+    - generic [ref=e175]:
+      - generic [ref=e176]:
+        - generic [ref=e177]: CISO View
+        - heading "URIP Risk Intelligence" [level=3] [ref=e178]
+        - paragraph [ref=e179]: “Where am I most exposed today?”
+        - list [ref=e180]:
+          - listitem [ref=e181]:
+            - generic [ref=e182]: 
+            - text: Composite 0–10 risk score on every CVE
+          - listitem [ref=e183]:
+            - generic [ref=e184]: 
+            - text: Live EPSS, KEV, MITRE ATT&CK and OTX enrichment
+          - listitem [ref=e185]:
+            - generic [ref=e186]: 
+            - text: APT attribution and IOC matches per finding
+          - listitem [ref=e187]:
+            - generic [ref=e188]: 
+            - text: Asset-tier weighting (T1–T4)
+          - listitem [ref=e189]:
+            - generic [ref=e190]: 
+            - text: SLA timers, owner assignment, auto-ticket to ITSM
+      - generic [ref=e191]:
+        - generic [ref=e192]:
+          - generic [ref=e193]: 
+          - text: Compliance Officer View
+        - heading "Continuous Audit-Readiness" [level=3] [ref=e194]
+        - paragraph [ref=e195]: “If the audit landed next week, would we pass?”
+        - list [ref=e196]:
+          - listitem [ref=e197]:
+            - generic [ref=e198]: 
+            - text: Framework score widgets with trend arrows
+          - listitem [ref=e199]:
+            - generic [ref=e200]: 
+            - text: Per-control drill-down with root-cause CVEs
+          - listitem [ref=e201]:
+            - generic [ref=e202]: 
+            - text: Drag-drop evidence with SHA-256 integrity
+          - listitem [ref=e203]:
+            - generic [ref=e204]: 
+            - text: Time-bound, framework-scoped auditor portal
+          - listitem [ref=e205]:
+            - generic [ref=e206]: 
+            - text: Versioned policy templates with e-sign workflow
+    - generic [ref=e207]:
+      - text: Both dashboards render from the same tenant data, share the same auth, the same audit log, and the same connector mesh. Critically, they are
+      - strong [ref=e208]: linked
+      - text: ": when a SOC 2 control fails, you see the exact CVEs causing it."
+      - strong [ref=e209]: No other product does this.
+  - generic [ref=e211]:
+    - generic [ref=e212]:
+      - generic [ref=e213]: How a Customer Onboards
+      - heading "Three screens. No professional services." [level=2] [ref=e214]
+      - paragraph [ref=e215]: The same flow runs for the 50-person SaaS startup chasing SOC 2 and the 1000-person manufacturer with eleven tools.
+    - generic [ref=e216]:
+      - generic [ref=e217]:
+        - generic [ref=e218]: "01"
+        - generic [ref=e220]: 
+        - heading "Sign up & brand" [level=4] [ref=e221]
+        - paragraph [ref=e222]: Tenant provisioned with its own slug, encryption key and database scope. Upload logo, pick colors, set the app name. Login pages, dashboards, exports and auditor invites carry your brand.
+      - generic [ref=e223]:
+        - generic [ref=e224]: "02"
+        - generic [ref=e226]: 
+        - heading "Pick from the catalog" [level=4] [ref=e227]
+        - paragraph [ref=e228]: A grid of 12 tiles — vendor name, one-line description, setup difficulty, freshness target. Click each tool you own. Roadmap connectors are visible but greyed.
+      - generic [ref=e229]:
+        - generic [ref=e230]: "03"
+        - generic [ref=e232]: 
+        - heading "Paste & test connection" [level=4] [ref=e233]
+        - paragraph [ref=e234]:
+          - text: Per-tool guided wizard with inline help and the vendor’s API doc link. Click
+          - emphasis [ref=e235]: Test Connection
+          - text: — in 2–4 seconds you see
+          - emphasis [ref=e236]: “Connected. Found 2,847 assets.”
+          - text: or the exact remediation step.
+      - generic [ref=e237]:
+        - generic [ref=e238]: "04"
+        - generic [ref=e240]: 
+        - heading "Watch it populate" [level=4] [ref=e241]
+        - paragraph [ref=e242]: Credentials saved to a per-tenant Fernet vault. The 15-minute poll cycle starts. Risk dashboard fills within minutes; compliance dashboard within an hour. Auditor invite can go out the same day.
+  - generic [ref=e244]:
+    - generic [ref=e245]:
+      - generic [ref=e246]: How We Calculate Risk
+      - heading "URIP doesn’t invent severity. It composes it." [level=2] [ref=e247]
+      - paragraph [ref=e248]: Every CVE that lands in URIP is run through a four-input formula plus an enrichment layer, producing a single 0–10 composite score.
+    - generic [ref=e249]:
+      - generic [ref=e250]:
+        - generic [ref=e251]: "URIP Risk Score = clamp[0, 10] ( (CVSS × 0.55) // theoretical severity + (EPSS × 2.5) // 30-day exploit probability + (KEV ? +2.0 : 0) // actively exploited now + (asset_tier_bonus) // T1:+1.0 T2:+0.5 T3:0 T4:−0.5 )"
+        - generic [ref=e252]:
+          - generic [ref=e254]: 
+          - generic [ref=e255]:
+            - generic [ref=e256]: CVSS Base Score
+            - generic [ref=e257]: The public NVD severity anchor
+          - generic [ref=e258]: × 0.55
+        - generic [ref=e259]:
+          - generic [ref=e261]: 
+          - generic [ref=e262]:
+            - generic [ref=e263]: EPSS Probability
+            - generic [ref=e264]: Will this CVE be exploited in the wild in 30 days?
+          - generic [ref=e265]: × 2.5
+        - generic [ref=e266]:
+          - generic [ref=e268]: 
+          - generic [ref=e269]:
+            - generic [ref=e270]: KEV Bonus
+            - generic [ref=e271]: CISA Known Exploited Vulnerabilities flag
+          - generic [ref=e272]: + 2.0
+        - generic [ref=e273]:
+          - generic [ref=e275]: 
+          - generic [ref=e276]:
+            - generic [ref=e277]: Asset Tier Multiplier
+            - generic [ref=e278]: Tenant-configurable T1–T4 criticality
+          - generic [ref=e279]: ± 1.0
+      - generic [ref=e280]:
+        - heading "Plus two enrichment layers no formula captures." [level=3] [ref=e281]
+        - paragraph [ref=e282]:
+          - strong [ref=e283]: APT attribution
+          - text: — MITRE ATT&CK CVE-to-group mapping.
+          - emphasis [ref=e284]: “This CVE is exploited by APT41 (T1190 Exploit Public-Facing Application). You are in their target sector. Treat as Critical.”
+        - paragraph [ref=e285]:
+          - strong [ref=e286]: IOC matches
+          - text: — AlienVault OTX pulses.
+          - emphasis [ref=e287]: “This C2 IP from your Zscaler logs matches an active OTX pulse from yesterday.”
+        - generic [ref=e288]:
+          - generic [ref=e289]: EPSS · FIRST.org
+          - generic [ref=e291]: KEV · CISA
+          - generic [ref=e293]: MITRE ATT&CK
+          - generic [ref=e295]: AlienVault OTX
+        - generic [ref=e297]:
+          - strong [ref=e298]: The unique edge.
+          - text: When a SOC 2 control fails, URIP already knows
+          - emphasis [ref=e299]: which CVE
+          - text: caused it, its exploit probability, the APT exploiting it, and which Tier-1 asset is affected. Sprinto cannot do this. CloudSEK cannot do this. URIP has both, joined inside one tenant.
+  - generic [ref=e301]:
+    - generic [ref=e302]:
+      - generic [ref=e303]: How We Integrate
+      - heading "Twelve native connectors. One contract. Universal." [level=2] [ref=e304]
+      - paragraph [ref=e305]: Every connector follows a four-method contract. New tools plug in without touching core code — that is the universal-system promise made literal.
+    - generic [ref=e306]:
+      - generic [ref=e307]:
+        - img "Tenable" [ref=e309]
+        - generic [ref=e310]: Tenable
+        - generic [ref=e311]: Vulnerability Mgmt
+      - generic [ref=e312]:
+        - img "SentinelOne" [ref=e314]
+        - generic [ref=e315]: SentinelOne
+        - generic [ref=e316]: EDR
+      - generic [ref=e317]:
+        - img "Zscaler" [ref=e319]
+        - generic [ref=e320]: Zscaler
+        - generic [ref=e321]: Network / SWG
+      - generic [ref=e322]:
+        - img "Netskope" [ref=e324]
+        - generic [ref=e325]: Netskope
+        - generic [ref=e326]: CASB / SSE
+      - generic [ref=e327]:
+        - img "Microsoft Entra ID" [ref=e329]
+        - generic [ref=e330]: MS Entra ID
+        - generic [ref=e331]: Identity
+      - generic [ref=e332]:
+        - img "Microsoft 365" [ref=e334]
+        - generic [ref=e335]: SharePoint · OneDrive · Teams
+        - generic [ref=e336]: Collaboration
+      - generic [ref=e337]:
+        - img "ManageEngine ServiceDesk Plus" [ref=e339]
+        - generic [ref=e340]: ManageEngine SDP
+        - generic [ref=e341]: ITSM
+      - generic [ref=e342]:
+        - img "ManageEngine Endpoint Central" [ref=e344]
+        - generic [ref=e345]: ManageEngine EC
+        - generic [ref=e346]: Endpoint Mgmt
+      - generic [ref=e347]:
+        - img "ManageEngine MDM" [ref=e349]
+        - generic [ref=e350]: ManageEngine MDM
+        - generic [ref=e351]: Mobile Devices
+      - generic [ref=e352]:
+        - img "Burp Suite Enterprise (PortSwigger)" [ref=e354]
+        - generic [ref=e355]: Burp Suite Enterprise
+        - generic [ref=e356]: DAST
+      - generic [ref=e357]:
+        - img "GTB Endpoint Protector" [ref=e359]
+        - generic [ref=e360]: GTB Endpoint Protector
+        - generic [ref=e361]: DLP
+      - generic [ref=e362]:
+        - img "CloudSEK" [ref=e364]
+        - generic [ref=e365]: CloudSEK
+        - generic [ref=e366]: External Threat
+    - generic [ref=e367]:
+      - generic [ref=e368]:
+        - heading "The Normalization Engine" [level=3] [ref=e369]
+        - paragraph [ref=e370]:
+          - text: Every tool’s raw output — a Tenable scan blob, a SentinelOne threat record, a Zscaler URL block, an Entra
+          - code [ref=e371]: riskEventType
+          - text: — maps to one internal
+          - code [ref=e372]: URIPRiskRecord
+          - text: schema before scoring. The risk register, the dashboard, the workflow, the SLA service, the audit log all consume the same shape.
+        - paragraph [ref=e373]:
+          - text: This is the difference between “we built 12 connectors” and
+          - strong [ref=e374]: “we built one connector the same way 12 times.”
+        - list [ref=e375]:
+          - listitem [ref=e376]:
+            - generic [ref=e377]: 
+            - generic [ref=e378]: Per-tenant Fernet-encrypted credential vault
+          - listitem [ref=e379]:
+            - generic [ref=e380]: 
+            - generic [ref=e381]: 15-min / 60-min / 4-hr staggered poll cycles
+          - listitem [ref=e382]:
+            - generic [ref=e383]: 
+            - generic [ref=e384]: Drift detection → DEGRADED state (no silent failure)
+          - listitem [ref=e385]:
+            - generic [ref=e386]: 
+            - generic [ref=e387]: Auto-discovered into the catalog wizard
+      - generic [ref=e388]:
+        - generic [ref=e389]: connectors/base/connector.py
+        - generic [ref=e390]: "class Connector: def authenticate() -> AuthState def fetch_findings(since: datetime) -> list[RawFinding] def normalize(raw: RawFinding) -> URIPRiskRecord def health_check() -> ConnectorHealth"
+        - paragraph [ref=e391]: Implement four methods. Provide a severity mapping. Register in the catalog. Ship. The plumbing — encrypted credentials, scheduling, normalization, scoring, audit logging — is already done.
+  - generic [ref=e393]:
+    - generic [ref=e394]:
+      - generic [ref=e395]: The Two Dashboards
+      - heading "Both run from the same tenant. Both share the same auth." [level=2] [ref=e396]
+      - paragraph [ref=e397]:
+        - text: The Compliance dashboard runs as a separate FastAPI service on port 8001 with its own database — and can also run
+        - strong [ref=e398]: standalone
+        - text: for prospects who want only audit-readiness.
+    - generic [ref=e399]:
+      - generic [ref=e400]:
+        - generic [ref=e401]: URIP · The CISO Pane
+        - heading "URIP Risk Intelligence Dashboard" [level=3] [ref=e402]
+        - list [ref=e403]:
+          - listitem [ref=e404]:
+            - generic [ref=e405]: 
+            - text: Top KPI strip — 5 click-through tiles (Open / Critical / High / Accepted / IOC Matches)
+          - listitem [ref=e406]:
+            - generic [ref=e407]: 
+            - text: Sortable, filterable risk register with EPSS, KEV, APT attribution columns
+          - listitem [ref=e408]:
+            - generic [ref=e409]: 
+            - text: Threat intel panel — active APTs targeting your sector, MITRE techniques, IOC pulses
+          - listitem [ref=e410]:
+            - generic [ref=e411]: 
+            - text: Connector health board with drift detection
+          - listitem [ref=e412]:
+            - generic [ref=e413]: 
+            - text: HoD risk-acceptance workflow · remediation tracker · auto-ticket to ManageEngine SDP
+          - listitem [ref=e414]:
+            - generic [ref=e415]: 
+            - text: Immutable, tenant-scoped audit log (every action recorded)
+          - listitem [ref=e416]:
+            - generic [ref=e417]: 
+            - text: Admin pages — tool catalog, tenants, modules, scoring weights, reports
+      - generic [ref=e418]:
+        - generic [ref=e419]: Compliance · The DPO Pane
+        - heading "Compliance Dashboard" [level=3] [ref=e420]
+        - list [ref=e421]:
+          - listitem [ref=e422]:
+            - generic [ref=e423]: 
+            - text: 7 framework score widgets with trend arrows · controls passing / total
+          - listitem [ref=e424]:
+            - generic [ref=e425]: 
+            - text: Per-framework drill-down (SOC 2 CC1–CC9 + A1 + PI1 + C1 + P1–P8)
+          - listitem [ref=e426]:
+            - generic [ref=e427]: 
+            - text: Single ranked list across ~424 controls by remedy_priority_score
+          - listitem [ref=e428]:
+            - generic [ref=e429]: 
+            - text: Drag-drop evidence with SHA-256 integrity hash · bundle export
+          - listitem [ref=e430]:
+            - generic [ref=e431]: 
+            - text: 9 versioned policy templates · e-sign workflow · bulk-remind
+          - listitem [ref=e432]:
+            - generic [ref=e433]: 
+            - text: Vendor risk — questionnaires, criticality, contract / DPA / BAA expiry alerts
+          - listitem [ref=e434]:
+            - generic [ref=e435]: 
+            - text: Time-bound, framework-scoped, read-only auditor portal with full activity trail
+  - generic [ref=e437]:
+    - generic [ref=e438]:
+      - generic [ref=e439]: The Module Catalog
+      - heading "9 capability modules + a mandatory Core. Pick what you need." [level=2] [ref=e440]
+      - paragraph [ref=e441]: "Disabled modules are dark in the UI (route guards) and inactive in the backend (decorator checks). Three-layer enforcement: UI, API, connector data plane."
+    - generic [ref=e442]:
+      - generic [ref=e443]:
+        - generic [ref=e444]: Mandatory
+        - generic [ref=e446]: 
+        - heading "CORE" [level=4] [ref=e447]
+        - paragraph [ref=e448]: Risk register, scoring engine, dashboard, workflow, audit log, reports, EPSS + KEV + MITRE + OTX enrichment, multi-tenancy, white-label theming.
+        - generic [ref=e449]: Always-on for every tenant.
+        - generic [ref=e450]: For every tenant
+      - generic [ref=e451]:
+        - generic [ref=e453]: 
+        - heading "VM · Vulnerability Management" [level=4] [ref=e454]
+        - paragraph [ref=e455]: Tenable + Qualys + Rapid7 + CrowdStrike Spotlight connectors for full vulnerability scan ingestion.
+        - generic [ref=e456]: Tenable · Qualys · Rapid7 · CrowdStrike Spotlight
+        - generic [ref=e457]: Anyone running scanners
+      - generic [ref=e458]:
+        - generic [ref=e460]: 
+        - heading "EDR · Endpoint Detection" [level=4] [ref=e461]
+        - paragraph [ref=e462]: SentinelOne + CrowdStrike Falcon + Defender for Endpoint + ManageEngine EC + MDM.
+        - generic [ref=e463]: SentinelOne · Falcon · Defender · ManageEngine EC · MDM
+        - generic [ref=e464]: Anyone with endpoint security
+      - generic [ref=e465]:
+        - generic [ref=e467]: 
+        - heading "NETWORK" [level=4] [ref=e468]
+        - paragraph [ref=e469]: Zscaler + Netskope + Palo Alto + Fortigate + CloudSEK external threat surface.
+        - generic [ref=e470]: Zscaler · Netskope · Palo Alto · Fortigate · CloudSEK
+        - generic [ref=e471]: Cloud-first orgs
+      - generic [ref=e472]:
+        - generic [ref=e474]: 
+        - heading "IDENTITY" [level=4] [ref=e475]
+        - paragraph [ref=e476]: Microsoft Entra + Okta + Google Workspace identity-risk telemetry.
+        - generic [ref=e477]: Entra · Okta · Google Workspace
+        - generic [ref=e478]: Anyone with SSO
+      - generic [ref=e479]:
+        - generic [ref=e481]: 
+        - heading "COLLABORATION" [level=4] [ref=e482]
+        - paragraph [ref=e483]: SharePoint + OneDrive + Teams + Slack + Confluence sharing & data-loss signals.
+        - generic [ref=e484]: SharePoint · OneDrive · Teams · Slack · Confluence
+        - generic [ref=e485]: Knowledge-work orgs
+      - generic [ref=e486]:
+        - generic [ref=e488]: 
+        - heading "ITSM" [level=4] [ref=e489]
+        - paragraph [ref=e490]: ServiceNow + Jira + ManageEngine SDP — bidirectional ticketing for active remediation.
+        - generic [ref=e491]: ServiceNow · Jira · ManageEngine SDP
+        - generic [ref=e492]: Anyone with formal ticketing
+      - generic [ref=e493]:
+        - generic [ref=e495]: 
+        - heading "DAST" [level=4] [ref=e496]
+        - paragraph [ref=e497]: Burp Suite Enterprise + OWASP ZAP + Acunetix — dynamic application security testing.
+        - generic [ref=e498]: Burp Enterprise · OWASP ZAP · Acunetix
+        - generic [ref=e499]: App-heavy orgs
+      - generic [ref=e500]:
+        - generic [ref=e502]: 
+        - heading "DLP · Data Loss Prevention" [level=4] [ref=e503]
+        - paragraph [ref=e504]: GTB + Forcepoint + Symantec DLP — data-exfiltration and insider-risk telemetry.
+        - generic [ref=e505]: GTB · Forcepoint · Symantec DLP
+        - generic [ref=e506]: Compliance-driven orgs
+      - generic [ref=e507]:
+        - generic [ref=e509]: 
+        - heading "COMPLIANCE & AUDIT-READINESS" [level=4] [ref=e510]
+        - paragraph [ref=e511]: 7-framework engine, control monitoring, evidence automation, policy management, access reviews, vendor risk, incident lifecycle, asset inventory, auditor portal, framework-specific reports.
+        - generic [ref=e512]: SOC 2 · ISO 27001 · GDPR · HIPAA · PCI DSS · DPDP · NIST CSF
+        - generic [ref=e513]: Anyone facing audits
+  - generic [ref=e515]:
+    - generic [ref=e516]:
+      - generic [ref=e517]: Architecture
+      - heading "Same code. Three deployment topologies. Your choice." [level=2] [ref=e518]
+      - paragraph [ref=e519]: Pure SaaS for fastest time-to-value. On-Premise for maximum sovereignty. Hybrid-SaaS for the best of both.
+    - generic [ref=e520]:
+      - generic [ref=e521]:
+        - generic [ref=e523]: 
+        - heading "Pure SaaS" [level=4] [ref=e524]
+        - paragraph [ref=e525]: We host everything. The customer logs in to their tenant.urip.io subdomain. Fastest time-to-value, standard SaaS commercial model.
+        - generic [ref=e526]:
+          - generic [ref=e527]: 
+          - text: Quickest deployment
+      - generic [ref=e528]:
+        - text: Recommended
+        - generic [ref=e530]: 
+        - heading "Hybrid-SaaS" [level=4] [ref=e531]
+        - paragraph [ref=e532]:
+          - text: Cloud portal for UI & intelligence. A Docker agent inside your network for connectors and raw storage.
+          - strong [ref=e533]: Sensitive identifiers never leave your network.
+        - generic [ref=e534]:
+          - generic [ref=e535]: 
+          - text: Procurement-clearing for regulated buyers
+      - generic [ref=e536]:
+        - generic [ref=e538]: 
+        - heading "On-Premise Licensed" [level=4] [ref=e539]
+        - paragraph [ref=e540]: The customer hosts everything. Maximum data sovereignty. Same codebase, same UX. Zero operational burden on us.
+        - generic [ref=e541]:
+          - generic [ref=e542]: 
+          - text: Air-gap compatible
+    - generic [ref=e543]:
+      - heading "The Hybrid-SaaS trust boundary" [level=3] [ref=e544]
+      - paragraph [ref=e545]: The only thing crossing from your network to our cloud is a tiny JSON envelope of summary metrics — risk scores, control pass/fail counts, compliance percentages, connector heartbeats. Same architectural pattern CrowdStrike Falcon, Tenable Nessus Agent and Splunk Forwarder use to clear procurement at regulated buyers.
+      - img [ref=e546]:
+        - generic [ref=e548]: SEMANTIC GRAVITY CLOUD
+        - generic [ref=e550]: Frontend Portal
+        - generic [ref=e551]: Dashboard UI · Auditor portal · Reports
+        - generic [ref=e553]: Cloud Backend · Intelligence Engine
+        - generic [ref=e554]: EPSS / KEV / MITRE / OTX feeds · Compliance scoring
+        - generic [ref=e555]: Aggregate metadata only · HMAC-signed ingest
+        - generic [ref=e556]: HTTPS · HMAC-signed
+        - generic [ref=e557]: scores + counts only
+        - generic [ref=e559]: CUSTOMER NETWORK
+        - generic [ref=e561]: URIP Agent · Docker container
+        - generic [ref=e562]: 12 Connectors · Normalizer · Local Vault
+        - generic [ref=e563]: Encrypted Reporter · Drill-down Tunnel (60s tokens)
+        - generic [ref=e565]: Local Postgres · customer-owned
+        - generic [ref=e566]: IPs · Hostnames · Usernames · Evidence files
+        - generic [ref=e567]: STAYS ON CUSTOMER NETWORK FOREVER
+  - generic [ref=e569]:
+    - generic [ref=e570]:
+      - generic [ref=e571]: The Technology Stack
+      - heading "Deliberately small. Opinionated. Operationally simple." [level=2] [ref=e572]
+      - paragraph [ref=e573]: Boring tech where it counts — so the smart stuff (scoring, enrichment, linkage) gets all the attention.
+    - generic [ref=e574]:
+      - generic [ref=e575]:
+        - generic [ref=e576]: Backend
+        - generic [ref=e577]:
+          - strong [ref=e578]: Python 3.13 / 3.11
+          - text: ", FastAPI, SQLAlchemy 2.x async, Alembic, Pydantic v2."
+      - generic [ref=e579]:
+        - generic [ref=e580]: Database
+        - generic [ref=e581]:
+          - strong [ref=e582]: Postgres
+          - text: (Neon in cloud, customer-managed in Hybrid-SaaS), per-tenant scope.
+      - generic [ref=e583]:
+        - generic [ref=e584]: Frontend
+        - generic [ref=e585]:
+          - text: Vanilla
+          - strong [ref=e586]: HTML / JS / CSS
+          - text: for the URIP shell ·
+          - strong [ref=e587]: Next.js
+          - text: option for compliance UI.
+      - generic [ref=e588]:
+        - generic [ref=e589]: Auth & Crypto
+        - generic [ref=e590]:
+          - strong [ref=e591]: PyJWT
+          - text: tokens ·
+          - strong [ref=e592]: Fernet
+          - text: "-encrypted per-tenant vault · SHA-256 evidence integrity."
+      - generic [ref=e593]:
+        - generic [ref=e594]: Connectors
+        - generic [ref=e595]:
+          - strong [ref=e596]: HTTPX + Pydantic v2
+          - text: with a plugin registry. Auto-discovered into the catalog wizard.
+      - generic [ref=e597]:
+        - generic [ref=e598]: Eventing & Async
+        - generic [ref=e599]:
+          - strong [ref=e600]: Redis pub/sub
+          - text: event bus +
+          - strong [ref=e601]: Celery
+          - text: workers for heavy connector pulls.
+      - generic [ref=e602]:
+        - generic [ref=e603]: Hybrid Agent
+        - generic [ref=e604]:
+          - strong [ref=e605]: Docker
+          - text: + HMAC-signed reporter + reverse-WebSocket drill-down tunnel.
+      - generic [ref=e606]:
+        - generic [ref=e607]: External Feeds
+        - generic [ref=e608]: EPSS · CISA KEV · MITRE ATT&CK · AlienVault OTX — all four live.
+      - generic [ref=e609]:
+        - generic [ref=e610]: Object Storage
+        - generic [ref=e611]:
+          - strong [ref=e612]: S3-compatible
+          - text: — R2 in cloud, customer-local in Hybrid-SaaS.
+      - generic [ref=e613]:
+        - generic [ref=e614]: Observability
+        - generic [ref=e615]:
+          - text: Structured JSON logs ·
+          - strong [ref=e616]: Sentry
+          - text: for errors ·
+          - strong [ref=e617]: Better Stack
+          - text: for metrics.
+  - generic [ref=e619]:
+    - generic [ref=e620]:
+      - generic [ref=e621]: What Sets URIP Apart
+      - heading "Three moats. Each individually meaningful. Together, decisive." [level=2] [ref=e622]
+    - generic [ref=e623]:
+      - generic [ref=e624]:
+        - generic [ref=e625]: "01"
+        - heading "Risk × Control linkage" [level=3] [ref=e626]
+        - paragraph [ref=e627]:
+          - text: URIP is the only platform that says
+          - emphasis [ref=e628]: “this CVE is what’s breaking your SOC 2 control CC7.1, on this Tier-1 asset, owned by this person, with EPSS 0.92 and KEV-active.”
+        - generic [ref=e629]: Sprinto sees the failure but has no CVE-level threat enrichment. CloudSEK sees the threat but has no compliance scaffolding. URIP has both.
+      - generic [ref=e630]:
+        - generic [ref=e631]: "02"
+        - heading "Universal connector framework" [level=3] [ref=e632]
+        - paragraph [ref=e633]: Bring any tool. Implement four methods. Auto-register in the catalog. The plumbing — encrypted credentials, polling, normalization, scoring, audit logging, health monitoring — is done.
+        - generic [ref=e634]: No custom integration project. No professional services engagement. Same wizard for the 50-person startup and the 1000-person enterprise.
+      - generic [ref=e635]:
+        - generic [ref=e636]: "03"
+        - heading "Hybrid-SaaS data sovereignty" [level=3] [ref=e637]
+        - paragraph [ref=e638]: Sensitive vulnerability data — IP addresses, hostnames, usernames, evidence files — stays on your network. The cloud only ever sees summary scores.
+        - generic [ref=e639]: Same pattern CrowdStrike Falcon, Tenable Nessus Agent and Splunk Forwarder use. Sprinto cannot offer this — its entire model is cloud-side.
+  - generic [ref=e641]:
+    - generic [ref=e642]:
+      - generic [ref=e643]: Who It’s For
+      - heading "Built for orgs already running a security stack — tired of swivel-chairing." [level=2] [ref=e644]
+    - generic [ref=e645]:
+      - generic [ref=e646]:
+        - generic [ref=e648]: 
+        - generic [ref=e649]:
+          - heading "Mid-market SaaS (50–1000 employees)" [level=4] [ref=e650]
+          - paragraph [ref=e651]: Customer security questionnaires. SOC 2 Type 2 / ISO 27001. 5–15 security tools, no dedicated SOC.
+      - generic [ref=e652]:
+        - generic [ref=e654]: 
+        - generic [ref=e655]:
+          - heading "Manufacturing, robotics, regulated industries" [level=4] [ref=e656]
+          - paragraph [ref=e657]: Multi-customer audit pressure, on-prem OT, procurement requirement that vendor data not leave the customer network — the Hybrid-SaaS sweet spot.
+      - generic [ref=e658]:
+        - generic [ref=e660]: 
+        - generic [ref=e661]:
+          - heading "Any org with 5+ security tools" [level=4] [ref=e662]
+          - paragraph [ref=e663]: Wants ONE pane — risk register, threat intelligence, compliance status, evidence, auditor portal — without rebuilding the data layer themselves.
+      - generic [ref=e664]:
+        - generic [ref=e666]: 
+        - generic [ref=e667]:
+          - heading "Compliance-first prospects" [level=4] [ref=e668]
+          - paragraph [ref=e669]: DPO buyer, no CISO involvement, want only audit-readiness. Buy the standalone Compliance Module without the URIP risk layer.
+  - generic [ref=e671]:
+    - generic [ref=e672]:
+      - generic [ref=e673]: What You Bring
+      - heading "URIP cannot run on goodwill. Here’s what we need from you." [level=2] [ref=e674]
+      - paragraph [ref=e675]: That’s it. No professional services. No bespoke integration project. No consultant onsite.
+    - generic [ref=e676]:
+      - generic [ref=e677]:
+        - heading " API credentials per tool" [level=4] [ref=e678]:
+          - generic [ref=e679]: 
+          - text: API credentials per tool
+        - paragraph [ref=e680]: Read-only is fine for almost everything. ManageEngine SDP needs write for bidirectional ticketing. Vendor-published scopes only.
+      - generic [ref=e681]:
+        - heading " One tenant admin" [level=4] [ref=e682]:
+          - generic [ref=e683]: 
+          - text: One tenant admin
+        - paragraph [ref=e684]: Configures the workspace — brand, frameworks, module subscriptions, user invitations.
+      - generic [ref=e685]:
+        - heading " Network allowlist" [level=4] [ref=e686]:
+          - generic [ref=e687]: 
+          - text: Network allowlist
+        - paragraph [ref=e688]: Pure SaaS — allowlist our cloud IP at egress. Hybrid-SaaS — allow the Docker agent’s outbound HTTPS to our cloud.
+      - generic [ref=e689]:
+        - heading " MS Entra admin consent" [level=4] [ref=e690]:
+          - generic [ref=e691]: 
+          - text: MS Entra admin consent
+        - paragraph [ref=e692]: Required if Identity / Collaboration modules are subscribed. Least-privilege scopes documented in the per-tool wizard.
+      - generic [ref=e693]:
+        - heading " Burp Suite Enterprise license" [level=4] [ref=e694]:
+          - generic [ref=e695]: 
+          - text: Burp Suite Enterprise license
+        - paragraph [ref=e696]: If DAST module is subscribed — Burp Pro alone does not expose the full programmatic API.
+    - paragraph [ref=e697]: No professional services. No bespoke integration project. No consultant onsite.
+  - generic [ref=e699]:
+    - generic [ref=e700]:
+      - generic [ref=e701]: What URIP Delivers Today
+      - heading "A complete, working platform — not a roadmap promise." [level=2] [ref=e702]
+      - paragraph [ref=e703]: Every capability listed below runs against the real upstream API in production today.
+    - generic [ref=e704]:
+      - generic [ref=e705]:
+        - generic [ref=e707]: 
+        - generic [ref=e708]: 12 production connectors with the full four-method contract
+      - generic [ref=e709]:
+        - generic [ref=e711]: 
+        - generic [ref=e712]: 7 pre-seeded compliance frameworks (~424 controls)
+      - generic [ref=e713]:
+        - generic [ref=e715]: 
+        - generic [ref=e716]: Both dashboards — full end-to-end UI
+      - generic [ref=e717]:
+        - generic [ref=e719]: 
+        - generic [ref=e720]: Auditor portal with framework-scoped, time-bound, read-only access
+      - generic [ref=e721]:
+        - generic [ref=e723]: 
+        - generic [ref=e724]: Hybrid-SaaS Docker agent with HMAC-signed reporter
+      - generic [ref=e725]:
+        - generic [ref=e727]: 
+        - generic [ref=e728]: Drill-down reverse-WebSocket tunnel with 60s tokens
+      - generic [ref=e729]:
+        - generic [ref=e731]: 
+        - generic [ref=e732]: Multi-tenant data plane with cross-tenant isolation tests
+      - generic [ref=e733]:
+        - generic [ref=e735]: 
+        - generic [ref=e736]: White-label per-tenant theming end-to-end
+      - generic [ref=e737]:
+        - generic [ref=e739]: 
+        - generic [ref=e740]: Composite scoring engine (CVSS · EPSS · KEV · tier)
+      - generic [ref=e741]:
+        - generic [ref=e743]: 
+        - generic [ref=e744]: 4 live external intelligence feeds
+      - generic [ref=e745]:
+        - generic [ref=e747]: 
+        - generic [ref=e748]: SHA-256 evidence integrity hash on every artifact
+      - generic [ref=e749]:
+        - generic [ref=e751]: 
+        - generic [ref=e752]: Per-tenant Fernet-encrypted credential vault
+      - generic [ref=e753]:
+        - generic [ref=e755]: 
+        - generic [ref=e756]: 9 license modules + Core, with three-layer enforcement
+      - generic [ref=e757]:
+        - generic [ref=e759]: 
+        - generic [ref=e760]: Standalone Compliance deployment (Sprinto-equivalent GTM)
+      - generic [ref=e761]:
+        - generic [ref=e763]: 
+        - generic [ref=e764]: Risk acceptance workflow with HoD approval
+      - generic [ref=e765]:
+        - generic [ref=e767]: 
+        - generic [ref=e768]: Bidirectional ticketing into ManageEngine SDP
+      - generic [ref=e769]:
+        - generic [ref=e771]: 
+        - generic [ref=e772]: Immutable per-tenant audit log on every action
+      - generic [ref=e773]:
+        - generic [ref=e775]: 
+        - generic [ref=e776]: 9 versioned policy templates with e-sign workflow
+      - generic [ref=e777]:
+        - generic [ref=e779]: 
+        - generic [ref=e780]: Vendor risk — questionnaires, criticality, contract alerts
+      - generic [ref=e781]:
+        - generic [ref=e783]: 
+        - generic [ref=e784]: Drift detection on connectors (no silent failure)
+  - generic [ref=e786]:
+    - generic [ref=e787]:
+      - generic [ref=e788]: The Pricing Story
+      - heading "Per-module subscription. Pay only for what you turn on." [level=2] [ref=e789]
+      - paragraph [ref=e790]: Disabled modules are dark in the UI and inactive in the backend. A startup might subscribe to Core + Compliance only. An enterprise might run all nine.
+    - generic [ref=e791]:
+      - generic [ref=e792]:
+        - generic [ref=e794]: 
+        - heading "Per-module licensing" [level=4] [ref=e795]
+        - paragraph [ref=e796]: Each tenant subscribes to exactly the capability modules they need. Core is always-on and bundled. Compliance is the strategic upsell that moves the conversation from operational tooling to board-level GRC.
+      - generic [ref=e797]:
+        - generic [ref=e799]: 
+        - heading "Cost-consolidation pitch" [level=4] [ref=e800]
+        - paragraph [ref=e801]: One subscription replaces a typical bundle of compliance automation, external threat intel, manual audit-prep consultants, and tool swivel-chair FTE overhead — while adding the Risk × Control linkage neither vendor in your existing stack offers.
+      - generic [ref=e802]:
+        - generic [ref=e804]: 
+        - heading "Hybrid-SaaS baseline" [level=4] [ref=e805]
+        - paragraph [ref=e806]: A modest VPS on the customer side runs the on-prem Docker agent (a 2 vCPU / 4 GB instance is enough for most tenants). The cloud portal is included in the URIP subscription — no extra hosting line item.
+  - generic [ref=e808]:
+    - generic [ref=e809]:
+      - generic [ref=e810]: Honest Limitations
+      - heading "What URIP is — and isn’t." [level=2] [ref=e811]
+      - paragraph [ref=e812]:
+        - text: URIP is a unifier and a scaffold, not a do-everything platform. Six things URIP explicitly does
+        - strong [ref=e813]: not
+        - text: "do:"
+    - generic [ref=e814]:
+      - generic [ref=e815]:
+        - heading " We don’t crawl the dark web" [level=4] [ref=e816]:
+          - generic [ref=e817]: 
+          - text: We don’t crawl the dark web
+        - paragraph [ref=e818]: We integrate with CloudSEK — they run the crawler infrastructure (Tor, residential proxies, Telegram scraping, paid DNS feeds). We surface their alerts inside the unified URIP dashboard with EPSS + KEV + asset-tier prioritisation on top.
+      - generic [ref=e819]:
+        - heading " We don’t run a SOC" [level=4] [ref=e820]:
+          - generic [ref=e821]: 
+          - text: We don’t run a SOC
+        - paragraph [ref=e822]: URIP surfaces and prioritises risks. It does not respond to incidents. Your security team or SOC vendor still owns response. URIP is the unified pane on which they triage.
+      - generic [ref=e823]:
+        - heading " We don’t author training videos" [level=4] [ref=e824]:
+          - generic [ref=e825]: 
+          - text: We don’t author training videos
+        - paragraph [ref=e826]: We integrate with KnowBe4 / Hoxhunt / Cybeready and pull training-completion telemetry as compliance evidence. We do not build training content.
+      - generic [ref=e827]:
+        - heading " We don’t run BGV" [level=4] [ref=e828]:
+          - generic [ref=e829]: 
+          - text: We don’t run BGV
+        - paragraph [ref=e830]: We integrate with AuthBridge / OnGrid and pull background-verification status as evidence. We do not perform BGV ourselves.
+      - generic [ref=e831]:
+        - heading " We are not the auditor" [level=4] [ref=e832]:
+          - generic [ref=e833]: 
+          - text: We are not the auditor
+        - paragraph [ref=e834]: We make audits easy — automated evidence collection, control monitoring, policy tracking, reporting, the auditor portal. The customer still owns control design, policy approvals, vendor selection and the audit engagement itself.
+      - generic [ref=e835]:
+        - heading " We are not legal counsel" [level=4] [ref=e836]:
+          - generic [ref=e837]: 
+          - text: We are not legal counsel
+        - paragraph [ref=e838]: Framework templates and policies are starting points. Your legal / compliance counsel must review and tailor them for your jurisdiction and customer contracts.
+  - generic [ref=e840]:
+    - heading "Stop juggling eleven security tools and three compliance spreadsheets." [level=2] [ref=e841]
+    - paragraph [ref=e842]: See one number. Drill to one CVE. Fix one ticket. Both dashboards on one screen.
+    - generic [ref=e843]:
+      - link "Sign in to your tenant " [ref=e844] [cursor=pointer]:
+        - /url: index.html
+        - text: Sign in to your tenant
+        - generic [ref=e845]: 
+      - link "How it works" [ref=e846] [cursor=pointer]:
+        - /url: "#how"
+    - generic [ref=e847]: Your tools · Your data · One pane · Audit-ready
+  - contentinfo [ref=e848]:
+    - generic [ref=e849]:
+      - generic [ref=e850]:
+        - generic [ref=e851]:
+          - generic [ref=e853]: 
+          - generic [ref=e854]: URIP
+        - paragraph [ref=e855]: Unified Risk Intelligence Platform — multi-tenant, module-pickable risk-and-compliance for organisations that already own a security stack.
+      - generic [ref=e856]:
+        - heading "Product" [level=5] [ref=e857]
+        - generic [ref=e858]:
+          - link "How it works" [ref=e859] [cursor=pointer]:
+            - /url: "#how"
+          - link "Dashboards" [ref=e860] [cursor=pointer]:
+            - /url: "#dashboards"
+          - link "Connectors" [ref=e861] [cursor=pointer]:
+            - /url: "#connectors"
+          - link "Modules" [ref=e862] [cursor=pointer]:
+            - /url: "#modules"
+          - link "Architecture" [ref=e863] [cursor=pointer]:
+            - /url: "#architecture"
+      - generic [ref=e864]:
+        - heading "Why URIP" [level=5] [ref=e865]
+        - generic [ref=e866]:
+          - link "What sets us apart" [ref=e867] [cursor=pointer]:
+            - /url: "#why-urip"
+          - link "Who it’s for" [ref=e868] [cursor=pointer]:
+            - /url: "#audience"
+          - link "Capabilities" [ref=e869] [cursor=pointer]:
+            - /url: "#capabilities"
+          - link "Honest limitations" [ref=e870] [cursor=pointer]:
+            - /url: "#not-us"
+          - link "Pricing model" [ref=e871] [cursor=pointer]:
+            - /url: "#pricing"
+      - generic [ref=e872]:
+        - heading "Get started" [level=5] [ref=e873]
+        - generic [ref=e874]:
+          - link "Sign in" [ref=e875] [cursor=pointer]:
+            - /url: index.html
+          - link "Customer portal" [ref=e876] [cursor=pointer]:
+            - /url: index.html
+          - link "What you bring" [ref=e877] [cursor=pointer]:
+            - /url: "#asks"
+    - generic [ref=e878]:
+      - text: © 2026 URIP · Unified Risk Intelligence Platform.
+      - emphasis [ref=e879]: "*Hybrid-SaaS deployment mode."
+      - text: All product names, logos, and brands shown on this page are property of their respective owners. All company, product and service names used here are for identification purposes only. Use of these names, logos, and brands does not imply endorsement or partnership.

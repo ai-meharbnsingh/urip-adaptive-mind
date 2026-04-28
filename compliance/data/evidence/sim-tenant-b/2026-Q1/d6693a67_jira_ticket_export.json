@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:24:25.069547",
+  "tickets": [
+    {
+      "id": "ADV-OPS-5118",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-838@adverb.in",
+      "created": "2026-03-19T13:24:25.069551",
+      "resolved": "2026-04-15T13:24:25.069553"
+    },
+    {
+      "id": "ADV-OPS-9779",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-321@adverb.in",
+      "created": "2026-02-10T13:24:25.069557",
+      "resolved": "2026-04-17T13:24:25.069559"
+    },
+    {
+      "id": "ADV-OPS-9595",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "In Progress",
+      "assignee": "user-202@adverb.in",
+      "created": "2026-03-19T13:24:25.069562",
+      "resolved": "2026-04-21T13:24:25.069564"
+    },
+    {
+      "id": "ADV-OPS-3939",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "Done",
+      "assignee": "user-825@adverb.in",
+      "created": "2026-02-03T13:24:25.069567",
+      "resolved": "2026-04-26T13:24:25.069568"
+    },
+    {
+      "id": "ADV-OPS-1893",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "In Progress",
+      "assignee": "user-814@adverb.in",
+      "created": "2026-03-27T13:24:25.069571",
+      "resolved": "2026-04-14T13:24:25.069573"
+    },
+    {
+      "id": "ADV-OPS-9042",
+      "title": "Quarterly access review \u2014 Q1 2026 \u2014 AWS Production",
+      "status": "Done",
+      "assignee": "user-687@adverb.in",
+      "created": "2026-03-07T13:24:25.069576",
+      "resolved": "2026-04-19T13:24:25.069578"
+    },
+    {
+      "id": "ADV-OPS-6582",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-358@adverb.in",
+      "created": "2026-02-10T13:24:25.069580",
+      "resolved": "2026-04-25T13:24:25.069582"
+    },
+    {
+      "id": "ADV-OPS-7565",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "Done",
+      "assignee": "user-690@adverb.in",
+      "created": "2026-04-06T13:24:25.069585",
+      "resolved": "2026-04-14T13:24:25.069587"
+    }
+  ]
+}

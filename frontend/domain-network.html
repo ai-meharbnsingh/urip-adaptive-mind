@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Network Security | URIP - Unified Risk Intelligence Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/domain-page.css">
+  <link rel="stylesheet" href="css/module-tools.css">
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+    <main class="main-content">
+      <header class="topbar"></header>
+      <div class="content-area">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title"><i class="fas fa-globe" style="color:var(--teal-accent);margin-right:.5rem"></i>Network Security</h1>
+            <p class="page-subtitle">Shadow IT discovery, NAC posture, firewall rule drift, and CASB policy hits across Zscaler, Netskope, Forescout, and Fortiguard.</p>
+          </div>
+          <div class="flex gap-2">
+            <a class="btn btn-outline" id="btnManageConnectors" href="tool-catalog.html?category=NETWORK">
+              <i class="fas fa-puzzle-piece"></i> Manage Connectors
+            </a>
+            <button class="btn btn-primary" id="btnRunScan" type="button">
+              <i class="fas fa-play"></i> Run Scan
+            </button>
+          </div>
+        </div>
+
+        <!-- Available integrations for this module -->
+        <div id="moduleTools" data-modules="NETWORK,DLP,CASB"></div>
+
+        <div class="domain-kpi-strip four">
+          <div class="kpi-card"><div class="kpi-icon" style="background:rgba(99,102,241,0.1);color:#6366F1"><i class="fas fa-list"></i></div><div class="kpi-content"><div class="kpi-value"><span id="kpiTotalRisks">--</span></div><div class="kpi-label">Total Risks</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon critical"><i class="fas fa-fire"></i></div><div class="kpi-content"><div class="kpi-value" style="color:#E74C3C"><span id="kpiCriticalCount">--</span></div><div class="kpi-label">Critical</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon medium"><i class="fas fa-gauge-high"></i></div><div class="kpi-content"><div class="kpi-value"><span id="kpiMeanScore">--</span></div><div class="kpi-label">Mean Score</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon" style="background:rgba(39,174,96,0.1);color:#27AE60"><i class="fas fa-plug-circle-check"></i></div><div class="kpi-content"><div class="kpi-value"><span id="kpiConnectorsConfigured">--</span></div><div class="kpi-label">Connectors Configured</div></div></div>
+        </div>
+
+        <div class="widget-row">
+          <div class="widget-stat">
+            <div class="stat-icon critical"><i class="fas fa-shield-virus"></i></div>
+            <div><div class="stat-value" id="blockedThreats">--</div><div class="stat-label">Blocked Threats Today</div></div>
+          </div>
+          <div class="widget-stat">
+            <div class="stat-icon warn"><i class="fas fa-eye-slash"></i></div>
+            <div><div class="stat-value" id="shadowItCount">--</div><div class="stat-label">Shadow IT Apps</div></div>
+          </div>
+          <div class="widget-stat">
+            <div class="stat-icon info"><i class="fas fa-network-wired"></i></div>
+            <div><div class="stat-value" id="nacViolations">--</div><div class="stat-label">NAC Violations</div></div>
+          </div>
+          <div class="widget-stat">
+            <div class="stat-icon" style="background:rgba(99,102,241,0.13);color:#6366F1"><i class="fas fa-fire"></i></div>
+            <div><div class="stat-value" id="firewallDrift">--</div><div class="stat-label">FW Rule Drift</div></div>
+          </div>
+        </div>
+
+        <div class="section-row">
+          <h2>Connectors in this domain</h2>
+          <a class="btn btn-sm btn-outline" href="tool-catalog.html?category=NETWORK"><i class="fas fa-plus"></i> Add</a>
+        </div>
+        <div id="connectorGrid" class="connector-grid"></div>
+
+        <div class="section-row">
+          <h2>Top Risks (last 30 days)</h2>
+          <a class="btn btn-sm btn-outline" href="risk-register.html?domain=network">View All <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div id="riskFallbackBanner" class="fallback-banner" style="display:none">
+          <i class="fas fa-circle-info"></i> Showing risks via source filter — Risk.domain field empty.
+        </div>
+        <div class="risk-table-card">
+          <table>
+            <thead><tr><th>ID</th><th>Finding</th><th>Source</th><th>Score</th><th>Severity</th></tr></thead>
+            <tbody id="topRisksBody"><tr><td colspan="5" style="padding:2rem;text-align:center;color:#94A3B8">Loading…</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="section-row"><h2>Activity Timeline (last 7 days)</h2></div>
+        <div id="activityTimeline" class="activity-timeline">
+          <div class="activity-item">
+            <span class="time">—</span>
+            <span>Network event timeline (block events, NAC posture changes, FW rule edits) not yet populated.</span>
+            <span class="actor">system</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/domain-page.js"></script>
+  <script src="js/module-tools.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      loadModuleTools(['NETWORK', 'DLP', 'CASB'], 'moduleTools', {
+        title: 'Available integrations for Network Security',
+        subtitle: 'Connect SWG/CASB/NAC/firewall tools to ingest network policy hits and shadow IT discovery.',
+        manageHref: 'tool-catalog.html?category=NETWORK'
+      });
+    });
+    DomainPage.init({
+      domainSlug: 'domain-network',
+      connectors: ['zscaler', 'netskope', 'forescout_nac', 'fortiguard_fw'],
+      sources: ['zscaler', 'netskope', 'forescout_nac', 'fortiguard_fw'],
+      domainField: 'network',
+      catalogCategory: 'NETWORK',
+      onSpecialWidgets: async function () {
+        var apiFetch = window.URIP && window.URIP.apiFetch;
+        if (!apiFetch) return;
+        try {
+          var sources = ['zscaler', 'netskope', 'forescout_nac', 'fortiguard_fw'];
+          var results = await Promise.all(sources.map(function (s) {
+            return apiFetch('/risks?source=' + s + '&per_page=100', { silent: true })
+              .catch(function () { return { items: [] }; });
+          }));
+          var [zs, ns, fc, fg] = results.map(function (r) { return (r && r.items) || []; });
+
+          var blocked = zs.filter(function (x) {
+            var f = (x.finding || '').toLowerCase();
+            return f.indexOf('block') >= 0 || f.indexOf('threat') >= 0;
+          }).length;
+          document.getElementById('blockedThreats').textContent = String(blocked);
+
+          var shadow = (zs.concat(ns)).filter(function (x) {
+            var f = (x.finding || '').toLowerCase();
+            return f.indexOf('shadow') >= 0 || f.indexOf('saas') >= 0 || f.indexOf('unsanctioned') >= 0;
+          }).length;
+          document.getElementById('shadowItCount').textContent = String(shadow);
+
+          var nac = fc.length;
+          document.getElementById('nacViolations').textContent = String(nac);
+
+          var drift = fg.filter(function (x) {
+            var f = (x.finding || '').toLowerCase();
+            return f.indexOf('rule') >= 0 || f.indexOf('drift') >= 0 || f.indexOf('config') >= 0;
+          }).length;
+          document.getElementById('firewallDrift').textContent = String(drift);
+        } catch (e) { console.error(e); }
+      },
+    });
+  </script>
+</body>
+</html>

@@ -6,18 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Threat Intelligence | URIP - Unified Risk Intelligence Platform</title>
 
-  <!-- Google Fonts - Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Font Awesome 6 -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- Custom CSS -->
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/sidebar.css">
-  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/app.css">
 
   <!-- Threat Intel Styles (inline to avoid extra CSS file) -->
   <style>
@@ -32,10 +27,11 @@
     @media (max-width: 600px)  { .ti-kpi-grid { grid-template-columns: 1fr; } }
 
     .ti-kpi-card {
-      background: #fff;
-      border-radius: var(--radius-lg);
+      background: var(--u-card);
+      border: 1px solid var(--u-border);
+      border-radius: var(--u-radius);
       padding: 24px;
-      box-shadow: var(--shadow-sm);
+      box-shadow: var(--u-shadow-sm);
       display: flex;
       align-items: center;
       gap: 16px;
@@ -56,18 +52,19 @@
     .ti-kpi-icon.apt      { background: linear-gradient(135deg, #8E44AD, #6C3483); }
     .ti-kpi-icon.relevant { background: linear-gradient(135deg, #1ABC9C, #16A085); }
     .ti-kpi-value {
-      font-size: 28px; font-weight: 700; color: var(--gray-800);
+      font-size: 28px; font-weight: 700; color: var(--u-fg);
       line-height: 1;
     }
     .ti-kpi-label {
-      font-size: 13px; color: var(--gray-500); margin-top: 4px;
+      font-size: 13px; color: var(--u-fg-3); margin-top: 4px;
     }
 
     /* ─── Section Cards ────────────────────────────── */
     .ti-section {
-      background: #fff;
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
+      background: var(--u-card);
+      border: 1px solid var(--u-border);
+      border-radius: var(--u-radius);
+      box-shadow: var(--u-shadow-sm);
       margin-bottom: 24px;
       overflow: hidden;
     }
@@ -76,27 +73,27 @@
       align-items: center;
       justify-content: space-between;
       padding: 20px 24px;
-      border-bottom: 1px solid var(--gray-200);
+      border-bottom: 1px solid var(--u-border);
     }
     .ti-section-title {
-      font-size: 16px; font-weight: 700; color: var(--gray-800);
+      font-size: 16px; font-weight: 700; color: var(--u-fg);
       display: flex; align-items: center; gap: 8px;
     }
-    .ti-section-title i { color: var(--teal-accent); }
+    .ti-section-title i { color: var(--u-cyan); }
     .ti-section-body { padding: 24px; }
 
     /* ─── Pulse Cards ──────────────────────────────── */
     .ti-pulse-card {
-      background: var(--gray-50);
-      border: 1px solid var(--gray-200);
-      border-radius: var(--radius-md);
+      background: var(--u-card-2);
+      border: 1px solid var(--u-border);
+      border-radius: var(--u-radius);
       padding: 20px;
       margin-bottom: 16px;
-      transition: border-color var(--transition-base), box-shadow var(--transition-base);
+      transition: border-color 220ms ease, box-shadow 220ms ease;
     }
     .ti-pulse-card:hover {
-      border-color: var(--teal-accent);
-      box-shadow: var(--shadow-md);
+      border-color: var(--u-primary);
+      box-shadow: var(--u-shadow);
     }
     .ti-pulse-header {
       display: flex; align-items: flex-start; justify-content: space-between;
@@ -302,20 +299,40 @@
       gap: 24px;
     }
     @media (max-width: 1000px) { .ti-two-col { grid-template-columns: 1fr; } }
+
+    /* ─── Word Cloud (D3 layout) ────────────────────── */
+    .ti-three-col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    @media (max-width: 1100px) { .ti-three-col { grid-template-columns: 1fr; } }
+    .ti-cloud-canvas {
+      width: 100%;
+      min-height: 240px;
+      background: linear-gradient(180deg, #fafbfc, #ffffff);
+      border-radius: var(--radius-md);
+      display: block;
+    }
+    .ti-cloud-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 240px;
+      color: var(--gray-400);
+      font-style: italic;
+    }
+    .ti-cloud-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--gray-500);
+      margin: 0 0 6px 4px;
+    }
   </style>
 </head>
-<body>
-  <div class="app-layout">
-    <!-- Sidebar Mount Point -->
-    <div id="sidebar-mount"></div>
-
-    <!-- Main Content -->
-    <main class="main-content">
-      <!-- Top Bar (populated by sidebar.js) -->
-      <header class="topbar"></header>
-
-      <!-- Content Area -->
-      <div class="content-area">
+<body class="urip-app">
+  <div id="app-shell" data-page="threat-map">
         <!-- Page Header -->
         <div class="page-header">
           <div>
@@ -379,6 +396,32 @@
             </div>
           </div>
           <div class="ti-section-body" id="ioc-matches-container"></div>
+        </div>
+
+        <!-- Threat Word Clouds (APT / TTP / Sector) -->
+        <div class="ti-section">
+          <div class="ti-section-header">
+            <div class="ti-section-title">
+              <i class="fas fa-cloud"></i>
+              Threat Activity Word Clouds
+            </div>
+          </div>
+          <div class="ti-section-body">
+            <div class="ti-three-col">
+              <div>
+                <p class="ti-cloud-title">Top APT Groups</p>
+                <svg id="cloud-apt" class="ti-cloud-canvas" aria-label="APT word cloud"></svg>
+              </div>
+              <div>
+                <p class="ti-cloud-title">Top TTPs / Tags</p>
+                <svg id="cloud-ttps" class="ti-cloud-canvas" aria-label="TTP word cloud"></svg>
+              </div>
+              <div>
+                <p class="ti-cloud-title">Top Targeted Sectors</p>
+                <svg id="cloud-sectors" class="ti-cloud-canvas" aria-label="Sector word cloud"></svg>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Threat Pulses + Dark Web Alerts (two columns) -->
@@ -445,20 +488,102 @@
           </div>
         </div>
 
-      </div>
-    </main>
   </div>
 
   <!-- Scripts -->
+  <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/sidebar.js"></script>
+  <script src="js/shell.js"></script>
   <script src="js/threat-map.js"></script>
+  <!-- D3 v7 + d3-cloud (word-cloud layout) via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3-cloud@1.2.7/build/d3.layout.cloud.min.js"></script>
   <script>
-    checkAuth();
+    // ─── Word-cloud renderer ────────────────────────────────────────
+    // Pulls /api/threat-intel/word-cloud and lays out three SVG canvases.
+    // Defensive: skips if D3 / d3.layout.cloud failed to load (offline demo).
+    (function () {
+      function paint(svgId, entries, palette) {
+        var svgEl = document.getElementById(svgId);
+        if (!svgEl) return;
+        if (!entries || !entries.length) {
+          svgEl.outerHTML = '<div class="ti-cloud-empty" id="' + svgId + '">No data yet — connectors must run a poll first</div>';
+          return;
+        }
+        if (typeof d3 === 'undefined' || !d3.layout || !d3.layout.cloud) {
+          svgEl.outerHTML = '<div class="ti-cloud-empty">D3 word-cloud library unavailable (offline?)</div>';
+          return;
+        }
+        var width = svgEl.clientWidth || 320;
+        var height = 240;
+        var max = entries[0].count || 1;
+        var min = entries[entries.length - 1].count || 1;
+        var fontScale = d3.scaleLinear().domain([min, max]).range([12, 38]);
+
+        var words = entries.map(function (e) { return { text: e.term, size: fontScale(e.count), count: e.count }; });
+
+        d3.layout.cloud()
+          .size([width, height])
+          .words(words)
+          .padding(3)
+          .rotate(function () { return ~~(Math.random() * 2) * 90; })
+          .font('Inter')
+          .fontSize(function (d) { return d.size; })
+          .on('end', function (placed) {
+            var svg = d3.select('#' + svgId);
+            svg.attr('viewBox', '0 0 ' + width + ' ' + height);
+            svg.selectAll('*').remove();
+            svg.append('g')
+              .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
+              .selectAll('text')
+              .data(placed)
+              .enter()
+              .append('text')
+                .style('font-family', 'Inter, sans-serif')
+                .style('font-weight', '600')
+                .style('fill', function (d, i) { return palette[i % palette.length]; })
+                .attr('text-anchor', 'middle')
+                .attr('font-size', function (d) { return d.size + 'px'; })
+                .attr('transform', function (d) { return 'translate(' + d.x + ',' + d.y + ')rotate(' + d.rotate + ')'; })
+                .text(function (d) { return d.text; })
+                .append('title')
+                  .text(function (d) { return d.text + ' — ' + d.count + ' mentions'; });
+          })
+          .start();
+      }
+
+      function loadAndRender() {
+        var url = '/api/threat-intel/word-cloud';
+        // Token comes from auth.js (window.URIPapi or similar pattern used by api.js).
+        var token = localStorage.getItem('auth_token') || localStorage.getItem('urip_token') || '';
+        fetch(url, { headers: token ? { Authorization: 'Bearer ' + token } : {} })
+          .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+          .then(function (data) {
+            paint('cloud-apt', data.apt_groups || [], ['#8E44AD', '#6C3483', '#A569BD', '#5B2C6F']);
+            paint('cloud-ttps', data.ttps || [], ['#E67E22', '#D35400', '#F39C12', '#B9770E']);
+            paint('cloud-sectors', data.sectors || [], ['#1ABC9C', '#16A085', '#48C9B0', '#117864']);
+          })
+          .catch(function (err) {
+            ['cloud-apt', 'cloud-ttps', 'cloud-sectors'].forEach(function (id) {
+              var el = document.getElementById(id);
+              if (el) el.outerHTML = '<div class="ti-cloud-empty" id="' + id + '">Could not load: ' + err.message + '</div>';
+            });
+          });
+      }
+
+      document.addEventListener('DOMContentLoaded', loadAndRender);
+    })();
+  </script>
+  <script>
+    if (typeof checkAuth === 'function') checkAuth();
 
     document.addEventListener('DOMContentLoaded', function() {
-      renderSidebar('threat-map');
+      window.URIP.shell.mount({
+        page: 'threat-map',
+        title: 'Threat Intelligence',
+        breadcrumb: 'Risk Center / Threat Intel'
+      });
 
       // Animate KPI cards on load
       var kpiCards = document.querySelectorAll('.ti-kpi-card');

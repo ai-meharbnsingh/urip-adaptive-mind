@@ -1,0 +1,71 @@
+{
+  "system": "Atlassian JIRA",
+  "project": "ADV-OPS",
+  "exported_at": "2026-04-27T13:24:24.594289",
+  "tickets": [
+    {
+      "id": "ADV-OPS-4845",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-118@adverb.in",
+      "created": "2026-02-26T13:24:24.594292",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-6849",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-947@adverb.in",
+      "created": "2026-02-07T13:24:24.594295",
+      "resolved": "2026-04-25T13:24:24.594297"
+    },
+    {
+      "id": "ADV-OPS-6533",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "Done",
+      "assignee": "user-732@adverb.in",
+      "created": "2026-03-14T13:24:24.594300",
+      "resolved": "2026-04-23T13:24:24.594303"
+    },
+    {
+      "id": "ADV-OPS-8968",
+      "title": "Renew Cloudflare WAF subscription (annual)",
+      "status": "In Progress",
+      "assignee": "user-903@adverb.in",
+      "created": "2026-02-26T13:24:24.594307",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-5382",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "Done",
+      "assignee": "user-823@adverb.in",
+      "created": "2026-04-06T13:24:24.594311",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-8173",
+      "title": "Review and approve new vendor: PixelWave Design Studio",
+      "status": "Done",
+      "assignee": "user-208@adverb.in",
+      "created": "2026-03-30T13:24:24.594315",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-1687",
+      "title": "Tabletop exercise \u2014 ransomware scenario \u2014 H1 2026",
+      "status": "Done",
+      "assignee": "user-271@adverb.in",
+      "created": "2026-03-28T13:24:24.594318",
+      "resolved": null
+    },
+    {
+      "id": "ADV-OPS-6925",
+      "title": "Patch CVE-2024-3400 across PAN-OS firewalls",
+      "status": "In Progress",
+      "assignee": "user-825@adverb.in",
+      "created": "2026-02-15T13:24:24.594321",
+      "resolved": null
+    }
+  ]
+}

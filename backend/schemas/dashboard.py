@@ -1,6 +1,13 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+
+
+class SlaBreachItem(BaseModel):
+    risk_id: str
+    finding: str
+    severity: str
+    sla_deadline: str
 
 
 class DashboardKPIs(BaseModel):
@@ -13,7 +20,7 @@ class DashboardKPIs(BaseModel):
     actively_exploited: int = 0
     ioc_matches: int = 0
     dark_web_alerts: int = 0
-    sla_breaching: list[dict]
+    sla_breaching: list[SlaBreachItem]
 
 
 class ChartData(BaseModel):
@@ -41,5 +48,4 @@ class AlertItem(BaseModel):
     status: str
     asset: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

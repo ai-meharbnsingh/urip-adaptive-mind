@@ -73,7 +73,10 @@ async def test_get_risk_not_found(client: AsyncClient, auth_headers):
 
 @pytest.mark.asyncio
 async def test_create_risk(client: AsyncClient, it_team_headers, seeded_risks):
-    """POST /api/risks creates a new risk with auto-generated risk_id."""
+    """POST /api/risks creates a new risk with auto-generated risk_id.
+
+    Status 201 (was 200) — see ENDPOINT_AUDIT.md criterion #7 for HTTP semantics.
+    """
     resp = await client.post("/api/risks", headers=it_team_headers, json={
         "finding": "New SQL injection in payments API",
         "description": "Parameterized queries not used",
@@ -85,7 +88,7 @@ async def test_create_risk(client: AsyncClient, it_team_headers, seeded_risks):
         "owner_team": "AppSec",
         "cve_id": "CVE-2026-5555",
     })
-    assert resp.status_code == 200
+    assert resp.status_code == 201
 
     body = resp.json()
     assert body["risk_id"].startswith("RISK-2026-")

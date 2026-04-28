@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendor Portal Login | URIP</title>
+  <meta name="description" content="Scoped login for external VAPT vendors. Submit findings to your client's URIP tenant via a sandboxed environment. You will see only your own submissions.">
+
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --navy-primary: #0D1B2A;
+      --navy-dark: #08121C;
+      --navy-light: #1B2838;
+      --teal-accent: #1ABC9C;
+      --teal-hover: #16A085;
+      --teal-light: #2ECC71;
+      --gray-100: #F0F4F8;
+      --gray-200: #E2E8F0;
+      --gray-400: #94A3B8;
+      --gray-500: #64748B;
+      --gray-700: #334155;
+      --gray-800: #1E293B;
+      --gray-900: #0F172A;
+      --white: #FFFFFF;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-weight: 400;
+      line-height: 1.55;
+      color: var(--gray-800);
+      background: var(--navy-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Background — same aesthetic as home.html hero */
+    body::before {
+      content: "";
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 0%, rgba(26,188,156,0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 80%, rgba(46,204,113,0.10) 0%, transparent 50%),
+        linear-gradient(180deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
+      z-index: 0;
+    }
+    body::after {
+      content: "";
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Top tiny bar */
+    .topbar {
+      position: absolute; top: 0; left: 0; right: 0;
+      padding: 20px 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      z-index: 10;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 12px;
+      color: var(--white);
+      font-weight: 700; font-size: 1.0625rem;
+    }
+    .brand-mark {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--teal-accent), var(--teal-hover));
+      display: grid; place-items: center;
+      color: var(--white); font-size: 0.875rem;
+      box-shadow: 0 4px 12px rgba(26,188,156,0.3);
+    }
+    .home-link {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: color 200ms ease;
+    }
+    .home-link:hover { color: var(--white); }
+
+    /* Main split layout */
+    .shell {
+      position: relative; z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      max-width: 1080px;
+      width: 100%;
+      padding: 64px 32px;
+    }
+
+    /* Left: pitch panel */
+    .pitch {
+      color: var(--white);
+      align-self: center;
+    }
+    .pitch .pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px;
+      background: rgba(26,188,156,0.12);
+      border: 1px solid rgba(26,188,156,0.4);
+      border-radius: 999px;
+      color: var(--teal-accent);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .pitch h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 18px;
+    }
+    .pitch h1 .accent {
+      background: linear-gradient(135deg, var(--teal-accent), var(--teal-light));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .pitch p {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.9375rem;
+      line-height: 1.65;
+      margin-bottom: 28px;
+      max-width: 460px;
+    }
+    .scope-list {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 12px;
+      max-width: 460px;
+    }
+    .scope-list li {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.85);
+    }
+    .scope-list li i.fa-check { color: var(--teal-accent); margin-top: 4px; flex-shrink: 0; }
+    .scope-list li i.fa-xmark { color: #94A3B8; margin-top: 4px; flex-shrink: 0; }
+    .scope-list li.cant { color: rgba(255,255,255,0.55); }
+
+    /* Right: login card */
+    .card {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+      overflow: hidden;
+      align-self: center;
+    }
+    .card-header {
+      padding: 28px 32px 18px;
+      background: linear-gradient(135deg, var(--navy-primary), var(--navy-light));
+      color: var(--white);
+      text-align: center;
+    }
+    .card-header .icon {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--teal-accent), var(--teal-hover));
+      display: grid; place-items: center;
+      margin: 0 auto 16px;
+      font-size: 1.4rem;
+      color: var(--white);
+      box-shadow: 0 8px 24px rgba(26,188,156,0.35);
+    }
+    .card-header h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+    .card-header p {
+      font-size: 0.8125rem;
+      color: rgba(255,255,255,0.7);
+    }
+    .card-body { padding: 28px 32px 32px; }
+
+    .field { margin-bottom: 16px; }
+    .field label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--gray-700);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+    .field input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      color: var(--gray-900);
+      background: var(--gray-100);
+      transition: border-color 200ms ease, background 200ms ease;
+      font-family: inherit;
+    }
+    .field input:focus {
+      outline: none;
+      border-color: var(--teal-accent);
+      background: var(--white);
+      box-shadow: 0 0 0 3px rgba(26,188,156,0.12);
+    }
+
+    .row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 18px 0 22px;
+      font-size: 0.8125rem;
+    }
+    .row label { color: var(--gray-700); display: flex; align-items: center; gap: 6px; }
+    .row a { color: var(--teal-accent); text-decoration: none; font-weight: 600; }
+    .row a:hover { color: var(--teal-hover); }
+
+    .btn-primary {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--teal-accent), var(--teal-hover));
+      color: var(--white);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 200ms ease;
+      box-shadow: 0 6px 18px rgba(26,188,156,0.35);
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      font-family: inherit;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(26,188,156,0.45); }
+
+    .info-callout {
+      margin-top: 22px;
+      padding: 14px 16px;
+      background: rgba(26,188,156,0.06);
+      border-left: 3px solid var(--teal-accent);
+      border-radius: 6px;
+      font-size: 0.8125rem;
+      color: var(--gray-700);
+      line-height: 1.55;
+    }
+    .info-callout strong { color: var(--gray-900); }
+
+    .switch-link {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 0.8125rem;
+      color: var(--gray-500);
+    }
+    .switch-link a {
+      color: var(--gray-700);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .switch-link a:hover { color: var(--teal-accent); }
+
+    /* Footer */
+    .foot {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 18px 28px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.4);
+      z-index: 10;
+    }
+
+    @media (max-width: 920px) {
+      .shell { grid-template-columns: 1fr; gap: 32px; padding: 90px 20px 60px; }
+      .pitch { text-align: center; }
+      .pitch p, .scope-list { margin-left: auto; margin-right: auto; }
+      .pitch h1 { font-size: 1.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <a href="home.html" class="brand">
+      <span class="brand-mark"><i class="fas fa-shield-halved"></i></span>
+      <span>URIP</span>
+    </a>
+    <a href="home.html" class="home-link">
+      <i class="fas fa-arrow-left"></i> Back to home
+    </a>
+  </header>
+
+  <main class="shell">
+
+    <!-- Left: scoped-login pitch -->
+    <section class="pitch">
+      <span class="pill"><i class="fas fa-user-shield"></i> Scoped Vendor Sandbox</span>
+      <h1>Sign in to your <span class="accent">vendor sandbox.</span></h1>
+      <p>This portal is for external pentesters and VAPT auditors invited by a URIP customer. You&rsquo;ll only see what your client&rsquo;s admin has explicitly scoped to your engagement.</p>
+
+      <ul class="scope-list">
+        <li><i class="fas fa-check"></i><span>Submit findings via a structured form &mdash; CVE ID, CVSS, PoC artifact, affected asset.</span></li>
+        <li><i class="fas fa-check"></i><span>See your own submissions and re-test requests.</span></li>
+        <li><i class="fas fa-check"></i><span>Watch each finding move from <em>submitted</em> &rarr; <em>assigned</em> &rarr; <em>remediated</em>.</span></li>
+        <li class="cant"><i class="fas fa-xmark"></i><span>You will not see internal network data, other vendors&rsquo; findings, or the customer&rsquo;s native connector outputs.</span></li>
+        <li class="cant"><i class="fas fa-xmark"></i><span>Your access auto-expires at the end of the engagement window.</span></li>
+      </ul>
+    </section>
+
+    <!-- Right: login card -->
+    <section class="card">
+      <div class="card-header">
+        <div class="icon"><i class="fas fa-user-shield"></i></div>
+        <h2>Vendor Portal Sign-in</h2>
+        <p>Use the credentials your client&rsquo;s admin sent you.</p>
+      </div>
+      <div class="card-body">
+        <form onsubmit="event.preventDefault(); alert('Demo only — wire this to /api/vendor/auth/login');">
+          <div class="field">
+            <label for="invite">Invitation Code</label>
+            <input id="invite" type="text" placeholder="VPT-XXXX-XXXX-XXXX" autocomplete="off" required>
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="you@vendor-firm.com" autocomplete="username" required>
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="current-password" required>
+          </div>
+
+          <div class="row">
+            <label><input type="checkbox" style="margin:0 4px 0 0;"> Remember device</label>
+            <a href="#">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn-primary">
+            Sign in to sandbox <i class="fas fa-arrow-right"></i>
+          </button>
+        </form>
+
+        <div class="info-callout">
+          <strong>First time?</strong> The invitation email from your client contains a one-time signup link. Open that link first to set your password, then return here to sign in.
+        </div>
+
+        <div class="switch-link">
+          Are you a URIP customer? <a href="index.html">Customer login &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    URIP Vendor Portal &middot; Scoped, sandboxed, time-bound access. Every action is recorded in the customer&rsquo;s tenant audit log.
+  </footer>
+
+</body>
+</html>

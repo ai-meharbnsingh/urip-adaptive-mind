@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submissions | VAPT Vendor Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/vapt-portal.css" />
+</head>
+<body>
+  <div class="vapt-shell">
+    <header class="vapt-topbar">
+      <div class="vapt-brand">
+        <span class="vapt-brand-icon"><i class="fas fa-bug"></i></span>
+        <span>URIP — VAPT Vendor Portal</span>
+      </div>
+      <nav class="vapt-tabs">
+        <a href="vapt-portal-dashboard.html" class="vapt-tab active">My submissions</a>
+        <a href="vapt-portal-submit.html" class="vapt-tab">New submission</a>
+      </nav>
+      <div class="vapt-user">
+        <span id="vendorName">…</span>
+        <button id="logoutBtn" class="vapt-btn vapt-btn-ghost" title="Sign out">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="vapt-content">
+      <section class="vapt-summary-row">
+        <div class="vapt-summary-card">
+          <div class="vapt-summary-label">Total submissions</div>
+          <div class="vapt-summary-value" id="sumTotal">–</div>
+        </div>
+        <div class="vapt-summary-card vapt-summary-warn" id="cardPending">
+          <div class="vapt-summary-label">Pending re-tests</div>
+          <div class="vapt-summary-value" id="sumPending">–</div>
+        </div>
+        <div class="vapt-summary-card">
+          <div class="vapt-summary-label">In progress</div>
+          <div class="vapt-summary-value" id="sumInProgress">–</div>
+        </div>
+        <div class="vapt-summary-card">
+          <div class="vapt-summary-label">Closed</div>
+          <div class="vapt-summary-value" id="sumClosed">–</div>
+        </div>
+      </section>
+
+      <section id="notifWrap" style="display:none">
+        <h2>Pending re-tests</h2>
+        <div id="notifList" class="vapt-notif-list"></div>
+      </section>
+
+      <section>
+        <div class="vapt-section-head">
+          <h2>My submissions</h2>
+          <div class="vapt-section-tools">
+            <select id="statusFilter" class="vapt-select">
+              <option value="">All statuses</option>
+              <option value="submitted">Submitted</option>
+              <option value="triaged">Triaged</option>
+              <option value="in_progress">In progress</option>
+              <option value="fixed">Fixed</option>
+              <option value="retest_requested">Re-test requested</option>
+              <option value="retest_pass">Re-test pass</option>
+              <option value="retest_fail">Re-test fail</option>
+              <option value="closed">Closed</option>
+            </select>
+            <a href="vapt-portal-submit.html" class="vapt-btn vapt-btn-primary">
+              <i class="fas fa-plus"></i> New submission
+            </a>
+          </div>
+        </div>
+
+        <div id="loading" class="vapt-loading">
+          <i class="fas fa-spinner fa-spin"></i> Loading…
+        </div>
+
+        <div id="empty" class="vapt-empty" style="display:none">
+          <div class="vapt-empty-icon"><i class="fas fa-inbox"></i></div>
+          <div class="vapt-empty-title">No submissions yet</div>
+          <p>Submit your first finding to populate the customer's risk register.</p>
+          <a href="vapt-portal-submit.html" class="vapt-btn vapt-btn-primary">
+            <i class="fas fa-plus"></i> New submission
+          </a>
+        </div>
+
+        <table id="submissionsTable" class="vapt-table" style="display:none">
+          <thead>
+            <tr>
+              <th>Finding</th>
+              <th>CVE</th>
+              <th>CVSS</th>
+              <th>Severity</th>
+              <th>Submitted</th>
+              <th>Status</th>
+              <th>URIP Risk</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/vapt-portal-api.js"></script>
+  <script src="js/vapt-portal.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      VaptPortal.requireSession();
+      VaptPortal.setupChrome();
+
+      var statusFilter = document.getElementById('statusFilter');
+      var loading = document.getElementById('loading');
+      var emptyMsg = document.getElementById('empty');
+      var table = document.getElementById('submissionsTable');
+      var tbody = document.getElementById('tableBody');
+      var notifWrap = document.getElementById('notifWrap');
+      var notifList = document.getElementById('notifList');
+
+      function load() {
+        loading.style.display = '';
+        emptyMsg.style.display = 'none';
+        table.style.display = 'none';
+
+        var statusVal = statusFilter.value;
+        Promise.all([
+          VaptPortalApi.listSubmissions(statusVal),
+          VaptPortalApi.listNotifications()
+        ])
+          .then(function (results) {
+            var subs = results[0];
+            var notifs = results[1];
+
+            // Summary counts
+            var allCounts = (subs && subs.items) ? subs.items : [];
+            var byStatus = {};
+            allCounts.forEach(function (s) {
+              byStatus[s.status] = (byStatus[s.status] || 0) + 1;
+            });
+            document.getElementById('sumTotal').textContent = String(allCounts.length);
+            document.getElementById('sumPending').textContent =
+                String(byStatus['retest_requested'] || 0);
+            document.getElementById('sumInProgress').textContent =
+                String((byStatus['in_progress'] || 0) + (byStatus['triaged'] || 0));
+            document.getElementById('sumClosed').textContent =
+                String(byStatus['closed'] || 0);
+
+            // Notifications
+            if (notifs && notifs.items && notifs.items.length) {
+              notifWrap.style.display = '';
+              notifList.textContent = '';
+              notifs.items.forEach(function (n) {
+                var card = document.createElement('a');
+                card.className = 'vapt-notif-card';
+                card.href = 'vapt-portal-submission-detail.html?id=' + encodeURIComponent(n.submission_id);
+                var t = document.createElement('div');
+                t.className = 'vapt-notif-title';
+                t.textContent = n.finding_title;
+                var meta = document.createElement('div');
+                meta.className = 'vapt-notif-meta';
+                meta.textContent = (n.risk_id_label ? (n.risk_id_label + ' · ') : '') +
+                                   'Re-test requested ' + VaptPortal.fmtDate(n.requested_at);
+                card.appendChild(t);
+                card.appendChild(meta);
+                notifList.appendChild(card);
+              });
+            } else {
+              notifWrap.style.display = 'none';
+            }
+
+            // Table
+            loading.style.display = 'none';
+            tbody.textContent = '';
+            if (allCounts.length === 0) {
+              emptyMsg.style.display = '';
+              return;
+            }
+            table.style.display = '';
+            allCounts.forEach(function (s) {
+              var tr = document.createElement('tr');
+              tr.appendChild(td(s.finding_title));
+              tr.appendChild(td(s.cve_id || '—'));
+              tr.appendChild(td(String(s.cvss_score)));
+              tr.appendChild(severityBadge(s.severity));
+              tr.appendChild(td(VaptPortal.fmtDate(s.submitted_at)));
+              tr.appendChild(statusBadge(s.status));
+              tr.appendChild(td(s.risk_id_label || '—'));
+
+              var link = document.createElement('a');
+              link.href = 'vapt-portal-submission-detail.html?id=' + encodeURIComponent(s.id);
+              link.className = 'vapt-btn vapt-btn-ghost';
+              link.textContent = 'View';
+              var actionTd = document.createElement('td');
+              actionTd.appendChild(link);
+              tr.appendChild(actionTd);
+
+              tbody.appendChild(tr);
+            });
+          })
+          .catch(function (err) {
+            loading.style.display = 'none';
+            emptyMsg.style.display = '';
+            emptyMsg.querySelector('.vapt-empty-title').textContent =
+                'Could not load submissions: ' + (err.message || 'unknown error');
+          });
+      }
+
+      function td(text) {
+        var el = document.createElement('td');
+        el.textContent = text;
+        return el;
+      }
+      function severityBadge(sev) {
+        var cell = document.createElement('td');
+        var b = document.createElement('span');
+        b.className = 'vapt-badge vapt-badge-' + sev;
+        b.textContent = sev;
+        cell.appendChild(b);
+        return cell;
+      }
+      function statusBadge(status) {
+        var cell = document.createElement('td');
+        var b = document.createElement('span');
+        b.className = 'vapt-badge vapt-status-' + status;
+        b.textContent = status.replace(/_/g, ' ');
+        cell.appendChild(b);
+        return cell;
+      }
+
+      statusFilter.addEventListener('change', load);
+      load();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evidence Requests | Adverb Compliance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+    <main class="main-content">
+      <header class="topbar"></header>
+      <div class="content-area">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Evidence Requests</h1>
+            <p class="page-subtitle">Requests from auditors for additional evidence. Mark as fulfilled by linking the evidence ID.</p>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <div class="filter-group">
+            <span class="filter-label">Show:</span>
+            <select class="form-select" id="filterFulfilled" style="width:auto">
+              <option value="">All</option>
+              <option value="false">Pending only</option>
+              <option value="true">Fulfilled only</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title" id="meta">Loading…</span></div>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Auditor</th>
+                  <th>Description</th>
+                  <th>Control</th>
+                  <th>Requested</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="body">
+                <tr><td colspan="6"><div class="skeleton skeleton-row"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/theming.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      checkAuth();
+      var C = window.COMPLIANCE;
+
+      async function load() {
+        var fulfilled = document.getElementById('filterFulfilled').value;
+        var qs = fulfilled !== '' ? ('?fulfilled=' + fulfilled) : '';
+        var body = document.getElementById('body');
+        body.innerHTML = '<tr><td colspan="6"><div class="skeleton skeleton-row"></div></td></tr>';
+        try {
+          var rows = await C.apiFetch('/admin/evidence-requests' + qs);
+          rows = rows || [];
+          document.getElementById('meta').textContent = rows.length + ' request(s)';
+          body.innerHTML = '';
+          if (!rows.length) {
+            var tr = document.createElement('tr');
+            var td = document.createElement('td'); td.colSpan = 6; td.style.padding = 0;
+            var w = document.createElement('div');
+            C.renderEmptyState(w, 'fa-inbox', 'No evidence requests', 'Requests will arrive here when auditors ask for additional evidence.');
+            td.appendChild(w); tr.appendChild(td); body.appendChild(tr);
+            return;
+          }
+          rows.forEach(function (r) {
+            var tr = document.createElement('tr');
+            tr.innerHTML =
+              '<td><strong>' + C.escapeHtml(r.auditor_email) + '</strong></td>' +
+              '<td style="max-width:380px">' + C.escapeHtml(r.description) + '</td>' +
+              '<td style="font-family:\'SF Mono\',monospace;font-size:.75rem">' + (r.control_id ? r.control_id.slice(0, 12) + '…' : '—') + '</td>' +
+              '<td style="font-size:.8125rem">' + C.relativeTime(r.requested_at) + '</td>' +
+              '<td>' + (r.fulfilled_at
+                ? '<span class="status-pill status-pass">Fulfilled</span>'
+                : '<span class="status-pill status-inconclusive">Pending</span>') + '</td>' +
+              '<td>' + (r.fulfilled_at
+                ? '<span class="text-xs text-gray">by ' + C.escapeHtml(r.fulfilled_by_user_id || '—') + '</span>'
+                : '<button class="btn btn-sm btn-primary" data-id="' + r.id + '"><i class="fas fa-check"></i> Fulfil</button>') +
+              '</td>';
+            body.appendChild(tr);
+          });
+          body.querySelectorAll('[data-id]').forEach(function (b) {
+            b.addEventListener('click', function () { promptFulfil(b.getAttribute('data-id')); });
+          });
+        } catch (e) {
+          C.renderEmptyState(body, 'fa-triangle-exclamation', 'Failed to load', e.message || 'Admin role required.');
+        }
+      }
+
+      function promptFulfil(reqId) {
+        var inner = document.createElement('div');
+        inner.innerHTML =
+          '<p class="text-sm mb-4">Link an existing evidence record to fulfil this request. Get the evidence ID from the Evidence page.</p>' +
+          '<div class="form-group"><label class="form-label">Evidence ID</label>' +
+          '<input class="form-input" id="fEv" placeholder="evidence_id (UUID)" /></div>';
+        var cancel = document.createElement('button'); cancel.className = 'btn btn-secondary'; cancel.textContent = 'Cancel';
+        var go = document.createElement('button'); go.className = 'btn btn-primary'; go.innerHTML = '<i class="fas fa-check"></i> Mark fulfilled';
+        var modal = C.openModal({ title: 'Fulfil request', body: inner, footer: [cancel, go] });
+        cancel.addEventListener('click', modal.close);
+        go.addEventListener('click', async function () {
+          var ev = document.getElementById('fEv').value.trim();
+          if (!ev) { C.showNotification('Validation', 'Evidence ID required.', 'error'); return; }
+          go.disabled = true; go.innerHTML = '<i class="fas fa-spinner fa-spin"></i> …';
+          try {
+            await C.apiFetch('/admin/evidence-requests/' + reqId + '/fulfil', { method: 'POST', body: { evidence_id: ev } });
+            C.showNotification('Fulfilled', 'Request marked fulfilled.', 'success');
+            modal.close();
+            load();
+          } catch (e) {
+            C.showNotification('Failed', e.message || '', 'error');
+            go.disabled = false; go.innerHTML = '<i class="fas fa-check"></i> Mark fulfilled';
+          }
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        renderSidebar('evidence-requests');
+        document.getElementById('filterFulfilled').addEventListener('change', load);
+        load();
+      });
+    })();
+  </script>
+</body>
+</html>
