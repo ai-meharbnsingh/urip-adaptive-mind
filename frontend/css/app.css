@@ -7,22 +7,22 @@
    --------------------------------------------------------------------------*/
 
 :root {
-  /* Dark cockpit palette */
-  --u-bg:           #0E0E10;
-  --u-bg-elev:      #14141A;
-  --u-card:         #1A1A1F;
-  --u-card-2:       #20202A;
-  --u-border:       #2A2A30;
-  --u-border-2:     #34343E;
-  --u-fg:           #ECEDEE;
-  --u-fg-2:         #B6B7BC;
-  --u-fg-3:         #7A7C84;
+  /* Dark cockpit palette — aligned with landing.css brand navy */
+  --u-bg:           #08121C;   /* landing --navy-dark */
+  --u-bg-elev:      #0D1B2A;   /* landing --navy-primary */
+  --u-card:         #112236;   /* landing --navy-mid */
+  --u-card-2:       #1B2838;   /* landing --navy-light */
+  --u-border:       rgba(255,255,255,0.08);
+  --u-border-2:     rgba(255,255,255,0.14);
+  --u-fg:           #FFFFFF;
+  --u-fg-2:         rgba(255,255,255,0.78);
+  --u-fg-3:         rgba(255,255,255,0.5);
   --u-fg-mono:      #E2E2E5;
 
-  /* Brand */
-  --u-primary:      #4A6CF7;
-  --u-primary-2:    #6883FB;
-  --u-primary-d:    #2E50DD;
+  /* Brand — teal accent (matches landing.css --teal-accent / --teal-hover) */
+  --u-primary:      #1ABC9C;   /* landing --teal-accent */
+  --u-primary-2:    #2ECC71;   /* landing --teal-light */
+  --u-primary-d:    #16A085;   /* landing --teal-hover */
 
   /* Status (TrendAI style) */
   --u-ok:           #20BF55;
@@ -40,8 +40,8 @@
   --sev-critical:   #E74C3C;
   --sev-high:       #E67E22;
   --sev-medium:     #F1C40F;
-  --sev-low:        #4A6CF7;
-  --sev-info:       #7A7C84;
+  --sev-low:        #1ABC9C;  /* remapped from blue → teal to match brand */
+  --sev-info:       rgba(255,255,255,0.5);
 
   /* Lifecycle (connector / module) */
   --life-live:      #20BF55;
@@ -59,10 +59,10 @@
   --u-radius-lg:    14px;
   --u-radius-xl:    20px;
 
-  /* Shadow */
-  --u-shadow-sm:    0 1px 2px rgba(0,0,0,.4);
-  --u-shadow:       0 4px 14px rgba(0,0,0,.45);
-  --u-shadow-lg:    0 16px 40px rgba(0,0,0,.55);
+  /* Shadow — dark-surface scale aligned with landing shadow-md/lg */
+  --u-shadow-sm:    0 1px 2px rgba(0,0,0,0.4);
+  --u-shadow:       0 4px 14px rgba(0,0,0,0.5);
+  --u-shadow-lg:    0 16px 40px rgba(0,0,0,0.6);
 
   /* Motion */
   --u-fast:         140ms ease;
@@ -84,6 +84,20 @@ body.urip-app {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+
+  /* Remap legacy main.css gray scale for dark cockpit so inline
+     `style="color:var(--gray-600)"` etc. doesn't render as faded grey. */
+  --gray-50:  rgba(255,255,255,0.04);
+  --gray-100: rgba(255,255,255,0.06);
+  --gray-200: rgba(255,255,255,0.08);
+  --gray-300: rgba(255,255,255,0.16);
+  --gray-400: rgba(255,255,255,0.4);
+  --gray-500: rgba(255,255,255,0.5);
+  --gray-600: rgba(255,255,255,0.78);
+  --gray-700: rgba(255,255,255,0.86);
+  --gray-800: #FFFFFF;
+  --gray-900: #FFFFFF;
+  --white:    #FFFFFF;
 }
 
 body.urip-app *,
@@ -96,9 +110,9 @@ body.urip-app a { color: inherit; text-decoration: none; }
 body.urip-app h1, body.urip-app h2, body.urip-app h3,
 body.urip-app h4, body.urip-app h5, body.urip-app h6 {
   margin: 0;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--u-fg);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 body.urip-app h1 { font-size: 22px; line-height: 1.25; }
 body.urip-app h2 { font-size: 18px; line-height: 1.3; }
@@ -132,7 +146,7 @@ body.urip-app ::-webkit-scrollbar-thumb:hover { background: #4a4a55; }
   position: sticky;
   top: 0;
   height: 100vh;
-  background: linear-gradient(180deg, #101015 0%, #0A0A0E 100%);
+  background: linear-gradient(180deg, #0D1B2A 0%, #08121C 100%);
   border-right: 1px solid var(--u-border);
   display: flex;
   flex-direction: column;
@@ -217,7 +231,7 @@ body.urip-app ::-webkit-scrollbar-thumb:hover { background: #4a4a55; }
   color: var(--u-fg);
 }
 .app-side-link.is-active {
-  background: rgba(74, 108, 247, 0.10);
+  background: rgba(26, 188, 156, 0.10);
   color: #fff;
   border-left-color: var(--u-primary);
 }
@@ -275,7 +289,7 @@ body.urip-app ::-webkit-scrollbar-thumb:hover { background: #4a4a55; }
   top: 0;
   z-index: 80;
   height: var(--u-topbar-h);
-  background: rgba(14,14,16,.85);
+  background: rgba(8,18,28,.85);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--u-border);
@@ -309,7 +323,7 @@ body.urip-app ::-webkit-scrollbar-thumb:hover { background: #4a4a55; }
 .app-topbar-search input::placeholder { color: var(--u-fg-3); }
 .app-topbar-search input:focus {
   border-color: var(--u-primary);
-  box-shadow: 0 0 0 3px rgba(74,108,247,.15);
+  box-shadow: 0 0 0 3px rgba(26,188,156,.15);
 }
 .app-topbar-search i {
   position: absolute;
@@ -486,11 +500,16 @@ body.urip-app ::-webkit-scrollbar-thumb:hover { background: #4a4a55; }
 .u-btn:hover { border-color: var(--u-border-2); background: var(--u-card-2); }
 .u-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .u-btn.is-primary {
-  background: var(--u-primary);
-  border-color: var(--u-primary);
+  background: linear-gradient(135deg, var(--u-primary) 0%, #16A085 100%);
+  border-color: transparent;
   color: #fff;
+  box-shadow: 0 6px 20px rgba(26,188,156,0.35);
 }
-.u-btn.is-primary:hover { background: var(--u-primary-d); border-color: var(--u-primary-d); }
+.u-btn.is-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 28px rgba(26,188,156,0.45);
+  border-color: transparent;
+}
 .u-btn.is-danger {
   background: var(--u-danger);
   border-color: var(--u-danger);
@@ -523,7 +542,7 @@ body.urip-app ::-webkit-scrollbar-thumb:hover { background: #4a4a55; }
 .u-select:focus,
 .u-textarea:focus {
   border-color: var(--u-primary);
-  box-shadow: 0 0 0 3px rgba(74,108,247,.15);
+  box-shadow: 0 0 0 3px rgba(26,188,156,.15);
 }
 .u-input::placeholder { color: var(--u-fg-3); }
 
@@ -594,7 +613,7 @@ body.urip-app ::-webkit-scrollbar-thumb:hover { background: #4a4a55; }
 .u-badge.is-critical { background: var(--u-danger-bg); color: var(--sev-critical); }
 .u-badge.is-high     { background: rgba(230,126,34,.14); color: var(--sev-high); }
 .u-badge.is-medium   { background: var(--u-warn-bg);   color: var(--sev-medium); }
-.u-badge.is-low      { background: rgba(74,108,247,.14); color: var(--sev-low); }
+.u-badge.is-low      { background: rgba(26,188,156,.14); color: var(--sev-low); }
 .u-badge.is-info     { background: rgba(122,124,132,.18); color: #b0b1b6; }
 .u-badge.is-ok       { background: var(--u-ok-bg); color: var(--u-ok); }
 
@@ -756,7 +775,7 @@ body.urip-app ::-webkit-scrollbar-thumb:hover { background: #4a4a55; }
 }
 
 .r-bigscore {
-  background: linear-gradient(150deg, rgba(74,108,247,.18) 0%, var(--u-card) 60%);
+  background: linear-gradient(150deg, rgba(26,188,156,.15) 0%, var(--u-card) 60%);
   border: 1px solid var(--u-border);
   border-radius: var(--u-radius-lg);
   padding: 24px;
@@ -866,7 +885,7 @@ body.urip-app ::-webkit-scrollbar-thumb:hover { background: #4a4a55; }
   place-items: center;
   font-size: 14px;
   margin-bottom: 12px;
-  background: rgba(74,108,247,.12);
+  background: rgba(26,188,156,.12);
   color: var(--u-primary-2);
 }
 .r-bucket-label {
@@ -1307,11 +1326,17 @@ body.urip-app .btn {
 }
 body.urip-app .btn:hover { background: var(--u-card); color: var(--u-fg); border-color: var(--u-border-2); }
 body.urip-app .btn-primary {
-  background: var(--u-primary);
-  border-color: var(--u-primary);
+  background: linear-gradient(135deg, var(--u-primary) 0%, #16A085 100%);
+  border-color: transparent;
   color: #fff;
+  box-shadow: 0 6px 20px rgba(26,188,156,0.35);
 }
-body.urip-app .btn-primary:hover { background: var(--u-primary-d); border-color: var(--u-primary-d); }
+body.urip-app .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 28px rgba(26,188,156,0.45);
+  background: linear-gradient(135deg, var(--u-primary) 0%, #16A085 100%);
+  border-color: transparent;
+}
 body.urip-app .btn-outline {
   background: transparent;
   color: var(--u-fg-2);
@@ -1382,7 +1407,7 @@ body.urip-app select:focus,
 body.urip-app textarea:focus {
   outline: none;
   border-color: var(--u-primary);
-  box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.18);
+  box-shadow: 0 0 0 2px rgba(26, 188, 156, 0.18);
 }
 body.urip-app label { color: var(--u-fg-2); font-size: 12px; font-weight: 500; }
 
@@ -1402,8 +1427,8 @@ body.urip-app .badge {
 body.urip-app .badge-critical { background: var(--u-danger-bg); color: var(--u-danger); }
 body.urip-app .badge-high { background: rgba(230, 126, 34, 0.16); color: var(--sev-high); }
 body.urip-app .badge-medium { background: var(--u-warn-bg); color: var(--u-warn); }
-body.urip-app .badge-low { background: rgba(74, 108, 247, 0.16); color: var(--u-primary-2); }
-body.urip-app .badge-info { background: rgba(74, 108, 247, 0.16); color: var(--u-primary-2); }
+body.urip-app .badge-low { background: rgba(26, 188, 156, 0.16); color: var(--u-primary-2); }
+body.urip-app .badge-info { background: rgba(26, 188, 156, 0.16); color: var(--u-primary-2); }
 body.urip-app .badge-success { background: var(--u-ok-bg); color: var(--u-ok); }
 
 /* Action tiles + rows + split layouts (CSPM/AI/etc dashboards) */
@@ -1436,7 +1461,7 @@ body.urip-app .action-tile-icon {
 }
 body.urip-app .action-tile-icon.icon-fail { background: var(--u-danger-bg); color: var(--u-danger); }
 body.urip-app .action-tile-icon.icon-warn { background: var(--u-warn-bg); color: var(--u-warn); }
-body.urip-app .action-tile-icon.icon-info { background: rgba(74,108,247,0.16); color: var(--u-primary-2); }
+body.urip-app .action-tile-icon.icon-info { background: rgba(26,188,156,0.16); color: var(--u-primary-2); }
 body.urip-app .action-tile-icon.icon-success { background: var(--u-ok-bg); color: var(--u-ok); }
 body.urip-app .action-tile-content { display: flex; flex-direction: column; }
 body.urip-app .action-tile-value { font-size: 22px; font-weight: 700; color: var(--u-fg); }
@@ -1510,3 +1535,287 @@ body.urip-app .tab {
 }
 body.urip-app .tab.active,
 body.urip-app .tab:hover { color: var(--u-fg); border-bottom-color: var(--u-primary); }
+
+/* ============================================================================
+   LANDING-THEME OVERRIDES — re-skin legacy main.css bleed-through classes
+   Scoped to body.urip-app so legacy auth/light pages are unaffected.
+   --------------------------------------------------------------------------*/
+
+/* KPI cards (main.css lines 754-835) */
+body.urip-app .kpi-card { background: var(--u-card); border: 1px solid var(--u-border); border-radius: var(--u-radius-lg); box-shadow: var(--u-shadow); color: var(--u-fg); }
+body.urip-app .kpi-card:hover { border-color: var(--u-primary); transform: translateY(-1px); }
+body.urip-app .kpi-value { color: var(--u-fg); }
+body.urip-app .kpi-label { color: var(--u-fg-3); text-transform: uppercase; letter-spacing: .08em; }
+body.urip-app .kpi-icon { background: rgba(255,255,255,0.06); border-radius: var(--u-radius); }
+body.urip-app .kpi-icon.critical { color: var(--sev-critical); background: var(--u-danger-bg); }
+body.urip-app .kpi-icon.high { color: var(--sev-high); background: rgba(230,126,34,0.12); }
+body.urip-app .kpi-icon.medium { color: var(--sev-medium); background: var(--u-warn-bg); }
+body.urip-app .kpi-icon.low { color: var(--sev-low); background: rgba(26,188,156,0.12); }
+
+/* Stat items — acceptance-workflow.html */
+body.urip-app .stat-item { background: var(--u-card); border: 1px solid var(--u-border); border-radius: var(--u-radius-lg); padding: 16px 20px; }
+body.urip-app .stat-item .stat-value { font-size: 28px; font-weight: 700; color: var(--u-fg); font-family: var(--u-font-mono); }
+body.urip-app .stat-item .stat-label { font-size: 11px; color: var(--u-fg-3); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; }
+
+/* Dashboard cards (domain pages) */
+body.urip-app .dashboard-card { background: var(--u-card); border: 1px solid var(--u-border); border-radius: var(--u-radius-lg); box-shadow: var(--u-shadow); }
+body.urip-app .dashboard-card-title { color: var(--u-fg); }
+
+/* Framework cards (domain-* pages) */
+body.urip-app .framework-card { background: var(--u-card); border: 1px solid var(--u-border); border-radius: var(--u-radius-lg); color: var(--u-fg); }
+body.urip-app .framework-card:hover { border-color: var(--u-primary); }
+body.urip-app .framework-card .name { color: var(--u-fg); font-weight: 600; }
+body.urip-app .framework-card .score { color: var(--u-primary); font-size: 28px; font-weight: 700; font-family: var(--u-font-mono); }
+body.urip-app .framework-card .score-label { color: var(--u-fg-3); font-size: 11px; }
+
+/* Section rows */
+body.urip-app .section-row { color: var(--u-fg); }
+body.urip-app .section-row h2 { color: var(--u-fg); font-size: 18px; font-weight: 600; }
+
+/* Widget stat cards (domain-workflow / domain-* sync rows) — domain-page.css
+   defines them with white background + dark text. Override for cockpit. */
+body.urip-app .widget-stat {
+  background: var(--u-card);
+  border: 1px solid var(--u-border);
+  border-radius: var(--u-radius-lg);
+  color: var(--u-fg);
+}
+body.urip-app .widget-stat .stat-icon {
+  background: rgba(26,188,156,0.12);
+  color: var(--u-primary);
+}
+body.urip-app .widget-stat .stat-icon.info {
+  background: rgba(26,188,156,0.12);
+  color: var(--u-primary);
+}
+body.urip-app .widget-stat .stat-icon.warn {
+  background: var(--u-warn-bg);
+  color: var(--u-warn);
+}
+body.urip-app .widget-stat .stat-icon.critical {
+  background: var(--u-danger-bg);
+  color: var(--u-danger);
+}
+body.urip-app .widget-stat .stat-icon.success {
+  background: var(--u-ok-bg);
+  color: var(--u-ok);
+}
+body.urip-app .widget-stat .stat-value {
+  color: var(--u-fg);
+  font-family: var(--u-font-mono);
+}
+body.urip-app .widget-stat .stat-label {
+  color: var(--u-fg-3);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+body.urip-app .ticket-connect-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--u-primary);
+  font-weight: 600;
+}
+body.urip-app .ticket-connect-link:hover { color: var(--u-primary-d); text-decoration: underline; }
+
+/* Risk-table card (auto-remediation runs etc.) bleeds white from main.css */
+body.urip-app .risk-table-card {
+  background: var(--u-card);
+  border: 1px solid var(--u-border);
+  border-radius: var(--u-radius-lg);
+  overflow: hidden;
+}
+body.urip-app .risk-table-card table { width: 100%; border-collapse: collapse; color: var(--u-fg); }
+body.urip-app .risk-table-card th {
+  background: rgba(255,255,255,0.04);
+  color: var(--u-fg-3);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--u-border);
+}
+body.urip-app .risk-table-card td {
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--u-fg-2);
+  border-bottom: 1px solid var(--u-border);
+}
+body.urip-app .risk-table-card tr:last-child td { border-bottom: 0; }
+
+/* Domain page generic .card overrides */
+body.urip-app .card {
+  background: var(--u-card);
+  border: 1px solid var(--u-border);
+  border-radius: var(--u-radius-lg);
+  color: var(--u-fg);
+}
+body.urip-app .workflow-queue-row { color: var(--u-fg-2); padding: 14px 16px; border-bottom: 1px solid var(--u-border); }
+body.urip-app .workflow-queue-row:last-child { border-bottom: 0; }
+
+/* domain-kpi-strip — defined as light in domain-page.css */
+body.urip-app .domain-kpi-strip { gap: 14px; }
+body.urip-app .domain-kpi-strip .kpi-card {
+  background: var(--u-card);
+  border: 1px solid var(--u-border);
+  color: var(--u-fg);
+}
+body.urip-app .domain-kpi-strip .kpi-value { color: var(--u-fg); font-family: var(--u-font-mono); }
+body.urip-app .domain-kpi-strip .kpi-label { color: var(--u-fg-3); }
+
+/* Module Tools cards (`.mt-card`) — defined white in module-tools.css */
+body.urip-app .mt-card {
+  background: var(--u-card);
+  border: 1px solid var(--u-border);
+  color: var(--u-fg);
+}
+body.urip-app .mt-card:hover { border-color: var(--u-primary); }
+body.urip-app .mt-card.is-configured { border-color: var(--u-primary); }
+body.urip-app .mt-card-name { color: var(--u-fg); }
+body.urip-app .mt-card-meta { color: var(--u-fg-3); }
+body.urip-app .mt-card-desc { color: var(--u-fg-2); }
+body.urip-app .mt-card-logo {
+  background: rgba(26,188,156,0.12);
+  color: var(--u-primary);
+}
+body.urip-app .mt-pill {
+  background: rgba(255,255,255,0.06);
+  color: var(--u-fg-2);
+  border: 1px solid var(--u-border);
+}
+body.urip-app .mt-pill.is-configured { background: var(--u-ok-bg); color: var(--u-ok); border-color: rgba(32,191,85,0.35); }
+body.urip-app .mt-pill.is-available  { background: var(--u-cyan-bg); color: var(--u-primary); border-color: rgba(26,188,156,0.35); }
+body.urip-app .mt-pill.is-roadmap    { background: rgba(255,255,255,0.04); color: var(--u-fg-3); }
+body.urip-app .mt-section-head h2 { color: var(--u-fg); }
+body.urip-app .mt-section-head .mt-sub { color: var(--u-fg-3); }
+body.urip-app .mt-configure-btn {
+  background: linear-gradient(135deg, var(--u-primary) 0%, var(--u-primary-d) 100%);
+  color: #fff;
+  border: 0;
+  box-shadow: 0 4px 12px rgba(26,188,156,0.25);
+}
+body.urip-app .mt-configure-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(26,188,156,0.35); }
+
+/* Dashboard card body — domain-* placeholder text */
+body.urip-app .dashboard-card-body em { color: var(--u-fg-3); }
+body.urip-app .dashboard-card-header { border-bottom: 1px solid var(--u-border); padding-bottom: 10px; margin-bottom: 12px; }
+
+/* Acceptance workflow — split layout, request list, detail panel.
+   These come from main.css with --white backgrounds. */
+body.urip-app .request-list,
+body.urip-app .detail-panel {
+  background: var(--u-card);
+  border: 1px solid var(--u-border);
+  border-radius: var(--u-radius-lg);
+  box-shadow: var(--u-shadow);
+}
+body.urip-app .request-item { border-bottom: 1px solid var(--u-border); color: var(--u-fg-2); }
+body.urip-app .request-item:last-child { border-bottom: 0; }
+body.urip-app .request-item:hover { background: rgba(255,255,255,0.04); }
+body.urip-app .request-item.active {
+  background: rgba(26,188,156,0.08);
+  border-left: 3px solid var(--u-primary);
+}
+body.urip-app .request-id { color: var(--u-fg); }
+body.urip-app .request-title { color: var(--u-fg); font-weight: 500; }
+body.urip-app .request-meta { color: var(--u-fg-3); }
+
+body.urip-app .detail-panel-header {
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid var(--u-border);
+  color: var(--u-fg);
+}
+body.urip-app .detail-section-title { color: var(--u-fg-3); text-transform: uppercase; letter-spacing: .08em; }
+
+/* Stat-item already styled in earlier override block; ensure layout stays grid */
+body.urip-app .acceptance-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 14px; }
+
+/* Empty state cards (admin / dashboard) */
+body.urip-app .empty-state { background: var(--u-card); border: 1px solid var(--u-border); border-radius: var(--u-radius-lg); color: var(--u-fg-2); }
+body.urip-app .empty-state-title { color: var(--u-fg); }
+body.urip-app .empty-state-text { color: var(--u-fg-3); }
+body.urip-app .empty-state-icon { color: var(--u-fg-3); }
+
+/* Alerts table — used on dashboard + acceptance for risk lists */
+body.urip-app .alerts-table { color: var(--u-fg); }
+body.urip-app .alerts-table th { color: var(--u-fg-3); border-bottom: 1px solid var(--u-border); background: rgba(255,255,255,0.03); }
+body.urip-app .alerts-table td { color: var(--u-fg-2); border-bottom: 1px solid var(--u-border); }
+
+/* btn-outline — landing has it transparent w/ teal border on hover */
+body.urip-app .btn-outline {
+  background: transparent;
+  color: var(--u-fg);
+  border: 1px solid var(--u-border-2);
+}
+body.urip-app .btn-outline:hover {
+  border-color: var(--u-primary);
+  color: var(--u-primary);
+  background: rgba(26,188,156,0.06);
+}
+
+/* Several JS modules (acceptance / audit-log / filters / admin-tenants) inject
+   hardcoded light-theme hex colors via element.style.color. Catch these with
+   attribute selectors so dark-mode pages don't end up with near-invisible
+   navy-on-navy text. */
+body.urip-app [style*="color:#1E293B"],
+body.urip-app [style*="color: #1E293B"],
+body.urip-app [style*="color:rgb(30, 41, 59)"],
+body.urip-app [style*="color: rgb(30, 41, 59)"] { color: var(--u-fg) !important; }
+
+body.urip-app [style*="color:#334155"],
+body.urip-app [style*="color: #334155"],
+body.urip-app [style*="color:rgb(51, 65, 85)"],
+body.urip-app [style*="color: rgb(51, 65, 85)"] { color: var(--u-fg) !important; }
+
+body.urip-app [style*="color:#475569"],
+body.urip-app [style*="color: #475569"],
+body.urip-app [style*="color:rgb(71, 85, 105)"],
+body.urip-app [style*="color: rgb(71, 85, 105)"] { color: var(--u-fg-2) !important; }
+
+body.urip-app [style*="color:#64748B"],
+body.urip-app [style*="color: #64748B"],
+body.urip-app [style*="color:rgb(100, 116, 139)"],
+body.urip-app [style*="color: rgb(100, 116, 139)"] { color: var(--u-fg-3) !important; }
+
+body.urip-app [style*="color:#94A3B8"],
+body.urip-app [style*="color: #94A3B8"],
+body.urip-app [style*="color:rgb(148, 163, 184)"],
+body.urip-app [style*="color: rgb(148, 163, 184)"] { color: var(--u-fg-3) !important; }
+
+/* Light backgrounds also injected via inline style */
+body.urip-app [style*="background:#F0F4F8"],
+body.urip-app [style*="background: #F0F4F8"],
+body.urip-app [style*="background-color:#F0F4F8"],
+body.urip-app [style*="background-color: #F0F4F8"] { background: rgba(255,255,255,0.06) !important; }
+body.urip-app [style*="background:#F8FAFC"],
+body.urip-app [style*="background: #F8FAFC"] { background: rgba(255,255,255,0.04) !important; }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Page navigation polish — fade-in on mount + view-transitions
+   ────────────────────────────────────────────────────────────────────────── */
+body.urip-app .app-main {
+  opacity: 0;
+  transition: opacity 180ms ease-out;
+}
+body.urip-app .app-main.is-mounted {
+  opacity: 1;
+}
+
+/* View Transitions API — smooth cross-fade between pages where supported.
+   Chromium 111+, Safari 18+. Other browsers fall back to the fade-in above. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+}
+
+/* Respect users who prefer no motion */
+@media (prefers-reduced-motion: reduce) {
+  body.urip-app .app-main { transition: none; opacity: 1; }
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none; }
+}

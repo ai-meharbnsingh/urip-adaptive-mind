@@ -7,29 +7,51 @@
   <title>Compliance Summary | URIP - Unified Risk Intelligence Platform</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/sidebar.css">
-  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/app.css?v=20260434">
   <link rel="stylesheet" href="css/domain-page.css">
   <link rel="stylesheet" href="css/module-tools.css">
 </head>
-<body>
-  <div class="app-layout">
-    <div id="sidebar-mount"></div>
-    <main class="main-content">
-      <header class="topbar"></header>
-      <div class="content-area">
+<body class="urip-app">
+  <div id="app-shell" data-page="domain-compliance-summary">
         <div class="page-header">
           <div>
             <h1 class="page-title"><i class="fas fa-clipboard-check" style="color:var(--teal-accent);margin-right:.5rem"></i>Compliance Summary</h1>
             <p class="page-subtitle">Live posture across SOC 2, ISO 27001, GDPR, HIPAA, PCI-DSS, DPDP, and NIST CSF — drill into the full Compliance module for control evidence.</p>
           </div>
           <div class="flex gap-2">
+            <a class="btn btn-outline" href="connector-wizard.html?category=COMPLIANCE">
+              <i class="fas fa-plug"></i> Connect Evidence Source
+            </a>
+            <a class="btn btn-outline" href="../compliance/frontend/frameworks.html?action=add">
+              <i class="fas fa-plus"></i> Add Framework
+            </a>
             <a class="btn btn-primary" href="../compliance/frontend/frameworks.html">
               <i class="fas fa-arrow-up-right-from-square"></i> Open Compliance Module
             </a>
+          </div>
+        </div>
+
+        <!-- Integration banner: hub for connecting evidence sources -->
+        <div class="compliance-integrations-banner" style="background:var(--u-card,#112236);border:1px solid var(--u-border,rgba(255,255,255,.08));border-radius:14px;padding:18px 22px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap">
+          <div style="flex:1;min-width:280px">
+            <div style="font-size:11px;font-weight:700;color:var(--u-fg-3,rgba(255,255,255,.5));text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">
+              <i class="fas fa-link"></i> Compliance Integration Points
+            </div>
+            <div style="color:var(--u-fg,#fff);font-size:15px;font-weight:600;margin-bottom:4px">
+              Connect a GRC source or upload evidence to start scoring
+            </div>
+            <div style="color:var(--u-fg-2,rgba(255,255,255,.78));font-size:13px">
+              Vanta · Drata · OneTrust · ServiceNow GRC · Manual upload — pick a source and we will map controls to your selected frameworks.
+            </div>
+          </div>
+          <div class="flex gap-2" style="flex-wrap:wrap">
+            <a class="btn btn-sm btn-outline" href="connector-wizard.html?tool=vanta"><i class="fas fa-plug"></i> Vanta</a>
+            <a class="btn btn-sm btn-outline" href="connector-wizard.html?tool=drata"><i class="fas fa-plug"></i> Drata</a>
+            <a class="btn btn-sm btn-outline" href="connector-wizard.html?tool=onetrust"><i class="fas fa-plug"></i> OneTrust</a>
+            <a class="btn btn-sm btn-primary" href="../compliance/frontend/evidence.html?action=upload"><i class="fas fa-upload"></i> Upload Evidence</a>
           </div>
         </div>
 
@@ -112,19 +134,21 @@
             </div>
           </div>
         </div>
-      </div>
-    </main>
   </div>
 
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/sidebar.js"></script>
+  <script src="js/shell.js?v=20260434"></script>
   <script src="js/module-tools.js"></script>
   <script>
     if (typeof checkAuth === 'function') checkAuth();
     document.addEventListener('DOMContentLoaded', async function () {
-      if (typeof renderSidebar === 'function') renderSidebar('domain-compliance-summary');
+      window.URIP.shell.mount({
+        page: 'domain-compliance-summary',
+        title: 'Compliance Summary',
+        breadcrumb: 'Domains / Compliance Summary'
+      });
 
       loadModuleTools(
         ['ITSM', 'IDENTITY', 'EDR', 'CSPM', 'VM', 'EMAIL_COLLAB', 'NETWORK', 'DLP',

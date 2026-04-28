@@ -7,20 +7,15 @@
   <title>Workflow Automation | URIP - Unified Risk Intelligence Platform</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/sidebar.css">
-  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/app.css?v=20260434">
   <link rel="stylesheet" href="css/domain-page.css">
   <link rel="stylesheet" href="css/module-tools.css">
 </head>
-<body>
-  <div class="app-layout">
-    <div id="sidebar-mount"></div>
-    <main class="main-content">
-      <header class="topbar"></header>
-      <div class="content-area">
+<body class="urip-app">
+  <div id="app-shell" data-page="domain-workflow">
         <div class="page-header">
           <div>
             <h1 class="page-title"><i class="fas fa-gears" style="color:var(--teal-accent);margin-right:.5rem"></i>Workflow Automation</h1>
@@ -29,6 +24,9 @@
           <div class="flex gap-2">
             <a class="btn btn-outline" href="acceptance-workflow.html">
               <i class="fas fa-clipboard-check"></i> Acceptance Workflow
+            </a>
+            <a class="btn btn-outline" href="connector-wizard.html?category=ITSM">
+              <i class="fas fa-plug"></i> Connect Ticketing
             </a>
             <a class="btn btn-primary" href="settings.html#auto-remediation">
               <i class="fas fa-sliders"></i> Configure Auto-Remediation
@@ -96,31 +94,52 @@
         <!-- Ticket sync status -->
         <div class="section-row">
           <h2>Jira / ServiceNow Sync Status</h2>
+          <a class="btn btn-sm btn-outline" href="connector-wizard.html?category=ITSM">
+            <i class="fas fa-plug"></i> Add Ticketing System
+          </a>
         </div>
         <div class="widget-row">
           <div class="widget-stat">
             <div class="stat-icon info"><i class="fab fa-jira"></i></div>
-            <div><div class="stat-value" id="jiraSyncStatus">—</div><div class="stat-label">Jira sync</div></div>
+            <div>
+              <div class="stat-value" id="jiraSyncStatus">—</div>
+              <div class="stat-label">Jira sync</div>
+              <a class="ticket-connect-link" id="jiraConnectLink" href="connector-wizard.html?tool=jira" style="display:none">Connect Jira →</a>
+            </div>
           </div>
           <div class="widget-stat">
             <div class="stat-icon info"><i class="fas fa-ticket"></i></div>
-            <div><div class="stat-value" id="snowSyncStatus">—</div><div class="stat-label">ServiceNow sync</div></div>
+            <div>
+              <div class="stat-value" id="snowSyncStatus">—</div>
+              <div class="stat-label">ServiceNow sync</div>
+              <a class="ticket-connect-link" id="snowConnectLink" href="connector-wizard.html?tool=servicenow" style="display:none">Connect ServiceNow →</a>
+            </div>
+          </div>
+          <div class="widget-stat">
+            <div class="stat-icon info"><i class="fas fa-headset"></i></div>
+            <div>
+              <div class="stat-value" id="sdpSyncStatus">—</div>
+              <div class="stat-label">ManageEngine SDP</div>
+              <a class="ticket-connect-link" id="sdpConnectLink" href="connector-wizard.html?tool=manageengine_sdp" style="display:none">Connect SDP →</a>
+            </div>
           </div>
         </div>
-      </div>
-    </main>
   </div>
 
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/sidebar.js"></script>
+  <script src="js/shell.js?v=20260434"></script>
   <script src="js/domain-page.js"></script>
   <script src="js/module-tools.js"></script>
   <script>
     if (typeof checkAuth === 'function') checkAuth();
     document.addEventListener('DOMContentLoaded', async function () {
-      if (typeof renderSidebar === 'function') renderSidebar('domain-workflow');
+      window.URIP.shell.mount({
+        page: 'domain-workflow',
+        title: 'Workflow Automation',
+        breadcrumb: 'Domains / Workflow Automation'
+      });
 
       loadModuleTools(['ITSM'], 'moduleTools', {
         title: 'Available ticketing integrations',
@@ -247,17 +266,28 @@
         document.getElementById('kpiRemediated').textContent = '—';
       }
 
-      // Ticket sync status — try /api/integrations/jira/health and /api/integrations/servicenow/health
-      var jiraEl = document.getElementById('jiraSyncStatus');
-      var snowEl = document.getElementById('snowSyncStatus');
+      // Ticket sync status. When the integration is not configured, expose
+      // a visible "Connect …" CTA so the user knows how to mount one.
+      function setSyncStatus(statusId, linkId, status) {
+        var statusEl = document.getElementById(statusId);
+        var linkEl = document.getElementById(linkId);
+        if (!statusEl) return;
+        statusEl.textContent = status;
+        var notConnected = /not configured|disconnected|error/i.test(status);
+        if (linkEl) linkEl.style.display = notConnected ? '' : 'none';
+      }
       try {
         var jh = await apiFetch('/integrations/jira/health', { silent: true });
-        jiraEl.textContent = (jh && jh.status) ? jh.status : 'Connected';
-      } catch (e) { jiraEl.textContent = 'Not configured'; }
+        setSyncStatus('jiraSyncStatus', 'jiraConnectLink', (jh && jh.status) ? jh.status : 'Connected');
+      } catch (e) { setSyncStatus('jiraSyncStatus', 'jiraConnectLink', 'Not configured'); }
       try {
         var sh = await apiFetch('/integrations/servicenow/health', { silent: true });
-        snowEl.textContent = (sh && sh.status) ? sh.status : 'Connected';
-      } catch (e) { snowEl.textContent = 'Not configured'; }
+        setSyncStatus('snowSyncStatus', 'snowConnectLink', (sh && sh.status) ? sh.status : 'Connected');
+      } catch (e) { setSyncStatus('snowSyncStatus', 'snowConnectLink', 'Not configured'); }
+      try {
+        var sdph = await apiFetch('/integrations/manageengine_sdp/health', { silent: true });
+        setSyncStatus('sdpSyncStatus', 'sdpConnectLink', (sdph && sdph.status) ? sdph.status : 'Connected');
+      } catch (e) { setSyncStatus('sdpSyncStatus', 'sdpConnectLink', 'Not configured'); }
 
       // Tickets synced + rollbacks (placeholders)
       document.getElementById('kpiTicketsSynced').textContent = '—';

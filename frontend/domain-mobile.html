@@ -7,20 +7,15 @@
   <title>Mobile Security | URIP - Unified Risk Intelligence Platform</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/sidebar.css">
-  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/app.css?v=20260434">
   <link rel="stylesheet" href="css/domain-page.css">
   <link rel="stylesheet" href="css/module-tools.css">
 </head>
-<body>
-  <div class="app-layout">
-    <div id="sidebar-mount"></div>
-    <main class="main-content">
-      <header class="topbar"></header>
-      <div class="content-area">
+<body class="urip-app">
+  <div id="app-shell" data-page="domain-mobile">
         <div class="page-header">
           <div>
             <h1 class="page-title"><i class="fas fa-mobile-screen-button" style="color:var(--teal-accent);margin-right:.5rem"></i>Mobile Security</h1>
@@ -89,18 +84,21 @@
             <span class="actor">system</span>
           </div>
         </div>
-      </div>
-    </main>
   </div>
 
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/sidebar.js"></script>
+  <script src="js/shell.js?v=20260434"></script>
   <script src="js/domain-page.js"></script>
   <script src="js/module-tools.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+      window.URIP.shell.mount({
+        page: 'domain-mobile',
+        title: 'Mobile Security',
+        breadcrumb: 'Domains / Mobile Security'
+      });
       loadModuleTools(['MDM', 'UEM'], 'moduleTools', {
         title: 'Available integrations for Mobile Security',
         subtitle: 'Connect MDM/UEM platforms to monitor enrolled handsets, OS patch level, and lost/stolen workflow.',

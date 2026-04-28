@@ -8,27 +8,16 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!--
-    Wave A note: when app.css/shell.js land they will replace these per-page imports.
-    Until then, these are the live design system files (main.css + sidebar.css + dashboard.css).
-  -->
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/sidebar.css">
-  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/app.css?v=20260434">
   <link rel="stylesheet" href="css/domain-page.css">
   <link rel="stylesheet" href="css/module-tools.css">
 </head>
-<body>
-  <div class="app-layout">
-    <div id="sidebar-mount"></div>
-
-    <main class="main-content">
-      <header class="topbar"></header>
-
-      <div class="content-area">
+<body class="urip-app">
+  <div id="app-shell" data-page="domain-endpoint">
         <!-- Page header -->
         <div class="page-header">
           <div>
@@ -153,18 +142,21 @@
             <span class="actor">system</span>
           </div>
         </div>
-      </div>
-    </main>
   </div>
 
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/sidebar.js"></script>
+  <script src="js/shell.js?v=20260434"></script>
   <script src="js/domain-page.js"></script>
   <script src="js/module-tools.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+      window.URIP.shell.mount({
+        page: 'domain-endpoint',
+        title: 'Endpoint Security',
+        breadcrumb: 'Domains / Endpoint Security'
+      });
       loadModuleTools(['EDR', 'VM'], 'moduleTools', {
         title: 'Available integrations for Endpoint Security',
         subtitle: 'Wire up EDR/XDR and VM scanners to start populating endpoint risks.',

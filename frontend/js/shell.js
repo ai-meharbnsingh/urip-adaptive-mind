@@ -16,6 +16,7 @@
 
   var URIP = window.URIP || {};
   var SIDEBAR_KEY = 'urip_app_sidebar_collapsed';
+  var SIDEBAR_SCROLL_KEY = 'urip_app_sidebar_scroll';
 
   // ---------------------------------------------------------------------------
   // 10-domain sidebar taxonomy (per MASTER_BLUEPRINT §6.5)
@@ -35,14 +36,14 @@
     {
       title: 'Domains',
       items: [
-        { id: 'endpoint',   label: 'Endpoint',       icon: 'fa-shield-halved',   href: 'risk-register.html?domain=endpoint',  emoji: '🛡️' },
-        { id: 'identity',   label: 'Identity',       icon: 'fa-key',             href: 'risk-register.html?domain=identity',  emoji: '🔑' },
-        { id: 'network',    label: 'Network',        icon: 'fa-network-wired',   href: 'risk-register.html?domain=network',   emoji: '🌐' },
-        { id: 'cloud',      label: 'Cloud Security', icon: 'fa-cloud',           href: 'cspm-dashboard.html',                  emoji: '☁️' },
-        { id: 'email',      label: 'Email & Collab', icon: 'fa-envelope',        href: 'risk-register.html?domain=email',     emoji: '📧' },
-        { id: 'mobile',     label: 'Mobile',         icon: 'fa-mobile-screen',   href: 'risk-register.html?domain=mobile',    emoji: '📱' },
-        { id: 'ot',         label: 'OT Security',    icon: 'fa-industry',        href: 'risk-register.html?domain=ot',        emoji: '🏭' },
-        { id: 'external',   label: 'External Threat',icon: 'fa-earth-asia',      href: 'threat-map.html?domain=external',     emoji: '🌍' }
+        { id: 'domain-endpoint',         label: 'Endpoint',        icon: 'fa-shield-halved', href: 'domain-endpoint.html',          emoji: '🛡️' },
+        { id: 'domain-identity',         label: 'Identity',        icon: 'fa-key',           href: 'domain-identity.html',          emoji: '🔑' },
+        { id: 'domain-network',          label: 'Network',         icon: 'fa-network-wired', href: 'domain-network.html',           emoji: '🌐' },
+        { id: 'domain-cloud',            label: 'Cloud Security',  icon: 'fa-cloud',         href: 'domain-cloud.html',             emoji: '☁️' },
+        { id: 'domain-email-collab',     label: 'Email & Collab',  icon: 'fa-envelope',      href: 'domain-email-collab.html',      emoji: '📧' },
+        { id: 'domain-mobile',           label: 'Mobile',          icon: 'fa-mobile-screen', href: 'domain-mobile.html',            emoji: '📱' },
+        { id: 'domain-ot',               label: 'OT Security',     icon: 'fa-industry',      href: 'domain-ot.html',                emoji: '🏭' },
+        { id: 'domain-external-threat',  label: 'External Threat', icon: 'fa-earth-asia',    href: 'domain-external-threat.html',   emoji: '🌍' }
       ]
     },
     {
@@ -59,16 +60,16 @@
     {
       title: 'Compliance',
       items: [
-        { id: 'compliance', label: 'Compliance',     icon: 'fa-clipboard-list',  href: '../compliance/frontend/index.html', extLink: true }
+        { id: 'domain-compliance-summary', label: 'Compliance',  icon: 'fa-clipboard-list', href: 'domain-compliance-summary.html' }
       ]
     },
     {
       title: 'Operations',
       items: [
-        { id: 'workflow',         label: 'Workflow Auto',  icon: 'fa-robot',           href: 'remediation-tracker.html?tab=auto' },
-        { id: 'audit-log',        label: 'Audit Log',      icon: 'fa-clock-rotate-left', href: 'audit-log.html' },
-        { id: 'reports',          label: 'Reports',        icon: 'fa-file-lines',      href: 'reports.html' },
-        { id: 'asset-inventory',  label: 'Asset Inventory',icon: 'fa-boxes-stacked',   href: 'asset-inventory.html' }
+        { id: 'domain-workflow',  label: 'Workflow & Ticketing', icon: 'fa-gears',           href: 'domain-workflow.html' },
+        { id: 'audit-log',        label: 'Audit Log',            icon: 'fa-clock-rotate-left', href: 'audit-log.html' },
+        { id: 'reports',          label: 'Reports',              icon: 'fa-file-lines',      href: 'reports.html' },
+        { id: 'asset-inventory',  label: 'Asset Inventory',      icon: 'fa-boxes-stacked',   href: 'asset-inventory.html' }
       ]
     },
     {
@@ -502,6 +503,80 @@
 
     container.appendChild(sidebar);
     container.appendChild(main);
+
+    // ─────────────────────────────────────────────────────────────────────
+    // UX polish for full-page navigation:
+    //  1. Restore sidebar scroll so a click near the bottom (e.g. VAPT)
+    //     doesn't feel like the whole page reloaded to the top.
+    //  2. Subtle fade-in on load so the page swap feels less jarring.
+    //  3. Pre-fetch sidebar nav targets on hover / focus.
+    //  4. Use the View Transitions API where supported.
+    // ─────────────────────────────────────────────────────────────────────
+
+    // (1) Sidebar scroll persistence (sessionStorage so it clears on tab close)
+    var sidebarScroll = sidebar.querySelector('.app-sidebar-scroll');
+    if (sidebarScroll) {
+      // Restore must happen AFTER layout, otherwise scrollHeight is 0 and
+      // scrollTop assignment is silently clamped.
+      var savedScroll = 0;
+      try { savedScroll = parseInt(sessionStorage.getItem(SIDEBAR_SCROLL_KEY) || '0', 10); } catch (_e) {}
+      if (savedScroll > 0) {
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { sidebarScroll.scrollTop = savedScroll; });
+        });
+      }
+      var scrollPersistTimer = null;
+      sidebarScroll.addEventListener('scroll', function () {
+        if (scrollPersistTimer) clearTimeout(scrollPersistTimer);
+        scrollPersistTimer = setTimeout(function () {
+          try { sessionStorage.setItem(SIDEBAR_SCROLL_KEY, String(sidebarScroll.scrollTop)); } catch (_e) {}
+        }, 80);
+      }, { passive: true });
+      // Also persist on link click — covers the case where the user clicks
+      // immediately after scrolling and the debounce hasn't fired yet.
+      sidebar.addEventListener('click', function () {
+        try { sessionStorage.setItem(SIDEBAR_SCROLL_KEY, String(sidebarScroll.scrollTop)); } catch (_e) {}
+      }, true);
+    }
+
+    // (2) Fade-in
+    requestAnimationFrame(function () {
+      main.classList.add('is-mounted');
+    });
+
+    // (2) Pre-fetch on hover
+    var prefetched = {};
+    sidebar.querySelectorAll('a[href]').forEach(function (a) {
+      var href = a.getAttribute('href');
+      if (!href || href.startsWith('http') || href.startsWith('#') || prefetched[href]) return;
+      var prefetchOnce = function () {
+        if (prefetched[href]) return;
+        prefetched[href] = true;
+        var l = document.createElement('link');
+        l.rel = 'prefetch';
+        l.href = href;
+        l.as = 'document';
+        document.head.appendChild(l);
+      };
+      a.addEventListener('mouseenter', prefetchOnce, { passive: true });
+      a.addEventListener('focus', prefetchOnce, { passive: true });
+    });
+
+    // (3) View Transitions (Chromium 111+, Safari 18+)
+    if (document.startViewTransition) {
+      sidebar.querySelectorAll('a[href]').forEach(function (a) {
+        var href = a.getAttribute('href');
+        if (!href || href.startsWith('http') || href.startsWith('#')) return;
+        a.addEventListener('click', function (e) {
+          // Honour modifier keys / middle click
+          if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+          e.preventDefault();
+          document.startViewTransition(function () {
+            window.location.href = href;
+          });
+        });
+      });
+    }
   }
 
   // Helpers exposed to pages
