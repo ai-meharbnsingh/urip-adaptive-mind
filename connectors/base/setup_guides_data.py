@@ -4927,6 +4927,813 @@ _JIRA = SetupGuideSpec(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Okta Workforce Identity
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+_OKTA = SetupGuideSpec(
+    quick_facts=QuickFacts(
+        category="IDENTITY",
+        module="IDENTITY",
+        difficulty="easy",
+        approx_setup_minutes=10,
+        vendor_docs_url="https://developer.okta.com/docs/reference/core-okta-api/",
+        polling_default_minutes=15,
+        supports_webhooks=True,
+        license_tier_required=(
+            "Okta Workforce Identity (any tier including Free Trial / Developer)"
+        ),
+    ),
+    what_pulled=[
+        "System Log events — account locks, admin-app access, policy sign-on evaluations, "
+        "app membership changes",
+        "User posture — status, last login, last updated for all active users",
+        "App assignments — which Okta applications each user is provisioned to",
+        "MFA enrollment — enrolled factor types (TOTP, push, WebAuthn) per user",
+    ],
+    prerequisites=[
+        PrereqItem(
+            label="Okta admin role",
+            requirement=(
+                "User account with Read-Only Administrator role (minimum). "
+                "Org Administrator is required only if lifecycle management via API is needed."
+            ),
+        ),
+        PrereqItem(
+            label="API Token",
+            requirement=(
+                "An SSWS API token generated in Security → API → Tokens. "
+                "The token inherits the role of the creating user — use a dedicated "
+                "service account for the principle of least privilege."
+            ),
+        ),
+        PrereqItem(
+            label="Network",
+            requirement=(
+                "Allow URIP egress to https://your-org.okta.com on TCP 443. "
+                "For FedRAMP tenants use your okta-gov.com domain."
+            ),
+        ),
+    ],
+    steps=[
+        SetupStep(
+            n=1,
+            title="Sign in to the Okta Admin Console",
+            body=(
+                "Open https://your-org.okta.com/admin and log in as a user with "
+                "Read-Only Administrator role or higher."
+            ),
+        ),
+        SetupStep(
+            n=2,
+            title="Create an API Token",
+            body=(
+                "Navigate to **Security → API → Tokens** → click **Create Token**. "
+                "Give it a descriptive name (e.g. URIP-readonly)."
+            ),
+            warning=(
+                "The token value is displayed ONCE after creation. "
+                "Copy it to your password vault immediately — Okta cannot retrieve it later."
+            ),
+        ),
+        SetupStep(
+            n=3,
+            title="Configure the Okta connector in URIP",
+            body=(
+                "URIP → Tool Catalog → Okta tile → enter: "
+                "(1) Okta Domain: your-org.okta.com (no https://, no trailing slash). "
+                "(2) API Token: paste the token from Step 2. "
+                "(3) System Log event filter: leave default or customize the Okta filter expression."
+            ),
+        ),
+        SetupStep(
+            n=4,
+            title="Test Connection and Save",
+            body=(
+                "Click **Test Connection**. URIP calls GET /api/v1/users/me and "
+                "expects HTTP 200. On success, click **Save**. "
+                "URIP begins pulling System Log events on the next scheduled poll (every 15 min)."
+            ),
+        ),
+    ],
+    required_scopes=[
+        ScopeItem(
+            name="okta.users.read",
+            description=(
+                "Read user profiles, status, last login. "
+                "Granted via Read-Only Administrator role."
+            ),
+            required=True,
+        ),
+        ScopeItem(
+            name="okta.logs.read",
+            description=(
+                "Read System Log events. "
+                "Granted via Read-Only Administrator role."
+            ),
+            required=True,
+        ),
+    ],
+    sample_data={
+        "uuid": "f9a78b2c-1234-5678-abcd-ef0123456789",
+        "published": "2026-04-28T09:15:42.000Z",
+        "eventType": "user.account.lock",
+        "severity": "WARN",
+        "displayMessage": "Max sign in attempts exceeded",
+        "actor": {
+            "id": "00u1abcd2EFGhijk3456",
+            "type": "User",
+            "alternateId": "jane.doe@corp.example.com",
+            "displayName": "Jane Doe",
+        },
+        "target": [
+            {
+                "id": "00u1abcd2EFGhijk3456",
+                "type": "User",
+                "alternateId": "jane.doe@corp.example.com",
+                "displayName": "Jane Doe",
+            }
+        ],
+        "outcome": {"result": "FAILURE", "reason": "LOCKED_OUT"},
+    },
+    not_collected=[
+        "User passwords or password hashes",
+        "MFA seed / TOTP secrets",
+        "Full audit history older than the configured `since` timestamp",
+    ],
+    common_errors=[
+        ErrorFix(
+            error="401 Unauthorized on Test Connection",
+            cause=(
+                "API token has been revoked, expired (tokens expire after 30 days of inactivity), "
+                "or the token was created by a user whose account was deactivated."
+            ),
+            fix=(
+                "Security → API → Tokens → create a new token with a fresh service account. "
+                "Update the token value in URIP and retry Test Connection."
+            ),
+        ),
+        ErrorFix(
+            error="403 Forbidden",
+            cause=(
+                "The service account's role was downgraded or the account was deactivated "
+                "after the token was created."
+            ),
+            fix=(
+                "Confirm the service account is Active with Read-Only Administrator role in "
+                "Okta Admin Console → Directory → People. Re-enable or re-assign the role, "
+                "then retry."
+            ),
+        ),
+        ErrorFix(
+            error="429 Too Many Requests",
+            cause=(
+                "Okta rate-limits API tokens at ~600 requests/minute. "
+                "Large tenants with millions of log events can hit this during bulk back-fill."
+            ),
+            fix=(
+                "URIP uses limit=1000 events per page and Okta's Link-header cursor pagination, "
+                "which keeps request count low for incremental polls. "
+                "If back-fill triggers the limit, increase the polling interval to 60 min "
+                "until the initial sync completes."
+            ),
+        ),
+    ],
+    polling=PollingSpec(
+        default_minutes=15,
+        first_sync_estimate_minutes=5,
+        webhook_supported=True,
+        manual_refresh="Tool Catalog → Okta tile → Run Now (admin only).",
+    ),
+    disconnect_steps=[
+        "URIP → Tool Catalog → Okta tile → Disconnect.",
+        _CRED_VAULT_DELETE,
+        "Optionally revoke the API token in Okta: Security → API → Tokens → Revoke.",
+        _KEEP_HISTORY,
+    ],
+    references=[
+        "Okta Core API reference: https://developer.okta.com/docs/reference/core-okta-api/",
+        "API Token creation guide: https://developer.okta.com/docs/guides/create-an-api-token/",
+    ],
+)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GitHub Advanced Security (GHAS)
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+_GHAS = SetupGuideSpec(
+    quick_facts=QuickFacts(
+        category="DAST",
+        module="DAST",
+        difficulty="easy",
+        approx_setup_minutes=10,
+        vendor_docs_url=(
+            "https://docs.github.com/en/code-security/getting-started/github-security-features"
+        ),
+        polling_default_minutes=15,
+        supports_webhooks=False,
+        license_tier_required=(
+            "GitHub Advanced Security license required for private repos on GHEC; "
+            "GHAS license required on GitHub Enterprise Server >= 3.7."
+        ),
+    ),
+    what_pulled=[
+        "Code scanning alerts — CodeQL + third-party SAST tool findings per repo",
+        "Secret scanning alerts — leaked credentials and tokens committed to repos",
+        "Dependabot alerts — vulnerable dependencies (SCA) with CVSS + CVE cross-reference",
+        "Alert state: open / dismissed / fixed (incremental sync via updated_at filter)",
+        "Rule metadata: rule ID, severity, security_severity_level for code-scanning",
+        "Package metadata: ecosystem, name, vulnerable version range for Dependabot",
+    ],
+    prerequisites=[
+        PrereqItem(
+            label="GHAS license",
+            requirement=(
+                "GitHub Advanced Security must be enabled for your organization. "
+                "Public repos on GitHub.com have GHAS features for free. "
+                "Private repos on GitHub Enterprise Cloud require a GHAS license. "
+                "GitHub Enterprise Server >= 3.7 requires a GHAS license."
+            ),
+        ),
+        PrereqItem(
+            label="PAT scopes",
+            requirement=(
+                "Classic PAT: security_events + read:org. "
+                "Fine-grained PAT: Code scanning alerts (Read), Secret scanning alerts (Read), "
+                "Dependabot alerts (Read), and Members (Read) on the target organization."
+            ),
+        ),
+        PrereqItem(
+            label="Role",
+            requirement=(
+                "Token owner must be an organization owner or have the Security Manager role "
+                "to list org-level alerts across all repositories."
+            ),
+        ),
+    ],
+    steps=[
+        SetupStep(
+            n=1,
+            title="Enable GHAS on your organization",
+            body=(
+                "GitHub.com → Your Organization → Settings → Code security and analysis. "
+                "Enable: Dependency graph, Dependabot alerts, Dependabot security updates, "
+                "Code scanning (Default setup or Advanced), Secret scanning. "
+                "For GitHub Enterprise Server: Site admin → Security → enable GHAS features."
+            ),
+        ),
+        SetupStep(
+            n=2,
+            title="Create a Personal Access Token",
+            body=(
+                "GitHub → Settings → Developer settings → Personal access tokens → "
+                "Tokens (classic) → Generate new token. "
+                "Select scopes: security_events, read:org. "
+                "Set an expiry (90 days recommended) and copy the token value immediately — "
+                "GitHub does not show it again."
+            ),
+            warning=(
+                "Store the token in a secrets manager immediately. "
+                "Do not embed it in code or config files."
+            ),
+        ),
+        SetupStep(
+            n=3,
+            title="Configure the connector in URIP",
+            body=(
+                "Tool Catalog → GitHub Advanced Security tile → Connect. "
+                "Fill in: GitHub Organization (your org slug), "
+                "PAT (the token from step 2), "
+                "GitHub API URL (leave as https://api.github.com for GitHub.com, "
+                "or https://github.your-company.com/api/v3 for GHE Server). "
+                "Click Connect — URIP validates the token by calling GET /orgs/{org}."
+            ),
+        ),
+        SetupStep(
+            n=4,
+            title="Verify the first sync",
+            body=(
+                "After connecting, URIP performs an initial full pull across all three alert types. "
+                "Go to Risk Register → filter Source = 'ghas:code' / 'ghas:secret' / 'ghas:dependabot' "
+                "to confirm alerts are flowing in. "
+                "Subsequent polls run every 15 minutes (incremental, updated_at filter)."
+            ),
+        ),
+    ],
+    required_scopes=[
+        ScopeItem(
+            name="security_events",
+            description=(
+                "Read code-scanning alerts and secret-scanning alerts at the organization level."
+            ),
+            required=True,
+        ),
+        ScopeItem(
+            name="read:org",
+            description=(
+                "Verify organization membership and read organization metadata "
+                "(used by the authentication health-check call to GET /orgs/{org})."
+            ),
+            required=True,
+        ),
+    ],
+    sample_data={
+        "alert_type": "code_scanning",
+        "number": 42,
+        "state": "open",
+        "rule": {
+            "id": "java/sql-injection",
+            "severity": "error",
+            "security_severity_level": "critical",
+        },
+        "most_recent_instance": {
+            "location": {
+                "path": "src/main/java/com/example/UserController.java",
+                "start_line": 87,
+            }
+        },
+        "html_url": "https://github.com/acme-corp/backend/security/code-scanning/42",
+        "updated_at": "2026-04-28T10:00:00Z",
+    },
+    not_collected=[
+        "Code scanning alert details from forks (only the base repo alerts are fetched)",
+        "Secret scanning push-protection bypass events (separate endpoint, not yet supported)",
+        "Dependabot security update PR status (only the vulnerability alert, not the fix PR)",
+        "Repository-level alert counts per repo (org-wide roll-up only)",
+    ],
+    common_errors=[
+        ErrorFix(
+            error="401 Unauthorized",
+            cause="Token expired, revoked, or does not have the required scopes.",
+            fix=(
+                "Generate a new PAT at GitHub → Settings → Developer settings → "
+                "Personal access tokens. Ensure security_events and read:org scopes are selected. "
+                "Update the connector credentials in URIP Tool Catalog → GHAS tile → Edit."
+            ),
+        ),
+        ErrorFix(
+            error="403 Forbidden — 'Resource not accessible by integration'",
+            cause=(
+                "The token owner lacks the Security Manager role, or GHAS is not enabled "
+                "on the organization."
+            ),
+            fix=(
+                "Ask an org owner to grant you the Security Manager role "
+                "(Settings → Member privileges → Security managers). "
+                "Also verify GHAS is enabled: Settings → Code security and analysis."
+            ),
+        ),
+        ErrorFix(
+            error="404 Not Found for /orgs/{org}/code-scanning/alerts",
+            cause=(
+                "GHAS is not enabled on the organization, or the org name is incorrect."
+            ),
+            fix=(
+                "Confirm the org slug is correct (it appears in the URL: github.com/ORG_SLUG). "
+                "Enable GHAS in Settings → Code security and analysis."
+            ),
+        ),
+    ],
+    polling=PollingSpec(
+        default_minutes=15,
+        first_sync_estimate_minutes=5,
+        webhook_supported=False,
+        manual_refresh="Tool Catalog → GitHub Advanced Security tile → Run Now.",
+    ),
+    disconnect_steps=[
+        "Tool Catalog → GitHub Advanced Security tile → Disconnect.",
+        _CRED_VAULT_DELETE,
+        "Revoke the PAT at GitHub → Settings → Developer settings → Personal access tokens.",
+        _KEEP_HISTORY,
+    ],
+    references=[
+        "https://docs.github.com/en/rest/code-scanning/code-scanning",
+        "https://docs.github.com/en/rest/secret-scanning/secret-scanning",
+        "https://docs.github.com/en/rest/dependabot/alerts",
+        "https://docs.github.com/en/code-security/getting-started/github-security-features",
+    ],
+)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Snyk (DAST — SCA / Container / IaC / Code)
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+_SNYK = SetupGuideSpec(
+    quick_facts=QuickFacts(
+        category="DAST",
+        module="DAST",
+        difficulty="easy",
+        approx_setup_minutes=10,
+        vendor_docs_url="https://docs.snyk.io/snyk-api/snyk-rest-api",
+        polling_default_minutes=60,
+        supports_webhooks=False,
+        license_tier_required=(
+            "Any Snyk paid plan (Free tier supported with rate limits). "
+            "Snyk Code requires Standard or Enterprise plan."
+        ),
+    ),
+    what_pulled=[
+        "Open-source dependency vulnerabilities (npm, pip, Maven, Gradle, etc.)",
+        "Container image vulnerabilities (Docker, apk, deb, rpm packages)",
+        "IaC misconfigurations (Terraform, Kubernetes, Helm, CloudFormation, ARM)",
+        "Snyk Code SAST findings (Standard / Enterprise plans)",
+        "CVE IDs, effective severity level (critical/high/medium/low)",
+        "Affected package name and version from dependency coordinates",
+        "Issue created/updated timestamps for incremental polling",
+    ],
+    prerequisites=[
+        PrereqItem(
+            label="License tier",
+            requirement=(
+                "Any Snyk paid plan. Free tier is supported but API rate-limits "
+                "are lower. Snyk Code findings require Standard or Enterprise plan."
+            ),
+        ),
+        PrereqItem(
+            label="SCM integration",
+            requirement=(
+                "At least one SCM (GitHub, GitLab, Bitbucket, Azure Repos) or "
+                "registry must be connected and projects imported so Snyk has "
+                "findings to expose via the API."
+            ),
+        ),
+        PrereqItem(
+            label="Projects monitored",
+            requirement=(
+                "Projects must be in 'Active' status in the org. De-activated "
+                "projects do not produce issues in the API response."
+            ),
+        ),
+    ],
+    steps=[
+        SetupStep(
+            n=1,
+            title="Retrieve your Organization ID",
+            body=(
+                "Log in to app.snyk.io → Settings → General → copy the "
+                "**Organization ID** UUID (e.g. ``xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx``). "
+                "This is the ``org_id`` field in URIP — do NOT use the org slug/name."
+            ),
+        ),
+        SetupStep(
+            n=2,
+            title="Create an API token",
+            body=(
+                "Click your avatar (top-right) → Account Settings → "
+                "**General → Auth Token** → click **Click to show** and copy the value. "
+                "This is the ``api_token`` field. "
+                "Alternatively, generate a service-account token via Settings → "
+                "Service Accounts for production use."
+            ),
+            warning=(
+                "The API token has the same permissions as the user account. "
+                "Use a dedicated service account with minimum required permissions "
+                "for production deployments."
+            ),
+        ),
+        SetupStep(
+            n=3,
+            title="Choose severity filter",
+            body=(
+                "Decide which severity levels URIP should ingest. "
+                "Default is ``critical,high``. "
+                "Add ``medium`` or ``low`` if you want broader coverage. "
+                "Snyk severities: ``critical`` | ``high`` | ``medium`` | ``low``."
+            ),
+        ),
+        SetupStep(
+            n=4,
+            title="Configure in URIP",
+            body=(
+                "Tool Catalog → Snyk tile → enter Organization ID, API Token, "
+                "API URL (keep default unless EU/AU tenant), and Severity Filter, "
+                "then click **Test Connection**."
+            ),
+        ),
+    ],
+    required_scopes=[
+        ScopeItem(
+            name="snyk_org_read",
+            description=(
+                "Read access to the Snyk organization — required to list issues, "
+                "projects, and verify org access during authentication."
+            ),
+            required=True,
+        ),
+    ],
+    sample_data={
+        "id": "a1b2c3d4-1234-5678-abcd-ef0123456789",
+        "type": "issue",
+        "attributes": {
+            "title": "Remote Code Execution in log4j-core",
+            "effective_severity_level": "critical",
+            "type": "npm",
+            "status": "open",
+            "problems": [{"id": "CVE-2021-44228", "source": "NVD"}],
+            "coordinates": [
+                {
+                    "representations": [
+                        {
+                            "dependency": {
+                                "package_name": "log4j-core",
+                                "package_version": "2.14.1",
+                            }
+                        }
+                    ]
+                }
+            ],
+            "created_at": "2026-04-28T10:00:00Z",
+        },
+    },
+    not_collected=[
+        "Issues from de-activated or deleted projects",
+        "Snyk Learn content, fix PR diffs, or remediation advice",
+        "Private vulnerability research not yet in Snyk's database",
+        "User account or billing information",
+    ],
+    common_errors=[
+        ErrorFix(
+            error="401 Unauthorized on Test Connection",
+            cause="API token is invalid, expired, or belongs to a deactivated user.",
+            fix=(
+                "Regenerate the token at app.snyk.io → Avatar → Account Settings → "
+                "Auth Token. Paste the new token in URIP and retry."
+            ),
+        ),
+        ErrorFix(
+            error="404 — Org not found",
+            cause=(
+                "The org_id is wrong. Common mistake: pasting the org slug "
+                "(e.g. 'my-org') instead of the UUID."
+            ),
+            fix=(
+                "Go to app.snyk.io → Settings → General and copy the UUID "
+                "(format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx). "
+                "Update the Organization ID in URIP."
+            ),
+        ),
+        ErrorFix(
+            error="No issues returned / empty findings",
+            cause=(
+                "No projects are monitored in the org, all projects are de-activated, "
+                "or the severity_filter excludes all existing findings."
+            ),
+            fix=(
+                "Verify at least one project is Active in Snyk → Projects. "
+                "Lower the severity_filter to include 'medium' or 'low' if needed. "
+                "Run a fresh Snyk test on the project to generate new findings."
+            ),
+        ),
+    ],
+    polling=PollingSpec(
+        default_minutes=60,
+        first_sync_estimate_minutes=5,
+        webhook_supported=False,
+        manual_refresh="Tool Catalog → Snyk tile → Run Now.",
+    ),
+    disconnect_steps=[
+        "Tool Catalog → Snyk tile → Disconnect.",
+        f"{_CRED_VAULT_DELETE}",
+        "Optionally revoke the API token at app.snyk.io → Account Settings → Auth Token → Revoke.",
+        f"{_KEEP_HISTORY}",
+    ],
+    references=[
+        "https://docs.snyk.io/snyk-api/snyk-rest-api",
+        "https://apidocs.snyk.io/?version=2024-10-15",
+        "https://docs.snyk.io/getting-started/snyk-api-overview",
+    ],
+)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# HashiCorp Vault (PAM / Secrets Management)
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+_HASHICORP_VAULT = SetupGuideSpec(
+    quick_facts=QuickFacts(
+        category="PAM",
+        module="IDENTITY",
+        difficulty="medium",
+        approx_setup_minutes=20,
+        vendor_docs_url="https://developer.hashicorp.com/vault/api-docs",
+        polling_default_minutes=60,
+        supports_webhooks=False,
+        license_tier_required=(
+            "HashiCorp Vault Community (free, self-hosted), "
+            "Vault Enterprise (paid, self-hosted with namespaces/replication), "
+            "or HCP Vault (HashiCorp managed, any tier)."
+        ),
+    ),
+    what_pulled=[
+        "Audit device inventory — which audit backends (file, syslog, socket) are active",
+        "Auth method posture — enabled backends (token, userpass, approle, github, OIDC, …)",
+        "ACL policy list — names of all ACL policies defined in the namespace",
+        "Secret engine mounts — engine type and KV version per mount path",
+        "Health state — initialized, sealed, standby, performance_standby, Vault version",
+        "Token self-inspection — policies attached to the URIP service token",
+    ],
+    prerequisites=[
+        PrereqItem(
+            label="Vault version",
+            requirement=(
+                "HashiCorp Vault ≥ 1.9 (Community, Enterprise, or HCP Vault). "
+                "All probed endpoints (/sys/health, /sys/audit, /sys/auth, /sys/mounts, "
+                "/sys/policies/acl, /auth/token/lookup-self) are stable since Vault 0.9."
+            ),
+        ),
+        PrereqItem(
+            label="Read-only token",
+            requirement=(
+                "A Vault token with read-only capabilities on the six policy paths listed "
+                "in the README. Root tokens work but are not recommended. "
+                "Use a periodic token with -period=720h (30 days) to avoid expiry between polls."
+            ),
+        ),
+        PrereqItem(
+            label="Network",
+            requirement=(
+                "Allow URIP egress to <vault_addr> on TCP 443 (or 8200 for non-TLS dev instances). "
+                "Verify with: curl -s <vault_addr>/v1/sys/health | python3 -m json.tool"
+            ),
+        ),
+    ],
+    steps=[
+        SetupStep(
+            n=1,
+            title="Create the urip-readonly policy in Vault",
+            body=(
+                "Save the following HCL to `urip-readonly.hcl` and apply it:\n\n"
+                "```hcl\n"
+                'path "sys/health" { capabilities = ["read"] }\n'
+                'path "sys/audit" { capabilities = ["list", "read"] }\n'
+                'path "sys/auth" { capabilities = ["list", "read"] }\n'
+                'path "sys/mounts" { capabilities = ["list", "read"] }\n'
+                'path "sys/policies/acl" { capabilities = ["list", "read"] }\n'
+                'path "auth/token/lookup-self" { capabilities = ["read"] }\n'
+                "```\n\n"
+                "Apply: `vault policy write urip-readonly urip-readonly.hcl`"
+            ),
+        ),
+        SetupStep(
+            n=2,
+            title="Create a periodic read-only token",
+            body=(
+                "```bash\n"
+                "vault token create \\\n"
+                "  -policy=urip-readonly \\\n"
+                "  -period=720h \\\n"
+                "  -display-name=urip-posture-scanner \\\n"
+                "  -no-default-policy\n"
+                "```\n\n"
+                "Copy the `token` field from the output. "
+                "For Vault Enterprise, add `-namespace=admin/teamA` to scope to your namespace."
+            ),
+            warning=(
+                "Treat the token like a password. Store it only in URIP's encrypted credential vault."
+            ),
+        ),
+        SetupStep(
+            n=3,
+            title="Configure in URIP",
+            body=(
+                "URIP → Tool Catalog → HashiCorp Vault tile → Connect. "
+                "Enter **Vault Address** (e.g. https://vault.corp.example.com:8200), "
+                "paste the **Vault Token**, and set **Namespace** if using Vault Enterprise "
+                "(leave blank for Community / HCP root namespace). "
+                "Click **Test Connection** — you should see the Vault version and sealed status."
+            ),
+        ),
+        SetupStep(
+            n=4,
+            title="Verify Enterprise namespace (Enterprise only)",
+            body=(
+                "If you see `403 Forbidden` with a valid token, the namespace path may be wrong. "
+                "Run `vault namespace list` (with a root or admin token) to list available namespaces. "
+                "Update the **Namespace** field in URIP and retry Test Connection."
+            ),
+        ),
+    ],
+    required_scopes=[
+        ScopeItem(
+            name='path "sys/health" { capabilities = ["read"] }',
+            description="Read Vault health status (sealed/unsealed, initialized, version).",
+            required=True,
+        ),
+        ScopeItem(
+            name='path "sys/audit" { capabilities = ["list", "read"] }',
+            description="List and read audit devices to verify audit logging is enabled.",
+            required=True,
+        ),
+        ScopeItem(
+            name='path "sys/auth" { capabilities = ["list", "read"] }',
+            description="Enumerate auth backends to detect password-only methods.",
+            required=True,
+        ),
+        ScopeItem(
+            name='path "sys/mounts" { capabilities = ["list", "read"] }',
+            description="List secret engine mounts to detect deprecated KV v1 engines.",
+            required=True,
+        ),
+        ScopeItem(
+            name='path "sys/policies/acl" { capabilities = ["list", "read"] }',
+            description="List all ACL policies for posture analysis.",
+            required=True,
+        ),
+        ScopeItem(
+            name='path "auth/token/lookup-self" { capabilities = ["read"] }',
+            description="Validate the URIP token and inspect attached policies (detect root token).",
+            required=True,
+        ),
+    ],
+    sample_data={
+        "id": "hashicorp_vault:VAULT-AUDIT-DISABLED",
+        "source": "hashicorp_vault",
+        "finding": "Vault audit logging is disabled",
+        "domain": "identity",
+        "finding_code": "VAULT-AUDIT-DISABLED",
+        "asset": "https://vault.corp.example.com:8200",
+        "owner_team": "Security Engineering",
+        "cvss_score": 0.0,
+        "severity": "critical",
+        "description": (
+            "HashiCorp Vault posture finding [VAULT-AUDIT-DISABLED]: "
+            "Vault audit logging is disabled. No audit devices are configured "
+            "at /v1/sys/audit. Without audit logs, secret access, policy changes, "
+            "and authentication events are undetectable."
+        ),
+    },
+    not_collected=[
+        "Secret values stored inside Vault (the token has no read capabilities on secret paths)",
+        "Session recordings or terminal session video",
+        "Vault replication state or cluster peering details",
+        "User personal data beyond Vault token metadata",
+    ],
+    common_errors=[
+        ErrorFix(
+            error="HTTP 403 Forbidden on Test Connection",
+            cause=(
+                "The URIP token is missing one or more capabilities. "
+                "Most commonly: `sys/audit` or `sys/auth` were omitted from the policy."
+            ),
+            fix=(
+                "Re-apply the urip-readonly policy with all six path blocks. "
+                "Run: `vault token capabilities <token> sys/audit` to verify. "
+                "Then re-create the token and update it in URIP."
+            ),
+        ),
+        ErrorFix(
+            error="HTTP 503 — Vault is sealed",
+            cause=(
+                "The Vault cluster is sealed. No API operations are possible until unseal keys "
+                "or auto-unseal is applied."
+            ),
+            fix=(
+                "Run `vault operator unseal` on each Vault node (for manual unseal) "
+                "or check the auto-unseal provider (AWS KMS, Azure Key Vault, GCP KMS). "
+                "URIP will surface a VAULT-SEALED critical finding and retry on the next poll."
+            ),
+        ),
+        ErrorFix(
+            error="Namespace mismatch — findings from wrong namespace",
+            cause=(
+                "Enterprise Vault: the namespace field in URIP does not match the namespace "
+                "where the policy and token were created."
+            ),
+            fix=(
+                "Run `vault namespace list` with an admin token to list valid namespaces. "
+                "Correct the **Namespace** field in URIP → Tool Catalog → HashiCorp Vault → Edit."
+            ),
+        ),
+    ],
+    polling=PollingSpec(
+        default_minutes=60,
+        first_sync_estimate_minutes=1,
+        webhook_supported=False,
+        manual_refresh="Tool Catalog → HashiCorp Vault tile → Run Now.",
+    ),
+    disconnect_steps=[
+        "URIP → Tool Catalog → HashiCorp Vault tile → Disconnect.",
+        _CRED_VAULT_DELETE,
+        "Revoke the URIP token in Vault: `vault token revoke <token>` (or revoke by accessor).",
+        _KEEP_HISTORY,
+        "Optionally remove the urip-readonly policy: `vault policy delete urip-readonly`.",
+    ],
+    references=[
+        "Vault HTTP API docs: https://developer.hashicorp.com/vault/api-docs",
+        "sys/health endpoint: https://developer.hashicorp.com/vault/api-docs/system/health",
+        "sys/audit endpoint: https://developer.hashicorp.com/vault/api-docs/system/audit",
+        "Token auth: https://developer.hashicorp.com/vault/docs/auth/token",
+        "Vault Enterprise namespaces: https://developer.hashicorp.com/vault/docs/enterprise/namespaces",
+    ],
+)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Public registry — single dict keyed by connector NAME
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -4968,6 +5775,14 @@ SETUP_GUIDES: dict[str, SetupGuideSpec] = {
     "ongrid": _ONGRID,
     # ITSM — Jira Cloud + Data Center
     "jira": _JIRA,
+    # Identity — Okta Workforce Identity
+    "okta": _OKTA,
+    # DAST / AppSec — GitHub Advanced Security
+    "ghas": _GHAS,
+    # DAST / AppSec — Snyk SCA + Container + IaC + Code
+    "snyk": _SNYK,
+    # PAM / Secrets Management — HashiCorp Vault
+    "hashicorp_vault": _HASHICORP_VAULT,
 }
 
 

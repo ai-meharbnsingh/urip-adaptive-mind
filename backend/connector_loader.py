@@ -45,8 +45,10 @@ import connectors.fortiguard_fw.connector  # noqa: F401
 import connectors.gtb.connector  # noqa: F401
 # Identity / NAC / PAM
 import connectors.ms_entra.connector  # noqa: F401
+import connectors.okta.connector  # noqa: F401
 import connectors.forescout_nac.connector  # noqa: F401
 import connectors.cyberark_pam.connector  # noqa: F401
+import connectors.hashicorp_vault.connector  # noqa: F401
 # Cloud (CSPM)
 import connectors.aws_cspm.connector  # noqa: F401
 import connectors.azure_cspm.connector  # noqa: F401
@@ -61,8 +63,10 @@ import connectors.email_security.connector  # noqa: F401
 import connectors.m365_collab.connector  # noqa: F401
 # OT
 import connectors.armis_ot.connector  # noqa: F401
-# DAST
+# DAST / AppSec
 import connectors.burp_enterprise.connector  # noqa: F401
+import connectors.ghas.connector  # noqa: F401
+import connectors.snyk.connector  # noqa: F401
 # SIEM / Advisory / Bug Bounty
 import connectors.siem.connector  # noqa: F401
 import connectors.cert_in.connector  # noqa: F401

@@ -322,6 +322,35 @@
       ]
     },
     {
+      key: 'snyk',
+      name: 'Snyk',
+      category: 'DAST',
+      description: 'Open-source dependency scanning + container image SCA + IaC scanning. Pulls vulnerability findings from your monitored projects.',
+      logoLetter: 'S',
+      logoColor: C.violet,
+      logoUrl: 'https://snyk.io/favicon.ico',
+      docsUrl: 'https://docs.snyk.io/snyk-api/snyk-rest-api',
+      sourceType: 'snyk',
+      poll: '60 min',
+      statusPill: 'Live',
+      fields: [
+        { name: 'org_id', label: 'Snyk Organization ID (UUID)', type: 'text', required: true,
+          placeholder: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+          help: 'Snyk → Settings → General → Organization ID' },
+        { name: 'api_token', label: 'API Token', type: 'password', required: true, secret: true,
+          placeholder: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+          help: 'Snyk → Account Settings → API Token' },
+        { name: 'api_url', label: 'API URL', type: 'url', required: true,
+          default: 'https://api.snyk.io',
+          placeholder: 'https://api.snyk.io', pattern: URL_RX,
+          help: 'Override for Snyk EU (api.eu.snyk.io) or Snyk AU (api.au.snyk.io)' },
+        { name: 'severity_filter', label: 'Minimum severity to ingest (comma-sep)', type: 'text', required: true,
+          default: 'critical,high',
+          placeholder: 'critical,high',
+          help: 'Snyk severities: critical|high|medium|low' }
+      ]
+    },
+    {
       key: 'gtb_endpoint_protector',
       name: 'GTB Endpoint Protector',
       category: 'DLP',
@@ -396,7 +425,56 @@
           placeholder: 'project = SEC AND labels = "security"',
           help: 'JQL expression selecting security tickets for URIP to ingest.' }
       ]
-    }    ,
+    },
+    {
+      key: 'ghas',
+      name: 'GitHub Advanced Security',
+      category: 'DAST',
+      description: 'Code scanning + secret scanning + Dependabot SCA across your GitHub organization. Cross-correlate code vulnerabilities with runtime exposure.',
+      logoLetter: 'G',
+      logoColor: '#24292F',
+      logoUrl: 'https://github.githubassets.com/images/modules/site/octocat-octicon.png',
+      docsUrl: 'https://docs.github.com/en/code-security/getting-started/github-security-features',
+      sourceType: 'ghas',
+      poll: '15 min',
+      status: 'Live',
+      fields: [
+        { name: 'org', label: 'GitHub Organization', type: 'text', required: true,
+          placeholder: 'your-org',
+          help: 'GitHub organization slug — the name in your org URL (e.g. "acme-corp" from github.com/acme-corp).' },
+        { name: 'token', label: 'Personal Access Token or GitHub App token', type: 'password', required: true, secret: true,
+          placeholder: 'ghp_…',
+          help: 'Required scopes: security_events, read:org. Settings → Developer settings → Personal access tokens.' },
+        { name: 'api_url', label: 'GitHub API URL', type: 'url', required: true,
+          default: 'https://api.github.com',
+          placeholder: 'https://api.github.com', pattern: URL_RX,
+          help: 'Leave as default for GitHub.com. For GitHub Enterprise Server: https://github.your-company.com/api/v3' }
+      ]
+    },
+    {
+      key: 'hashicorp_vault',
+      name: 'HashiCorp Vault',
+      category: 'PAM',
+      description: 'Secrets management posture — verify audit logging is on, enumerate auth methods, list policies and mounted secret engines.',
+      logoLetter: 'V',
+      logoColor: C.amber,
+      logoUrl: 'https://www.datocms-assets.com/2885/1620155098-brandhashicorpvertical-onlightprimaryverticallogofullcolor.svg',
+      docsUrl: 'https://developer.hashicorp.com/vault/api-docs',
+      sourceType: 'hashicorp_vault',
+      poll: '60 min',
+      statusPill: 'Live',
+      fields: [
+        { name: 'vault_addr', label: 'Vault Address', type: 'url', required: true,
+          placeholder: 'https://vault.your-org.com:8200', pattern: URL_RX,
+          help: 'Full URL to your Vault instance including port. HCP Vault: use the public cluster address.' },
+        { name: 'token', label: 'Vault Token (read-only ACL recommended)', type: 'password', required: true, secret: true,
+          placeholder: 'hvs.CAESI…',
+          help: 'Generate via: vault token create -policy=urip-readonly -period=720h' },
+        { name: 'namespace', label: 'Namespace (Vault Enterprise only — leave blank for Community)', type: 'text', required: false,
+          placeholder: 'admin/teamA',
+          help: 'Vault Enterprise namespace path. Leave blank for Community edition or HCP Vault root namespace.' }
+      ]
+    },
     {
       key: 'crowdstrike',
       name: 'CrowdStrike Falcon',
@@ -478,6 +556,31 @@
         { name: 'api_key', label: 'Bearer Token', type: 'password', required: true, secret: true,
           placeholder: 'eyJ…',
           help: 'OneTrust → Settings → Developers → API Tokens → generate bearer token.' }
+      ]
+    },
+    {
+      key: 'okta',
+      name: 'Okta Workforce Identity',
+      category: 'Identity',
+      description: 'Universal SSO + adaptive MFA + lifecycle management. Pulls user posture, app assignments, MFA enrollment, and System Log events for cross-domain risk correlation.',
+      logoLetter: 'O',
+      logoColor: C.indigo,
+      logoUrl: 'https://www.okta.com/sites/default/files/Dev_Logo-02_Large-thumbnail.png',
+      docsUrl: 'https://developer.okta.com/docs/reference/core-okta-api/',
+      sourceType: 'okta',
+      poll: '15 min',
+      status_pill: 'Live',
+      fields: [
+        { name: 'domain', label: 'Okta Domain', type: 'url', required: true,
+          placeholder: 'your-org.okta.com',
+          help: 'Your Okta tenant domain. NO https://, NO trailing slash.' },
+        { name: 'api_token', label: 'API Token', type: 'password', required: true, secret: true,
+          placeholder: '00abc…XYZ',
+          help: 'Okta admin → Security → API → Tokens → Create Token. Token is shown ONCE.' },
+        { name: 'log_event_filter', label: 'System Log event filter (Okta filter syntax)', type: 'text', required: true,
+          placeholder: 'eventType eq "user.account.lock" or eventType eq "user.session.access_admin_app" or eventType eq "policy.evaluate_sign_on"',
+          default: 'eventType eq "user.account.lock" or eventType eq "user.session.access_admin_app" or eventType eq "policy.evaluate_sign_on"',
+          help: 'Okta filter expression for System Log events to ingest. Combine event types with "or".' }
       ]
     }
   ];
