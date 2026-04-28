@@ -1,6 +1,15 @@
 """
 backend/services/celery_app.py — Celery application factory.
 
+Celery is OPTIONAL at import time.  The try/except around `from celery import
+Celery` means that backend.main (and any module that imports backend.services)
+can be imported in environments where celery is not installed — for example a
+minimal CI environment or a unit-test run that does not exercise task dispatch.
+The runtime guard in ``make_celery_app()`` fires only when the Celery app is
+actually *constructed* (i.e. when a worker, beat scheduler, or task-dispatch
+call reaches that function), so ``from backend.services import celery_app``
+succeeds but yields ``None`` when celery is absent.
+
 Wires up the URIP Celery app with Redis as both broker and result backend,
 auto-discovers task modules under backend.services.tasks, and registers a
 beat schedule with three periodic jobs:
@@ -27,11 +36,26 @@ from __future__ import annotations
 
 import logging
 import os
-
-from celery import Celery
-from celery.schedules import schedule as _interval_schedule
+from typing import TYPE_CHECKING
 
 from backend.config import settings
+
+# ---------------------------------------------------------------------------
+# Optional celery import — keeps the module importable in minimal environments
+# ---------------------------------------------------------------------------
+try:
+    from celery import Celery
+    from celery.schedules import schedule as _interval_schedule
+
+    _CELERY_AVAILABLE = True
+except ImportError:
+    _CELERY_AVAILABLE = False
+    Celery = None  # type: ignore[assignment,misc]
+    _interval_schedule = None  # type: ignore[assignment]
+
+if TYPE_CHECKING:
+    # For type checkers (mypy / pyright) only — not executed at runtime.
+    from celery import Celery as _CeleryType  # noqa: F401
 
 
 logger = logging.getLogger(__name__)
@@ -53,8 +77,20 @@ def _coerce_bool(env_value: str | None) -> bool:
     return env_value.strip().lower() in {"1", "true", "yes", "on"}
 
 
-def make_celery_app() -> Celery:
-    """Build the configured Celery app."""
+def make_celery_app() -> "Celery":
+    """Build the configured Celery app.
+
+    Raises RuntimeError when called in an environment where celery is not
+    installed.  Set URIP_CELERY_OPTIONAL=1 to skip celery task dispatch
+    gracefully in tests that do not exercise the worker path.
+    """
+    if not _CELERY_AVAILABLE:
+        raise RuntimeError(
+            "celery is not installed — run `pip install -r requirements.txt`. "
+            "If you're running tests without celery, set "
+            "URIP_CELERY_OPTIONAL=1 to skip celery tasks gracefully."
+        )
+
     broker_url = _default_redis_url()
 
     app = Celery(
@@ -120,9 +156,15 @@ def make_celery_app() -> Celery:
     return app
 
 
+# ---------------------------------------------------------------------------
 # Module-level singleton — ``celery -A backend.services.celery_app`` looks
 # for an attribute called ``celery_app`` (or ``app``) on the target module.
-celery_app = make_celery_app()
+#
+# When celery is NOT installed, celery_app is None.  Any code that calls
+# make_celery_app() directly (e.g. a task module) will get the RuntimeError
+# above at the moment it tries to construct the app, not at import time.
+# ---------------------------------------------------------------------------
+celery_app = make_celery_app() if _CELERY_AVAILABLE else None
 app = celery_app  # alias for ``-A backend.services.celery_app`` convention
 
 

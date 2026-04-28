@@ -14,7 +14,7 @@ import os
 import sys
 import warnings
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class ConfigError(RuntimeError):
@@ -38,7 +38,8 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_HOURS: int = 8
     URIP_FERNET_KEY: str = ""
-    CORS_ORIGINS: str = "http://localhost:8000,http://localhost:3000"
+    # Comma-separated list. Wildcards ('*') are intentionally ignored.
+    CORS_ORIGINS: str = "http://localhost:8088,https://urip.adaptive-mind.com"
 
     # Connector API Keys (populated when RE provides access)
     CROWDSTRIKE_CLIENT_ID: str = ""
@@ -104,12 +105,13 @@ class Settings(BaseSettings):
     # Acceptance review period
     ACCEPTANCE_REVIEW_PERIOD_DAYS: int = 90
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
         # Accept and ignore unknown env keys so newly-added settings on .env
         # do not crash this loader (e.g. cross-worker config drift).
-        extra = "ignore"
+        extra="ignore",
+    )
 
 
 def _enforce_jwt_secret_policy(s: Settings) -> None:
