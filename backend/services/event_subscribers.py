@@ -12,29 +12,24 @@ Publishes:
     urip.risk.created   — fired by `publish_risk_created`
     urip.risk.resolved  — fired by `publish_risk_resolved`
 
-IN-MEMORY NOTIFICATION STORE — DESIGN NOTE
--------------------------------------------
-``_NOTIFICATIONS`` is an in-process dict keyed by tenant_id.  This is the
-correct design for single-instance deployments and local development.
+NOTIFICATION BACKEND SELECTION
+-------------------------------
+At import time the module selects one of two notification backends:
 
-Gemini CRITICAL finding (AUDIT_GEMINI_TRI_A.md:44):
-    In a multi-instance (HA / Kubernetes) deployment this store has two problems:
-    1. Each pod maintains its own copy — a request hitting pod B won't see
-       notifications written by pod A.
-    2. A pod restart wipes all unseen notifications.
+  ``_InProcessNotificationStore``  — in-memory defaultdict, single-instance only.
+    Default for dev/test when neither URIP_NOTIFICATION_BACKEND=redis nor
+    URIP_ENV in {production, staging} with REDIS_URL set.
 
-Migration path (deferred to separate sprint — see docs/SCALING.md):
-    Replace ``_NOTIFICATIONS`` with Redis-backed storage:
-        LPUSH urip:notif:{tenant_id} <json_payload>
-        LRANGE urip:notif:{tenant_id} 0 -1  (read all)
-        DEL    urip:notif:{tenant_id}        (clear)
-    Use ``redis.asyncio`` (already in requirements.txt via celery[redis]).
-    Set a TTL (e.g. 7 days) to prevent unbounded growth.
-    Alternatively land notifications in the Postgres `audit_log` table so they
-    survive Redis restarts and are queryable.
+  ``_RedisNotificationStore``       — Redis-backed, horizontally scalable.
+    Selected when EITHER:
+      • URIP_NOTIFICATION_BACKEND=redis  (explicit opt-in, any env)
+      • URIP_ENV in {production, prod, staging} AND REDIS_URL is set
 
-A startup warning is emitted when ``URIP_ENV=production`` to make this gap
-explicitly visible in logs.
+    Key scheme: ``urip:notif:{tenant_id}``  (LPUSH / LRANGE / DEL)
+    TTL: 7 days (NOTIF_TTL_SECONDS).
+
+    If Redis is unreachable at push/get time, operations log a warning and
+    fall back gracefully rather than crashing the app.
 
 Idempotency
 -----------
@@ -43,12 +38,13 @@ registrations are short-circuited via a sentinel attribute on the bus.
 """
 from __future__ import annotations
 
+import json
 import logging
 import os
 import uuid
 from collections import defaultdict
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, Protocol, runtime_checkable
 
 from sqlalchemy import select
 
@@ -73,55 +69,176 @@ from shared.events.topics import (
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# In-memory notification store — single-instance only (see module docstring)
+# Constants
 # ---------------------------------------------------------------------------
-
-# Gemini CRITICAL finding (AUDIT_GEMINI_TRI_A.md:44): this store is in-process.
-# Emit a structured warning at import time in production environments so the gap
-# is visible in logs and monitoring.  Full Redis migration is tracked as a
-# separate sprint (see docs/SCALING.md).
-_URIP_ENV = os.environ.get("URIP_ENV", "").lower()
-if _URIP_ENV in ("production", "prod", "staging"):
-    logger.warning(
-        "event_subscribers: _NOTIFICATIONS is an in-memory store — "
-        "notifications will be lost on pod restart and are NOT shared across "
-        "multiple instances (URIP_ENV=%s). "
-        "Migrate to Redis pub/sub before scaling horizontally. "
-        "See docs/SCALING.md for the migration path.",
-        _URIP_ENV,
-    )
-
-# Tenant_id → list of {topic, payload, recv_at}.
-_NOTIFICATIONS: dict[str, list[dict[str, Any]]] = defaultdict(list)
-# Bound at import time to a sentinel so we can no-op double-register.
+NOTIF_TTL_SECONDS = 7 * 24 * 3600  # 7 days
 _REGISTERED_SENTINEL = "_urip_subscribers_registered"
 
 
 # ---------------------------------------------------------------------------
-# Notification store helpers
+# Backend protocol
 # ---------------------------------------------------------------------------
-def _record_notification(tenant_id: str, topic: str, payload: dict) -> None:
-    _NOTIFICATIONS[tenant_id].append(
-        {
-            "topic": topic,
-            "payload": payload,
-            "received_at": datetime.now(timezone.utc).isoformat(),
-        }
+@runtime_checkable
+class NotificationBackend(Protocol):
+    """Interface that both store implementations satisfy."""
+
+    async def push(self, tenant_id: str, payload: dict[str, Any]) -> None: ...
+    async def get(self, tenant_id: str) -> list[dict[str, Any]]: ...
+    async def clear(self, tenant_id: str | None = None) -> None: ...
+
+
+# ---------------------------------------------------------------------------
+# Implementation 1: In-process (dev / test default)
+# ---------------------------------------------------------------------------
+class _InProcessNotificationStore:
+    """Thread-safe enough for asyncio; not safe across processes."""
+
+    def __init__(self) -> None:
+        self._store: dict[str, list[dict[str, Any]]] = defaultdict(list)
+
+    async def push(self, tenant_id: str, payload: dict[str, Any]) -> None:
+        self._store[tenant_id].append(payload)
+
+    async def get(self, tenant_id: str) -> list[dict[str, Any]]:
+        return list(self._store.get(tenant_id, ()))
+
+    async def clear(self, tenant_id: str | None = None) -> None:
+        if tenant_id is None:
+            self._store.clear()
+        else:
+            self._store.pop(tenant_id, None)
+
+
+# ---------------------------------------------------------------------------
+# Implementation 2: Redis-backed
+# ---------------------------------------------------------------------------
+class _RedisNotificationStore:
+    """
+    Redis-backed notification store.
+
+    LPUSH urip:notif:{tenant_id}  → newest entry at index 0
+    LRANGE … 0 -1                → all entries
+    DEL …                        → clear
+
+    Falls back gracefully (warning, no crash) when Redis is unreachable.
+    """
+
+    def __init__(self, redis_url: str) -> None:
+        try:
+            import redis.asyncio as aioredis  # type: ignore
+            self._client = aioredis.from_url(redis_url, decode_responses=True)
+        except Exception as exc:  # pragma: no cover
+            logger.warning("_RedisNotificationStore: could not create client: %s", exc)
+            self._client = None
+
+    def _key(self, tenant_id: str) -> str:
+        return f"urip:notif:{tenant_id}"
+
+    async def push(self, tenant_id: str, payload: dict[str, Any]) -> None:
+        if self._client is None:  # pragma: no cover
+            return
+        try:
+            key = self._key(tenant_id)
+            await self._client.lpush(key, json.dumps(payload))
+            await self._client.expire(key, NOTIF_TTL_SECONDS)
+        except Exception as exc:
+            logger.warning(
+                "RedisNotificationStore.push failed for tenant %s: %s — notification dropped",
+                tenant_id, exc,
+            )
+
+    async def get(self, tenant_id: str) -> list[dict[str, Any]]:
+        if self._client is None:  # pragma: no cover
+            return []
+        try:
+            raw = await self._client.lrange(self._key(tenant_id), 0, -1)
+            return [json.loads(x) for x in raw]
+        except Exception as exc:
+            logger.warning(
+                "RedisNotificationStore.get failed for tenant %s: %s — returning []",
+                tenant_id, exc,
+            )
+            return []
+
+    async def clear(self, tenant_id: str | None = None) -> None:
+        if self._client is None:  # pragma: no cover
+            return
+        try:
+            if tenant_id is None:
+                keys = await self._client.keys("urip:notif:*")
+                if keys:
+                    await self._client.delete(*keys)
+            else:
+                await self._client.delete(self._key(tenant_id))
+        except Exception as exc:
+            logger.warning(
+                "RedisNotificationStore.clear failed (tenant=%s): %s", tenant_id, exc
+            )
+
+
+# ---------------------------------------------------------------------------
+# Backend selection (chosen once at import time)
+# ---------------------------------------------------------------------------
+_URIP_ENV = os.environ.get("URIP_ENV", "").lower()
+_REDIS_URL = os.environ.get("REDIS_URL", "")
+_NOTIFICATION_BACKEND_ENV = os.environ.get("URIP_NOTIFICATION_BACKEND", "").lower()
+
+_use_redis = (
+    _NOTIFICATION_BACKEND_ENV == "redis"
+    or (_URIP_ENV in ("production", "prod", "staging") and bool(_REDIS_URL))
+)
+
+if _use_redis:
+    _NOTIFICATION_BACKEND: NotificationBackend = _RedisNotificationStore(
+        _REDIS_URL or "redis://redis:6379/0"
     )
+    logger.info(
+        "event_subscribers: using Redis notification backend (URIP_ENV=%s, REDIS_URL=%s)",
+        _URIP_ENV or "n/a",
+        _REDIS_URL,
+    )
+else:
+    _NOTIFICATION_BACKEND = _InProcessNotificationStore()
+    # Emit production warning ONLY when in-process store is selected in prod/staging.
+    if _URIP_ENV in ("production", "prod", "staging"):
+        logger.warning(
+            "event_subscribers: _NOTIFICATIONS is an in-memory store — "
+            "notifications will be lost on pod restart and are NOT shared across "
+            "multiple instances (URIP_ENV=%s). "
+            "Set REDIS_URL to enable the Redis backend, or set "
+            "URIP_NOTIFICATION_BACKEND=redis explicitly. "
+            "See docs/SCALING.md for the migration path.",
+            _URIP_ENV,
+        )
 
 
-def get_compliance_notifications(tenant_id: str) -> list[dict[str, Any]]:
+# ---------------------------------------------------------------------------
+# Public store helpers (async — wraps the selected backend)
+# ---------------------------------------------------------------------------
+async def _record_notification(tenant_id: str, topic: str, payload: dict) -> None:
+    """Push a structured notification entry into the selected backend."""
+    entry = {
+        "topic": topic,
+        "payload": payload,
+        "received_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await _NOTIFICATION_BACKEND.push(tenant_id, entry)
+
+
+async def notify_compliance_event(tenant_id: str, payload: dict[str, Any]) -> None:
+    """Push a raw payload dict directly into the backend (used by tests + future callers)."""
+    await _NOTIFICATION_BACKEND.push(tenant_id, payload)
+
+
+async def get_compliance_notifications(tenant_id: str) -> list[dict[str, Any]]:
     """Caller — usually a unified-dashboard endpoint — reads what compliance has
-    pushed for this tenant since process start."""
-    return list(_NOTIFICATIONS.get(tenant_id, ()))
+    pushed for this tenant."""
+    return await _NOTIFICATION_BACKEND.get(tenant_id)
 
 
-def clear_compliance_notifications(tenant_id: str | None = None) -> None:
-    """Test helper."""
-    if tenant_id is None:
-        _NOTIFICATIONS.clear()
-    else:
-        _NOTIFICATIONS.pop(tenant_id, None)
+async def clear_compliance_notifications(tenant_id: str | None = None) -> None:
+    """Clear notifications for a tenant (or all tenants if None)."""
+    await _NOTIFICATION_BACKEND.clear(tenant_id)
 
 
 # ---------------------------------------------------------------------------
@@ -133,7 +250,7 @@ async def _on_control_failed(payload: dict[str, Any]) -> None:
     except Exception as exc:
         logger.warning("control_failed: invalid payload: %s", exc)
         return
-    _record_notification(parsed.tenant_id, TOPIC_CONTROL_FAILED, payload)
+    await _record_notification(parsed.tenant_id, TOPIC_CONTROL_FAILED, payload)
 
     # If the tenant opted into auto-link, insert a Risk row.
     try:
@@ -192,7 +309,7 @@ async def _on_policy_expiring(payload: dict[str, Any]) -> None:
     except Exception as exc:
         logger.warning("policy_expiring: invalid payload: %s", exc)
         return
-    _record_notification(parsed.tenant_id, TOPIC_POLICY_EXPIRING, payload)
+    await _record_notification(parsed.tenant_id, TOPIC_POLICY_EXPIRING, payload)
 
 
 # ---------------------------------------------------------------------------

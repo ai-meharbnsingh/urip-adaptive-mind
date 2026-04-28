@@ -1,4 +1,5 @@
 import logging
+import os
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
@@ -23,6 +24,21 @@ app = FastAPI(
     description="Cybersecurity risk aggregation and management platform by Semantic Gravity",
     version="1.0.0",
 )
+
+# ---------------------------------------------------------------------------
+# Distributed event subscriber startup (DELIVERABLE 2)
+# ---------------------------------------------------------------------------
+# When URIP_DISTRIBUTED_EVENTS=1/true/yes is set, each pod PSUBSCRIBEs to
+# Redis for cross-pod event delivery.  The subscriber fans messages to local
+# bus handlers WITHOUT re-publishing to Redis (loop-free).
+# Safe no-op when the env var is absent or when Redis is unreachable.
+if os.environ.get("URIP_DISTRIBUTED_EVENTS", "").lower() in ("1", "true", "yes"):
+    @app.on_event("startup")  # type: ignore[misc]
+    async def _start_distributed_events() -> None:
+        from shared.events.bus import get_event_bus
+        from shared.events.redis_subscriber import start_redis_event_subscriber
+        redis_url = settings.REDIS_URL or "redis://redis:6379/0"
+        await start_redis_event_subscriber(get_event_bus(), redis_url)
 
 # Gemini Gap 6 (MEDIUM) — install structured logging so the global exception
 # handler below emits JSON log lines that downstream SIEM / log aggregation

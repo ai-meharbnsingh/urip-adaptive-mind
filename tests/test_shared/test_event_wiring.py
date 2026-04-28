@@ -153,7 +153,7 @@ async def test_urip_subscriber_records_control_failure_event():
     # Allow async subscribers to run if they spawn tasks.
     await asyncio.sleep(0)
 
-    notes = get_compliance_notifications("tenant-abc")
+    notes = await get_compliance_notifications("tenant-abc")
     assert any(n["topic"] == TOPIC_CONTROL_FAILED for n in notes), notes
 
 
@@ -177,7 +177,7 @@ async def test_urip_subscriber_records_policy_expiring_event():
     await bus.publish(TOPIC_POLICY_EXPIRING, payload)
     await asyncio.sleep(0)
 
-    notes = get_compliance_notifications("tenant-abc")
+    notes = await get_compliance_notifications("tenant-abc")
     assert any(n["topic"] == TOPIC_POLICY_EXPIRING for n in notes)
 
 
