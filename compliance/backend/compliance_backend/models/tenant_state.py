@@ -26,7 +26,7 @@ that NO request body can influence.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from sqlalchemy import String, DateTime, JSON, UniqueConstraint, Index
@@ -59,7 +59,7 @@ class TenantConfig(Base):
     tenant_id: Mapped[str] = mapped_column(String(36), nullable=False, unique=True, index=True)
     settings: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=lambda: datetime.utcnow()
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
 
     __table_args__ = (
@@ -86,7 +86,7 @@ class ConnectorPull(Base):
     connector_kind: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
     payload: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
     pulled_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=lambda: datetime.utcnow()
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
 
     __table_args__ = (

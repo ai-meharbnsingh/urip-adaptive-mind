@@ -71,7 +71,7 @@ DOMAIN_TEAM_MAP = {
 STATUSES = ["open", "in_progress", "accepted", "closed"]
 STATUS_WEIGHTS = [0.55, 0.25, 0.12, 0.08]
 
-# Royal Enfield-specific assets per domain
+# Sample assets per domain (synthetic demo data)
 ASSETS = {
     "endpoint": [
         "Finance Workstation FIN-WS-01", "HR Laptop HR-LT-042", "CISO Workstation EXEC-01",
@@ -82,8 +82,8 @@ ASSETS = {
     ],
     "cloud": [
         "AWS EKS Cluster - Dealer Portal", "S3 Bucket re-customer-data-prod",
-        "Azure AD Tenant royalenfield.com", "GCP BigQuery Analytics Warehouse",
-        "AWS Lambda - Order Processing", "CloudFront CDN - royalenfield.com",
+        "Azure AD Tenant example.com", "GCP BigQuery Analytics Warehouse",
+        "AWS Lambda - Order Processing", "CloudFront CDN - example.com",
         "S3 Bucket re-marketing-assets", "AWS RDS PostgreSQL - ERP",
         "Azure Blob - Warranty Docs", "AWS ECR Container Registry",
     ],
@@ -95,9 +95,9 @@ ASSETS = {
         "Network TAP TAP-CORE-01", "Proxy Server PROXY-INT-01",
     ],
     "application": [
-        "Dealer Portal API api.dealers.royalenfield.com",
-        "SAP ERP Production SAP-PRD-01", "Royal Enfield Mobile App v4.2",
-        "E-Commerce Platform shop.royalenfield.com",
+        "Dealer Portal API api.dealers.example.com",
+        "SAP ERP Production SAP-PRD-01", "Customer Mobile App v4.2",
+        "E-Commerce Platform shop.example.com",
         "Warranty Management System WMS-01",
         "Spare Parts Catalog API parts-api.re.internal",
         "HR Portal HRMS Workday Integration",
@@ -291,22 +291,22 @@ def seed_database():
         # ─── USERS ─────────────────────────────────────────────
         users = [
             User(
-                id=uuid.uuid4(), email="ciso@royalenfield.com",
+                id=uuid.uuid4(), email="ciso@example.com",
                 hashed_password=password_hash, full_name="Rajesh Kumar",
                 role="ciso", team="Security",
             ),
             User(
-                id=uuid.uuid4(), email="it.lead@royalenfield.com",
+                id=uuid.uuid4(), email="it.lead@example.com",
                 hashed_password=password_hash, full_name="Priya Sharma",
                 role="it_team", team="Infra Team",
             ),
             User(
-                id=uuid.uuid4(), email="vp.eng@royalenfield.com",
+                id=uuid.uuid4(), email="vp.eng@example.com",
                 hashed_password=password_hash, full_name="Arun Mehta",
                 role="executive", team="Engineering",
             ),
             User(
-                id=uuid.uuid4(), email="board@royalenfield.com",
+                id=uuid.uuid4(), email="board@example.com",
                 hashed_password=password_hash, full_name="Siddharth Lal",
                 role="board", team=None,
             ),
@@ -431,7 +431,7 @@ def seed_database():
             "threat_intel": ("Threat Intelligence Feed", "https://api.threatintel.example.com"),
             "cert_in": ("CERT-In Advisory Feed", "https://www.cert-in.org.in/api"),
             "bug_bounty": ("Bug Bounty Platform", "https://api.bugcrowd.com"),
-            "soc": ("SIEM / SoC Alerts", "https://siem.royalenfield.internal/api"),
+            "soc": ("SIEM / SoC Alerts", "https://siem.example.internal/api"),
         }
 
         for source_type, (name, url) in connector_names.items():

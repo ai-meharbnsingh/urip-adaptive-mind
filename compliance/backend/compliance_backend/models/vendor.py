@@ -9,7 +9,7 @@ Design notes:
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
 from typing import Optional, List
 
 from sqlalchemy import (
@@ -64,7 +64,7 @@ class Vendor(Base):
     # active | under_review | terminated
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="active")
     onboarded_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=lambda: datetime.utcnow()
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
     next_review_at: Mapped[date] = mapped_column(
         Date, nullable=False, default=lambda: (date.today() + timedelta(days=365))
@@ -110,7 +110,7 @@ class VendorQuestionnaire(Base):
     )
     template_name: Mapped[str] = mapped_column(String(255), nullable=False)
     sent_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=lambda: datetime.utcnow()
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
     due_at: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     # pending | in_progress | completed
@@ -144,7 +144,7 @@ class VendorDocument(Base):
     valid_from: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     valid_until: Mapped[Optional[date]] = mapped_column(Date, nullable=True, index=True)
     uploaded_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=lambda: datetime.utcnow()
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
     uploaded_by_user_id: Mapped[str] = mapped_column(String(255), nullable=False)
 
@@ -170,7 +170,7 @@ class VendorRiskScore(Base):
     )
     score: Mapped[int] = mapped_column(Integer, nullable=False)
     calculated_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=lambda: datetime.utcnow()
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
     factors_json: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
 

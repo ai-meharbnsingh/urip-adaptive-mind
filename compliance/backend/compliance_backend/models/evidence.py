@@ -19,7 +19,7 @@ Design notes:
   - UUID stored as String(36) for SQLite compatibility.
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from sqlalchemy import String, Text, DateTime, ForeignKey, JSON
@@ -63,7 +63,7 @@ class Evidence(Base):
     # ISO period string e.g. "2026" or "2026-Q1"
     audit_period: Mapped[str] = mapped_column(String(50), nullable=False)
     captured_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=lambda: datetime.utcnow()
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
     # "system" for auto-collected, user_id for manual
     captured_by: Mapped[str] = mapped_column(String(255), nullable=False, default="system")

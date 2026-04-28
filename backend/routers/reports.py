@@ -92,7 +92,7 @@ async def _generate_pdf(risks, report_type: str) -> StreamingResponse:
     elements.append(Paragraph(title, styles["Title"]))
     elements.append(Paragraph(
         f"Generated: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')} | "
-        f"Prepared by: Semantic Gravity",
+        f"Prepared by: URIP — Adaptive Mind",
         styles["Normal"],
     ))
     elements.append(Spacer(1, 20))

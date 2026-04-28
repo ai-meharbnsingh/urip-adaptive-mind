@@ -10,7 +10,7 @@ Design notes:
   - UUID stored as String(36) for SQLite test compatibility (same pattern as framework.py)
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List
 
 from sqlalchemy import String, Text, DateTime, ForeignKey, JSON
@@ -42,7 +42,7 @@ class ControlCheckRun(Base):
     # M7 (Codex MED-003 + Kimi MED-010) — standardised on String(36) UUID form.
     tenant_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
     run_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=lambda: datetime.utcnow()
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
     # pass | fail | inconclusive
     status: Mapped[str] = mapped_column(String(20), nullable=False)

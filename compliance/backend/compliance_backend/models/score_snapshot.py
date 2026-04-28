@@ -13,7 +13,7 @@ Design notes:
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from sqlalchemy import String, Float, Integer, DateTime, Index, UniqueConstraint
@@ -43,7 +43,7 @@ class ComplianceScoreSnapshot(Base):
     # Datetime not Date — multiple snapshots per day are allowed (manual triggers);
     # the trend query buckets per calendar day on the read side.
     snapshot_date: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=lambda: datetime.utcnow(), index=True
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), index=True
     )
     score: Mapped[float] = mapped_column(Float, nullable=False)
     pass_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)

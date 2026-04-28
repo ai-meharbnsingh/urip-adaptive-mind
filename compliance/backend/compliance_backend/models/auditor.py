@@ -23,7 +23,7 @@ Design notes:
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from sqlalchemy import String, Text, Boolean, DateTime, ForeignKey, Index
@@ -77,7 +77,7 @@ class AuditorAccess(Base):
     expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     is_revoked: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=lambda: datetime.utcnow()
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
 
     __table_args__ = (
@@ -114,7 +114,7 @@ class EvidenceRequest(Base):
     control_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
     description: Mapped[str] = mapped_column(Text, nullable=False)
     requested_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=lambda: datetime.utcnow()
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
     fulfilled_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     fulfilled_by_user_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
@@ -152,7 +152,7 @@ class AuditorActivityLog(Base):
     target_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     target_id: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     accessed_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=lambda: datetime.utcnow(), index=True
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), index=True
     )
     ip_address: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
 

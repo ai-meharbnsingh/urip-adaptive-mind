@@ -21,7 +21,7 @@ register_urip_subscribers()
 
 app = FastAPI(
     title="URIP - Unified Risk Intelligence Platform",
-    description="Cybersecurity risk aggregation and management platform by Semantic Gravity",
+    description="Cybersecurity risk aggregation and management platform",
     version="1.0.0",
 )
 

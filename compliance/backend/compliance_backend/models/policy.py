@@ -61,7 +61,7 @@ class Policy(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
-        default=datetime.utcnow,
+        default=lambda: datetime.now(timezone.utc),
     )
 
     # Relationships
@@ -143,7 +143,7 @@ class PolicyAcknowledgment(Base):
     acknowledged_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
-        default=datetime.utcnow,
+        default=lambda: datetime.now(timezone.utc),
     )
     signature: Mapped[str] = mapped_column(String(500), nullable=False)
 
