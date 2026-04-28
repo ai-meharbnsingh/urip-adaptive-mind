@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
   <link rel="stylesheet" href="css/main.css" />
-  <link rel="stylesheet" href="css/app.css?v=20260434" />
+  <link rel="stylesheet" href="css/app.css?v=20260435" />
 </head>
 <body class="urip-app">
   <div id="app-shell" data-page="admin-vapt">
@@ -39,13 +39,13 @@
           <table id="vendorsTable" class="data-table" style="display:none">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Contact</th>
-                <th>Status</th>
-                <th>Submissions</th>
-                <th>Invited</th>
-                <th>Last login</th>
-                <th></th>
+                <th scope="col">Name</th>
+                <th scope="col">Contact</th>
+                <th scope="col">Status</th>
+                <th scope="col">Submissions</th>
+                <th scope="col">Invited</th>
+                <th scope="col">Last login</th>
+                <th scope="col"></th>
               </tr>
             </thead>
             <tbody id="vendorsBody"></tbody>
@@ -78,15 +78,15 @@
           <table id="subsTable" class="data-table" style="display:none">
             <thead>
               <tr>
-                <th>Finding</th>
-                <th>Vendor</th>
-                <th>CVE</th>
-                <th>CVSS</th>
-                <th>Severity</th>
-                <th>Status</th>
-                <th>URIP Risk</th>
-                <th>Submitted</th>
-                <th></th>
+                <th scope="col">Finding</th>
+                <th scope="col">Vendor</th>
+                <th scope="col">CVE</th>
+                <th scope="col">CVSS</th>
+                <th scope="col">Severity</th>
+                <th scope="col">Status</th>
+                <th scope="col">URIP Risk</th>
+                <th scope="col">Submitted</th>
+                <th scope="col"></th>
               </tr>
             </thead>
             <tbody id="subsBody"></tbody>
@@ -109,19 +109,19 @@
       <form id="inviteForm" class="modal-body">
         <div class="form-row">
           <label>Name</label>
-          <input type="text" name="name" required maxlength="255" placeholder="Acme Pentesters" />
+          <input type="text" name="name" required maxlength="255" placeholder="Vendor name" />
         </div>
         <div class="form-row">
           <label>Contact email</label>
-          <input type="email" name="contact_email" required maxlength="255" placeholder="lead@acme.example.com" />
+          <input type="email" name="contact_email" required maxlength="255" placeholder="vendor@example.com" />
         </div>
         <div class="form-row">
           <label>Contact name</label>
-          <input type="text" name="contact_name" maxlength="255" placeholder="Alice Lead" />
+          <input type="text" name="contact_name" maxlength="255" placeholder="Contact name" />
         </div>
         <div class="form-row">
           <label>Organization</label>
-          <input type="text" name="organization" maxlength="255" placeholder="Acme Pvt Ltd" />
+          <input type="text" name="organization" maxlength="255" placeholder="Organization" />
         </div>
         <div class="form-row">
           <label>Validity (days)</label>
@@ -147,7 +147,7 @@
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/shell.js?v=20260434"></script>
+  <script src="js/shell.js?v=20260435"></script>
   <script>
     if (typeof checkAuth === 'function') checkAuth();
     document.addEventListener('DOMContentLoaded', function () {
@@ -162,6 +162,25 @@
   <script>
     (function () {
       'use strict';
+
+      // Inline flash banner shown at the top of #app-shell. Replaces native
+      // alert() so the page doesn't have a blocking modal during the demo.
+      function flashError(msg) {
+        var host = document.getElementById('app-shell') || document.body;
+        var bar = document.getElementById('vapt-flash');
+        if (!bar) {
+          bar = document.createElement('div');
+          bar.id = 'vapt-flash';
+          bar.setAttribute('role', 'alert');
+          bar.style.cssText = 'position:fixed;top:80px;right:24px;z-index:1000;background:var(--u-danger-bg,#fde6e3);border:1px solid var(--u-danger,#E74C3C);color:var(--u-fg,#fff);padding:12px 16px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.4);max-width:420px;font-size:14px';
+          host.appendChild(bar);
+        }
+        bar.textContent = msg;
+        bar.style.display = '';
+        clearTimeout(bar._t);
+        bar._t = setTimeout(function () { bar.style.display = 'none'; }, 5000);
+      }
+      window.flashError = flashError;
 
       function api(method, path, body, isMultipart) {
         var token = localStorage.getItem('urip_token');
@@ -235,7 +254,7 @@
                   if (!confirm('Revoke vendor "' + v.name + '"? Their JWT will fail on next request.')) return;
                   api('DELETE', '/vapt-vendors/' + encodeURIComponent(v.id))
                     .then(loadVendors)
-                    .catch(function (e) { alert(e.message); });
+                    .catch(function (e) { flashError(e.message); });
                 });
                 actions.appendChild(btn);
               }
@@ -288,7 +307,7 @@
                   if (!confirm('Mark as fixed and ask vendor to verify?')) return;
                   api('POST', '/vapt-submissions/' + encodeURIComponent(s.id) + '/request-retest', {})
                     .then(loadSubmissions)
-                    .catch(function (e) { alert(e.message); });
+                    .catch(function (e) { flashError(e.message); });
                 });
                 actions.appendChild(btn);
               }

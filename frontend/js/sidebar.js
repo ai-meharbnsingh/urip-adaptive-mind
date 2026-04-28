@@ -323,7 +323,7 @@
 
     // Left side - org name (branded)
     var brand2 = (window.URIP && window.URIP.branding) || {};
-    var orgLabel = brand2.app_name || 'Royal Enfield';
+    var orgLabel = brand2.app_name || 'URIP';
     var topbarLeft = el('div', 'topbar-left');
     var orgName = el('span', 'org-name');
     orgName.appendChild(faIcon('fa-building'));

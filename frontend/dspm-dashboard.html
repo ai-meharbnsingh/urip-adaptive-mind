@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/app.css?v=20260434">
+  <link rel="stylesheet" href="css/app.css?v=20260435">
 </head>
 <body class="urip-app">
   <div id="app-shell" data-page="dspm-dashboard">
@@ -65,12 +65,12 @@
         <table class="data-table" id="assetsTable">
           <thead>
             <tr>
-              <th>Location</th>
-              <th>Store Type</th>
-              <th>Classification</th>
-              <th>Sensitive Types</th>
-              <th>Owner</th>
-              <th>Last Scanned</th>
+              <th scope="col">Location</th>
+              <th scope="col">Store Type</th>
+              <th scope="col">Classification</th>
+              <th scope="col">Sensitive Types</th>
+              <th scope="col">Owner</th>
+              <th scope="col">Last Scanned</th>
             </tr>
           </thead>
           <tbody id="assetsBody">
@@ -84,7 +84,7 @@
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/shell.js?v=20260434"></script>
+  <script src="js/shell.js?v=20260435"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       window.URIP.shell.mount({

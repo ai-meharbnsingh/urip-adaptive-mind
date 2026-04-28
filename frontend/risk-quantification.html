@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/app.css?v=20260434">
+  <link rel="stylesheet" href="css/app.css?v=20260435">
 </head>
 <body class="urip-app">
   <div id="app-shell" data-page="risk-quantification">
@@ -57,7 +57,7 @@
         <table class="data-table">
           <thead>
             <tr>
-              <th>Risk ID</th><th>Label</th><th>LEF (events / yr)</th><th>LM ($)</th><th>ALE ($)</th><th>Computed</th>
+              <th scope="col">Risk ID</th><th scope="col">Label</th><th scope="col">LEF (events / yr)</th><th scope="col">LM ($)</th><th scope="col">ALE ($)</th><th scope="col">Computed</th>
             </tr>
           </thead>
           <tbody id="risksBody"><tr><td colspan="6" class="text-center">Loading...</td></tr></tbody>
@@ -78,7 +78,7 @@
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/shell.js?v=20260434"></script>
+  <script src="js/shell.js?v=20260435"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       window.URIP.shell.mount({

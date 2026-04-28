@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/app.css?v=20260434">
+  <link rel="stylesheet" href="css/app.css?v=20260435">
 </head>
 <body class="urip-app">
   <div id="app-shell" data-page="acceptance">
@@ -75,12 +75,12 @@
             <table class="alerts-table">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Finding</th>
-                  <th>Accepted By</th>
-                  <th>Date</th>
-                  <th>Review Period</th>
-                  <th>Status</th>
+                  <th scope="col">ID</th>
+                  <th scope="col">Finding</th>
+                  <th scope="col">Accepted By</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Review Period</th>
+                  <th scope="col">Status</th>
                 </tr>
               </thead>
               <tbody id="recentlyAcceptedBody">
@@ -95,7 +95,7 @@
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/shell.js?v=20260434"></script>
+  <script src="js/shell.js?v=20260435"></script>
   <script src="js/filters.js"></script>
   <script>
     if (typeof checkAuth === 'function') checkAuth();

@@ -501,6 +501,14 @@
     children.forEach(function (c) { content.appendChild(c); });
     main.appendChild(content);
 
+    // Skip-to-content link for keyboard / screen-reader users (WCAG 2.1 AA).
+    // Visible only when focused; jumps past the sidebar to the main content.
+    var skipLink = document.createElement('a');
+    skipLink.className = 'urip-skip-link';
+    skipLink.href = '#app-content';
+    skipLink.textContent = 'Skip to main content';
+    container.insertBefore(skipLink, container.firstChild);
+
     container.appendChild(sidebar);
     container.appendChild(main);
 

@@ -15,7 +15,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/app.css?v=20260434">
+  <link rel="stylesheet" href="css/app.css?v=20260435">
 </head>
 <body class="urip-app">
   <div id="app-shell" data-page="reports">
@@ -137,12 +137,12 @@
             <table class="certin-table">
               <thead>
                 <tr>
-                  <th>Advisory ID</th>
-                  <th>Title</th>
-                  <th>Published Date</th>
-                  <th>Severity</th>
-                  <th>Response Status</th>
-                  <th>Actions</th>
+                  <th scope="col">Advisory ID</th>
+                  <th scope="col">Title</th>
+                  <th scope="col">Published Date</th>
+                  <th scope="col">Severity</th>
+                  <th scope="col">Response Status</th>
+                  <th scope="col">Actions</th>
                 </tr>
               </thead>
               <tbody id="certinTableBody">
@@ -174,12 +174,12 @@
             <table class="alerts-table">
               <thead>
                 <tr>
-                  <th>Report Name</th>
-                  <th>Frequency</th>
-                  <th>Recipients</th>
-                  <th>Next Run</th>
-                  <th>Status</th>
-                  <th>Actions</th>
+                  <th scope="col">Report Name</th>
+                  <th scope="col">Frequency</th>
+                  <th scope="col">Recipients</th>
+                  <th scope="col">Next Run</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Actions</th>
                 </tr>
               </thead>
               <tbody id="scheduledTableBody">
@@ -194,7 +194,7 @@
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/shell.js?v=20260434"></script>
+  <script src="js/shell.js?v=20260435"></script>
   <script src="js/charts.js"></script>
   <script>
     if (typeof checkAuth === 'function') checkAuth();

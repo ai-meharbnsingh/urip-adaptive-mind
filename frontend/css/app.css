@@ -1743,6 +1743,23 @@ body.urip-app .alerts-table { color: var(--u-fg); }
 body.urip-app .alerts-table th { color: var(--u-fg-3); border-bottom: 1px solid var(--u-border); background: rgba(255,255,255,0.03); }
 body.urip-app .alerts-table td { color: var(--u-fg-2); border-bottom: 1px solid var(--u-border); }
 
+/* Skip-to-content link (WCAG 2.1 AA) — visible only when focused */
+body.urip-app .urip-skip-link {
+  position: absolute;
+  top: -40px;
+  left: 8px;
+  z-index: 1000;
+  background: var(--u-primary);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 0 0 8px 8px;
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+  transition: top var(--u-fast);
+}
+body.urip-app .urip-skip-link:focus { top: 0; outline: 2px solid var(--u-primary); }
+
 /* btn-outline — landing has it transparent w/ teal border on hover */
 body.urip-app .btn-outline {
   background: transparent;

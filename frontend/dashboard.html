@@ -15,7 +15,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/app.css?v=20260434">
+  <link rel="stylesheet" href="css/app.css?v=20260435">
   <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body class="urip-app">
@@ -140,7 +140,7 @@
             </div>
             <div class="dashboard-card-body">
               <div class="chart-container-sm">
-                <canvas id="riskByDomainChart"></canvas>
+                <canvas id="riskByDomainChart" role="img" aria-label="Risk by domain donut chart"></canvas>
               </div>
               <div class="chart-legend" id="domainLegend"></div>
             </div>
@@ -158,7 +158,7 @@
             </div>
             <div class="dashboard-card-body">
               <div class="chart-container">
-                <canvas id="riskTrendChart"></canvas>
+                <canvas id="riskTrendChart" role="img" aria-label="Risk trend over the last 6 months line chart"></canvas>
               </div>
             </div>
           </div>
@@ -173,7 +173,7 @@
             </div>
             <div class="dashboard-card-body">
               <div class="chart-container">
-                <canvas id="riskBySourceChart"></canvas>
+                <canvas id="riskBySourceChart" role="img" aria-label="Risk by source bar chart"></canvas>
               </div>
             </div>
           </div>
@@ -190,12 +190,12 @@
               <table class="alerts-table">
                 <thead>
                   <tr>
-                    <th>ID</th>
-                    <th>Finding</th>
-                    <th>Source</th>
-                    <th>CVSS</th>
-                    <th>Severity</th>
-                    <th>Status</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Finding</th>
+                    <th scope="col">Source</th>
+                    <th scope="col">CVSS</th>
+                    <th scope="col">Severity</th>
+                    <th scope="col">Status</th>
                   </tr>
                 </thead>
                 <tbody id="alertsTableBody">
@@ -211,7 +211,7 @@
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/shell.js?v=20260434"></script>
+  <script src="js/shell.js?v=20260435"></script>
   <script src="js/charts.js"></script>
   <script>
     if (typeof checkAuth === 'function') checkAuth();

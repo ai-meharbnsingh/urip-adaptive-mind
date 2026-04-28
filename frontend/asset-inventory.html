@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/app.css?v=20260434">
+  <link rel="stylesheet" href="css/app.css?v=20260435">
   <link rel="stylesheet" href="css/domain-page.css">
 </head>
 <body class="urip-app">
@@ -62,15 +62,15 @@
           <table class="asset-table">
             <thead>
               <tr>
-                <th style="width:36px"></th>
-                <th>Asset</th>
-                <th>Category</th>
-                <th>OS / Type</th>
-                <th>Last Seen</th>
-                <th>Risk Score</th>
-                <th>Open Risks</th>
-                <th>Owner</th>
-                <th>Tags</th>
+                <th scope="col" style="width:36px"></th>
+                <th scope="col">Asset</th>
+                <th scope="col">Category</th>
+                <th scope="col">OS / Type</th>
+                <th scope="col">Last Seen</th>
+                <th scope="col">Risk Score</th>
+                <th scope="col">Open Risks</th>
+                <th scope="col">Owner</th>
+                <th scope="col">Tags</th>
               </tr>
             </thead>
             <tbody id="assetTableBody">
@@ -94,7 +94,7 @@
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/shell.js?v=20260434"></script>
+  <script src="js/shell.js?v=20260435"></script>
   <script>
     if (typeof checkAuth === 'function') checkAuth();
     document.addEventListener('DOMContentLoaded', function () {
