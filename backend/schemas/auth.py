@@ -51,3 +51,30 @@ class UserProfile(BaseModel):
     tenant_slug: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class RegisterRequest(BaseModel):
+    tenant_id: str = Field(..., min_length=1)
+    email: EmailField
+    full_name: str = Field(..., min_length=1, max_length=150)
+    password: str = Field(..., min_length=12, max_length=72)
+    role: str = Field("it_team", min_length=1, max_length=20)
+    team: str | None = Field(None, max_length=100)
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailField
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str = Field(..., min_length=10, max_length=200)
+    new_password: str = Field(..., min_length=12, max_length=72)
+
+
+class MFAEnrollResponse(BaseModel):
+    provisioning_uri: str
+    qr_payload: str
+
+
+class MFAVerifyRequest(BaseModel):
+    code: str = Field(..., pattern=r"^[0-9]{6}$")
