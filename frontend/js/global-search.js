@@ -16,7 +16,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     window.URIP.shell.mount({
-      page: '',
+      page: 'global-search',
       title: 'Search Results',
       breadcrumb: 'Search'
     });

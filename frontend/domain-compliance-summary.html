@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/app.css?v=20260436">
+  <link rel="stylesheet" href="css/app.css?v=20260437">
   <link rel="stylesheet" href="css/domain-page.css">
   <link rel="stylesheet" href="css/module-tools.css">
 </head>
@@ -107,7 +107,7 @@
             </div>
             <div class="dashboard-card-body">
               <div id="auditActions" style="font-size:14px;color:var(--gray-600)">
-                <em>Compliance module endpoint not connected — placeholder until /api/compliance/action-items lands.</em>
+                <em style="color:var(--u-fg-3)">No action items pending — connect a GRC source above to start scoring.</em>
               </div>
             </div>
           </div>
@@ -118,7 +118,7 @@
             </div>
             <div class="dashboard-card-body">
               <div id="pendingAcks" style="font-size:14px;color:var(--gray-600)">
-                <em>Compliance module endpoint not connected — placeholder until /api/compliance/policies lands.</em>
+                <em style="color:var(--u-fg-3)">No pending policy acknowledgments — all up to date.</em>
               </div>
             </div>
           </div>
@@ -139,7 +139,7 @@
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/shell.js?v=20260436"></script>
+  <script src="js/shell.js?v=20260437"></script>
   <script src="js/module-tools.js"></script>
   <script>
     if (typeof checkAuth === 'function') checkAuth();

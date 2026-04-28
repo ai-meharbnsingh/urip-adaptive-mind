@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | URIP - Unified Risk Intelligence Platform</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+
+  <style>
+    .login-page { min-height: 100vh; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+    .login-bg-image { position:absolute; inset:0; background-image:url('https://images.unsplash.com/photo-1558494949-ef526b004297?w=1920&q=80'); background-size:cover; background-position:center; filter:brightness(0.3); }
+    .login-overlay { position:absolute; inset:0; background:linear-gradient(135deg, rgba(13, 27, 42, 0.95) 0%, rgba(8, 18, 28, 0.98) 100%); }
+    .login-card { position:relative; z-index:10; width:100%; max-width:480px; margin:2rem; animation:fadeInCard 0.5s ease; }
+    @keyframes fadeInCard { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
+    .login-card-inner { background-color:#FFFFFF; border-radius:16px; box-shadow:0 25px 80px rgba(0,0,0,0.4); overflow:hidden; }
+    .login-header { padding:2.5rem 2rem 1.5rem; text-align:center; background:linear-gradient(135deg, #0D1B2A 0%, #1B2838 100%); }
+    .login-logo { display:flex; flex-direction:column; align-items:center; }
+    .login-logo-icon { width:64px; height:64px; background:linear-gradient(135deg, #1ABC9C 0%, #16A085 100%); border-radius:12px; display:flex; align-items:center; justify-content:center; color:white; font-size:1.75rem; margin-bottom:1.25rem; box-shadow:0 8px 24px rgba(26, 188, 156, 0.3); }
+    .login-logo h1 { font-size:1.5rem; font-weight:700; color:#FFFFFF; margin-bottom:0.25rem; }
+    .login-logo h1 span { color:#1ABC9C; }
+    .login-logo p { font-size:0.875rem; color:rgba(255,255,255,0.7); font-weight:400; }
+    .login-body { padding:2rem; }
+    .login-options { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+    .auth-link { font-size:0.875rem; color:#1ABC9C; text-decoration:none; font-weight:500; }
+    .auth-link:hover { text-decoration:underline; }
+    .login-copyright { position:absolute; bottom:1.25rem; width:100%; text-align:center; color:rgba(255,255,255,0.6); font-size:0.8rem; z-index:10; }
+  </style>
+</head>
+<body>
+  <div class="login-page">
+    <div class="login-bg-image"></div>
+    <div class="login-overlay"></div>
+
+    <div class="login-card">
+      <div class="login-card-inner">
+        <div class="login-header">
+          <div class="login-logo">
+            <div class="login-logo-icon"><i class="fas fa-user-plus"></i></div>
+            <h1>Semantic <span>Gravity</span></h1>
+            <p>Create your URIP account</p>
+          </div>
+        </div>
+
+        <div class="login-body">
+          <form class="login-form" id="registerForm" onsubmit="handleRegister(event)">
+            <div class="form-group">
+              <label class="form-label" for="tenantId"><i class="fas fa-building" aria-hidden="true"></i> Tenant ID</label>
+              <input type="text" id="tenantId" class="form-input" placeholder="UUID provided by admin" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-id-card"></i> Full Name</label>
+              <input type="text" id="fullName" class="form-input" placeholder="Your name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="email"><i class="fas fa-envelope" aria-hidden="true"></i> Email Address</label>
+              <input type="email" id="email" class="form-input" placeholder="you@company.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="password"><i class="fas fa-lock" aria-hidden="true"></i> Password</label>
+              <input type="password" id="password" class="form-input" placeholder="12+ characters" required>
+            </div>
+
+            <div class="login-options">
+              <a class="auth-link" href="login.html">Back to login</a>
+            </div>
+
+            <button type="submit" class="login-btn" id="registerBtn">
+              <i class="fas fa-user-plus"></i>
+              Create Account
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="login-copyright">
+      &copy; 2026 URIP — Adaptive Mind. All rights reserved.
+    </div>
+  </div>
+
+  <script src="js/theming.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    async function handleRegister(event) {
+      event.preventDefault();
+      var btn = document.getElementById('registerBtn');
+      btn.disabled = true;
+      try {
+        var tenantId = document.getElementById('tenantId').value.trim();
+        var fullName = document.getElementById('fullName').value.trim();
+        var email = document.getElementById('email').value.trim();
+        var password = document.getElementById('password').value;
+
+        await window.URIP.apiFetch('/auth/register', {
+          method: 'POST',
+          body: JSON.stringify({
+            tenant_id: tenantId,
+            full_name: fullName,
+            email: email,
+            password: password
+          })
+        });
+
+        window.URIP.showNotification('Account created', 'You can now sign in.', 'success');
+        setTimeout(function () { window.location.href = 'login.html'; }, 700);
+      } catch (err) {
+        window.URIP.showNotification('Registration failed', (err && err.body && err.body.detail) || 'Please try again.', 'error');
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>

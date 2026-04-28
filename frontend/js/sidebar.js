@@ -133,7 +133,7 @@
 
     // Header / Logo — pull from URIP.branding (set by theming.js); fallback to defaults
     var brand = (window.URIP && window.URIP.branding) || {};
-    var brandAppName = brand.app_name || 'Semantic Gravity';
+    var brandAppName = brand.app_name || 'URIP — Adaptive Mind';
     var brandTagline = brand.app_tagline || 'Unified Risk Intelligence';
     var brandLogoUrl = brand.logo_url || null;
 

@@ -18,6 +18,17 @@ import logging
 from datetime import datetime, timezone
 from typing import Any, Optional
 
+
+def _run_async(coro: Any) -> Any:
+    """
+    Run a coroutine from synchronous code.
+
+    Uses asyncio.run() which always creates a new event loop, ensuring
+    compatibility with Python 3.10+ where get_event_loop() is deprecated
+    in non-async contexts and raises in 3.12+ when there is no current loop.
+    """
+    return asyncio.run(coro)
+
 from connectors.base.connector import (
     BaseConnector,
     ConnectorAuthError,
@@ -213,13 +224,16 @@ class ServiceNowConnector(BaseConnector):
     # authenticate
     # ─────────────────────────────────────────────────────────────────────────
 
-    async def authenticate(self, credentials: dict) -> ConnectorSession:  # type: ignore[override]
+    def authenticate(self, tenant_credentials: dict) -> ConnectorSession:
         """
         Validate ServiceNow credentials and return a ConnectorSession.
 
+        Sync wrapper around the async API client — uses _run_async() internally
+        to run the connectivity probe, matching the BaseConnector sync contract.
+
         Parameters
         ----------
-        credentials : dict
+        tenant_credentials : dict
             Must contain:
               - instance_url  (str)
               - auth_method   ("basic" or "oauth")
@@ -237,6 +251,7 @@ class ServiceNowConnector(BaseConnector):
         ConnectorAuthError
             If credentials are missing required fields or the API rejects them.
         """
+        credentials = tenant_credentials
         instance_url = credentials.get("instance_url", "").strip().rstrip("/")
         auth_method = str(credentials.get("auth_method", "")).lower()
         risk_query = credentials.get("risk_query", "category=security^active=true")
@@ -275,7 +290,7 @@ class ServiceNowConnector(BaseConnector):
 
         # Verify connectivity — raises ConnectorAuthError on 401/403.
         try:
-            await self._client.healthcheck()
+            _run_async(self._client.healthcheck())
         except ConnectorAuthError:
             raise
         except Exception as exc:
@@ -297,22 +312,20 @@ class ServiceNowConnector(BaseConnector):
     # fetch_findings
     # ─────────────────────────────────────────────────────────────────────────
 
-    async def fetch_findings(  # type: ignore[override]
-        self,
-        session: ConnectorSession,
-        since: Optional[datetime] = None,
-        limit: int = 100,
-    ) -> list[RawFinding]:
+    def fetch_findings(self, since: datetime, **kwargs: Any) -> list[RawFinding]:
         """
         Pull security incidents from ServiceNow.
 
+        Sync wrapper — uses _run_async() internally to call the async API
+        client, matching the BaseConnector sync contract.
+
         Parameters
         ----------
-        session : ConnectorSession
-            Session returned by authenticate().
-        since : datetime, optional
+        since : datetime
             Fetch incidents updated after this timestamp (encoded into query).
-        limit : int
+        tenant_id : str, optional (via **kwargs)
+            URIP tenant id to scope returned RawFindings.
+        limit : int, optional (via **kwargs)
             Maximum incidents to return (default 100).
 
         Returns
@@ -325,16 +338,18 @@ class ServiceNowConnector(BaseConnector):
                 "Connector not authenticated. Call authenticate() first."
             )
 
+        tenant_id: str = kwargs.get("tenant_id", "unknown")
+        limit: int = kwargs.get("limit", 100)
+
         query = self._risk_query
         if since:
             ts = since.strftime("%Y-%m-%d %H:%M:%S")
             query = f"{query}^sys_updated_on>{ts}"
 
         findings: list[RawFinding] = []
-        tenant_id = session.tenant_id
 
         try:
-            raw_list = await self._client.list_incidents(query=query, limit=limit)
+            raw_list = _run_async(self._client.list_incidents(query=query, limit=limit))
             # Validate through Pydantic to normalize nested-object fields.
             response = ServiceNowListResponse(result=raw_list)
 
@@ -420,13 +435,12 @@ class ServiceNowConnector(BaseConnector):
     # health_check
     # ─────────────────────────────────────────────────────────────────────────
 
-    async def health_check(  # type: ignore[override]
-        self,
-        session: ConnectorSession,
-    ) -> ConnectorHealth:
+    def health_check(self) -> ConnectorHealth:
         """
         Return connector operational status.
 
+        Sync wrapper — uses _run_async() internally to call the async API
+        client, matching the BaseConnector sync contract (no session param).
         Makes a lightweight GET /api/now/table/sys_user?sysparm_limit=1 call.
         Returns status="ok" on success, "degraded" or "error" on failure.
         Never raises — returns ConnectorHealth with status="error" instead.
@@ -440,7 +454,7 @@ class ServiceNowConnector(BaseConnector):
                     error_count=self._error_count,
                     last_error="Client not initialised — call authenticate() first.",
                 )
-            await self._client.healthcheck()
+            _run_async(self._client.healthcheck())
             return ConnectorHealth(
                 connector_name=self.NAME,
                 status="ok",

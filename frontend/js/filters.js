@@ -660,7 +660,7 @@
     // Modal box
     var modal = document.createElement('div');
     modal.style.cssText =
-      'background:#fff;border-radius:12px;width:100%;max-width:680px;' +
+      'background:var(--u-card,#fff);color:var(--u-fg,#1E293B);border-radius:12px;width:100%;max-width:680px;' +
       'max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);' +
       'padding:0';
 
@@ -847,7 +847,7 @@
 
     var footerCloseBtn = document.createElement('button');
     footerCloseBtn.style.cssText =
-      'padding:8px 24px;border:1px solid #CBD5E1;background:#fff;' +
+      'padding:8px 24px;border:1px solid var(--u-border,#CBD5E1);background:var(--u-card,#fff);color:var(--u-fg,#1E293B);' +
       'color:#475569;border-radius:6px;cursor:pointer;font-size:0.875rem;font-weight:500';
     footerCloseBtn.textContent = 'Close';
     footerCloseBtn.addEventListener('click', function () { closeModal('urip-risk-detail-modal'); });
@@ -882,7 +882,7 @@
     // Modal box
     var modal = document.createElement('div');
     modal.style.cssText =
-      'background:#fff;border-radius:10px;width:100%;max-width:400px;' +
+      'background:var(--u-card,#fff);color:var(--u-fg,#1E293B);border-radius:10px;width:100%;max-width:400px;' +
       'box-shadow:0 20px 60px rgba(0,0,0,0.25);overflow:hidden';
 
     // Header

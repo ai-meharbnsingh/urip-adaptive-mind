@@ -171,7 +171,7 @@
 
     var toast = document.createElement('div');
     toast.style.cssText =
-      'position:fixed;top:20px;right:20px;background:#fff;border-radius:8px;' +
+      'position:fixed;top:20px;right:20px;background:var(--u-card,#fff);color:var(--u-fg,#1E293B);border-radius:8px;' +
       'padding:16px 20px;box-shadow:0 10px 40px rgba(0,0,0,0.2);z-index:10000;' +
       'min-width:300px;max-width:420px;animation:uripSlideIn 0.3s ease';
 

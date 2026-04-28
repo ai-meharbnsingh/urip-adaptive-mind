@@ -11,13 +11,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/app.css?v=20260436">
+  <link rel="stylesheet" href="css/app.css?v=20260437">
 </head>
 <body class="urip-app">
-  <div id="app-shell" data-page="audit-log">
+  <div id="app-shell" data-page="notifications">
+    <h1 class="page-title">Notifications</h1>
     <div class="rr-toolbar">
-      <input id="nfSearch" type="search" placeholder="Filter notifications…">
-      <select id="nfType">
+      <input id="nfSearch" type="search" aria-label="Filter notifications" placeholder="Filter notifications…">
+      <select id="nfType" aria-label="Notification type">
         <option value="">All types</option>
         <option value="login">Login</option>
         <option value="risk">Risk</option>
@@ -41,7 +42,7 @@
   <script src="js/theming.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/shell.js?v=20260436"></script>
+  <script src="js/shell.js?v=20260437"></script>
   <script>
     (function () {
       'use strict';

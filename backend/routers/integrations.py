@@ -42,7 +42,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.database import get_db
 from backend.middleware.auth import get_current_user
-from backend.middleware.tenant import TenantContext
 from connectors.base.registry import _global_registry
 
 logger = logging.getLogger(__name__)

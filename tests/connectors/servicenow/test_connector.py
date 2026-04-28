@@ -5,11 +5,9 @@ Uses respx to mock all HTTP traffic — no real API calls.
 Coverage: registration, severity mapping, authentication (Basic + OAuth),
 incident list fetch, ticket creation (urgency mapping), health check.
 
-All connector methods that call the API are async; each test uses
-``asyncio.run()`` (via ``pytest.mark.asyncio`` / ``anyio`` or a plain
-sync wrapper) — we use a minimal sync helper pattern that works without
-requiring pytest-asyncio to be installed, while respecting the
-async-only API surface of ServiceNowAPIClient.
+authenticate(), fetch_findings(), and health_check() are SYNC (BaseConnector
+contract).  Tests call them directly.  create_ticket() is async (bidirectional
+extra); tests wrap it with _run().
 """
 
 from __future__ import annotations
@@ -187,7 +185,7 @@ def test_authenticate_basic(connector, basic_creds):
     """
     route = _mock_healthcheck_ok()
 
-    session = _run(connector.authenticate(basic_creds))
+    session = connector.authenticate(basic_creds)
 
     assert route.called, "healthcheck GET /api/now/table/sys_user was not called"
     assert isinstance(session, ConnectorSession)
@@ -205,12 +203,12 @@ def test_authenticate_basic_missing_password(connector):
     """authenticate() must raise ConnectorAuthError when password is absent."""
     _mock_healthcheck_ok()
     with pytest.raises(ConnectorAuthError, match="username"):
-        _run(connector.authenticate({
+        connector.authenticate({
             "instance_url": INSTANCE,
             "auth_method": "basic",
             "username": "user",
             # password intentionally missing
-        }))
+        })
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -227,7 +225,7 @@ def test_authenticate_oauth(connector, oauth_creds):
     """
     route = _mock_healthcheck_ok()
 
-    session = _run(connector.authenticate(oauth_creds))
+    session = connector.authenticate(oauth_creds)
 
     assert route.called, "healthcheck GET /api/now/table/sys_user was not called"
     assert isinstance(session, ConnectorSession)
@@ -240,11 +238,11 @@ def test_authenticate_oauth(connector, oauth_creds):
 def test_authenticate_oauth_missing_token(connector):
     """authenticate() must raise ConnectorAuthError when oauth_token is absent."""
     with pytest.raises(ConnectorAuthError, match="oauth_token"):
-        _run(connector.authenticate({
+        connector.authenticate({
             "instance_url": INSTANCE,
             "auth_method": "oauth",
             # oauth_token intentionally missing
-        }))
+        })
 
 
 @respx.mock
@@ -254,7 +252,7 @@ def test_authenticate_401_raises_auth_error(connector, basic_creds):
         return_value=httpx.Response(401, json={"error": "invalid credentials"})
     )
     with pytest.raises(ConnectorAuthError):
-        _run(connector.authenticate(basic_creds))
+        connector.authenticate(basic_creds)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -267,8 +265,9 @@ def test_list_incidents_query_passed(connector, basic_creds, fake_session):
     """
     fetch_findings() must pass the risk_query as sysparm_query to the Table API.
     """
+    from datetime import datetime, timezone as _tz
     _mock_healthcheck_ok()
-    _run(connector.authenticate(basic_creds))
+    connector.authenticate(basic_creds)
 
     route = respx.get(f"{INSTANCE}/api/now/table/incident").mock(
         return_value=httpx.Response(
@@ -277,7 +276,8 @@ def test_list_incidents_query_passed(connector, basic_creds, fake_session):
         )
     )
 
-    findings = _run(connector.fetch_findings(fake_session, limit=50))
+    since = datetime(2026, 1, 1, tzinfo=_tz.utc)
+    findings = connector.fetch_findings(since, limit=50, tenant_id=TENANT_ID)
 
     assert route.called, "GET /api/now/table/incident was not called"
     assert len(findings) == 1
@@ -287,20 +287,22 @@ def test_list_incidents_query_passed(connector, basic_creds, fake_session):
     # Check the query parameter was forwarded.
     request: httpx.Request = route.calls[0].request
     assert "sysparm_query" in request.url.params
-    assert request.url.params["sysparm_query"] == "category=security^active=true"
+    assert "category=security^active=true" in request.url.params["sysparm_query"]
 
 
 @respx.mock
 def test_fetch_findings_empty_result(connector, basic_creds, fake_session):
     """fetch_findings() with empty result must return empty list (not raise)."""
+    from datetime import datetime, timezone as _tz
     _mock_healthcheck_ok()
-    _run(connector.authenticate(basic_creds))
+    connector.authenticate(basic_creds)
 
     respx.get(f"{INSTANCE}/api/now/table/incident").mock(
         return_value=httpx.Response(200, json={"result": []})
     )
 
-    findings = _run(connector.fetch_findings(fake_session, limit=50))
+    since = datetime(2026, 1, 1, tzinfo=_tz.utc)
+    findings = connector.fetch_findings(since, limit=50, tenant_id=TENANT_ID)
     assert findings == []
 
 
@@ -357,7 +359,7 @@ def test_create_ticket_urgency_mapping_critical(connector, basic_creds, fake_ses
     to the ServiceNow Table API.
     """
     _mock_healthcheck_ok()
-    _run(connector.authenticate(basic_creds))
+    connector.authenticate(basic_creds)
 
     route = respx.post(f"{INSTANCE}/api/now/table/incident").mock(
         return_value=httpx.Response(
@@ -394,7 +396,7 @@ def test_create_ticket_urgency_mapping_critical(connector, basic_creds, fake_ses
 def test_create_ticket_urgency_mapping_low(connector, basic_creds, fake_session):
     """create_ticket() with severity='low' must post urgency=3 + impact=3."""
     _mock_healthcheck_ok()
-    _run(connector.authenticate(basic_creds))
+    connector.authenticate(basic_creds)
 
     route = respx.post(f"{INSTANCE}/api/now/table/incident").mock(
         return_value=httpx.Response(
@@ -427,17 +429,17 @@ def test_create_ticket_urgency_mapping_low(connector, basic_creds, fake_session)
 
 
 @respx.mock
-def test_health_check_ok(connector, basic_creds, fake_session):
+def test_health_check_ok(connector, basic_creds):
     """health_check() must return status='ok' when the sys_user ping succeeds."""
     _mock_healthcheck_ok()  # auth
-    _run(connector.authenticate(basic_creds))
+    connector.authenticate(basic_creds)
 
     # health_check will call sys_user again
     respx.get(f"{INSTANCE}/api/now/table/sys_user").mock(
         return_value=httpx.Response(200, json={"result": [{"sys_id": "abc"}]})
     )
 
-    health = _run(connector.health_check(fake_session))
+    health = connector.health_check()
 
     assert isinstance(health, ConnectorHealth)
     assert health.status == "ok"
@@ -445,28 +447,28 @@ def test_health_check_ok(connector, basic_creds, fake_session):
 
 
 @respx.mock
-def test_health_check_fail(connector, basic_creds, fake_session):
+def test_health_check_fail(connector, basic_creds):
     """
     health_check() must return status='degraded' (never raise) when the
     ping returns a server error.
     """
     _mock_healthcheck_ok()  # auth
-    _run(connector.authenticate(basic_creds))
+    connector.authenticate(basic_creds)
 
     respx.get(f"{INSTANCE}/api/now/table/sys_user").mock(
         return_value=httpx.Response(500, json={"error": "internal server error"})
     )
 
-    health = _run(connector.health_check(fake_session))
+    health = connector.health_check()
 
     assert isinstance(health, ConnectorHealth)
     assert health.status == "degraded"
     assert health.last_error is not None
 
 
-def test_health_check_no_client(connector, fake_session):
+def test_health_check_no_client(connector):
     """health_check() before authenticate() must return status='error', not raise."""
-    health = _run(connector.health_check(fake_session))
+    health = connector.health_check()
     assert health.status == "error"
     assert "authenticate" in health.last_error.lower()
 
