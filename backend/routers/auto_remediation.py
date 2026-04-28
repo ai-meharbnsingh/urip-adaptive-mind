@@ -203,3 +203,41 @@ async def list_executions_endpoint(
     tenant_id = _require_admin(user)
     rows = await list_executions(db, tenant_id, risk_id=risk_id)
     return [ExecutionOut.from_model(r) for r in rows]
+
+
+# --------------------------------------------------------------------------- #
+@router.get("/runs")
+async def list_runs_endpoint(
+    per_page: int = 20,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+) -> dict[str, Any]:
+    """UI-friendly view of recent auto-remediation runs for domain-workflow.html.
+
+    Same data as /executions but flattened to the column names the
+    frontend table renders: run_id, action, asset, result, created_at.
+    """
+    tenant_id = _require_admin(user)
+    rows = await list_executions(db, tenant_id, risk_id=None)
+
+    # Pull the human-readable asset string off each execution's Risk row.
+    risk_ids = [r.risk_id for r in rows[:per_page]]
+    asset_map: dict[uuid.UUID, str] = {}
+    if risk_ids:
+        from backend.models.risk import Risk
+        risk_q = select(Risk).where(Risk.id.in_(risk_ids))
+        if hasattr(Risk, "tenant_id"):
+            risk_q = risk_q.where(Risk.tenant_id == tenant_id)
+        for risk in (await db.execute(risk_q)).scalars().all():
+            asset_map[risk.id] = risk.asset
+
+    items = []
+    for e in rows[:per_page]:
+        items.append({
+            "run_id": str(e.id)[:8],
+            "action": e.executor_name,
+            "asset": asset_map.get(e.risk_id, "—"),
+            "result": e.status,
+            "created_at": e.started_at.isoformat() if e.started_at else None,
+        })
+    return {"items": items, "total": len(rows)}

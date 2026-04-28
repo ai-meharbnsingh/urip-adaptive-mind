@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.database import get_db
@@ -110,6 +110,138 @@ async def list_acceptance_requests(
         enriched.append(item)
 
     return enriched
+
+
+@router.get("/stats")
+async def acceptance_stats(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Aggregate counts for the acceptance dashboard cards.
+
+    Returns pending count, approvals in the current calendar month, and
+    lifetime total of accepted requests — all tenant-scoped.
+    """
+    pending_q = apply_tenant_filter(
+        select(func.count()).select_from(AcceptanceRequest), AcceptanceRequest,
+    ).where(AcceptanceRequest.status == "pending")
+    pending = (await db.execute(pending_q)).scalar() or 0
+
+    total_q = apply_tenant_filter(
+        select(func.count()).select_from(AcceptanceRequest), AcceptanceRequest,
+    ).where(AcceptanceRequest.status == "approved")
+    total_accepted = (await db.execute(total_q)).scalar() or 0
+
+    now = datetime.now(timezone.utc)
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    month_q = apply_tenant_filter(
+        select(func.count()).select_from(AcceptanceRequest), AcceptanceRequest,
+    ).where(
+        AcceptanceRequest.status == "approved",
+        AcceptanceRequest.review_date >= month_start,
+    )
+    approved_this_month = (await db.execute(month_q)).scalar() or 0
+
+    return {
+        "pending": int(pending),
+        "approved_this_month": int(approved_this_month),
+        "total_accepted": int(total_accepted),
+    }
+
+
+@router.get("/pending")
+async def acceptance_pending(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Pending acceptance requests in the shape acceptance-workflow.html expects.
+
+    Each item carries the human-readable risk fields the UI renders
+    (risk_id label, severity, title/finding, requester full name, date).
+    """
+    query = apply_tenant_filter(
+        select(AcceptanceRequest), AcceptanceRequest,
+    ).where(AcceptanceRequest.status == "pending").order_by(
+        AcceptanceRequest.created_at.desc(),
+    )
+    requests = (await db.execute(query)).scalars().all()
+    if not requests:
+        return {"items": []}
+
+    risk_ids = [a.risk_id for a in requests]
+    user_ids = [a.requested_by for a in requests]
+    caller_tenant_id = TenantContext.get_or_none()
+
+    risk_query = select(Risk).where(Risk.id.in_(risk_ids))
+    if caller_tenant_id is not None and hasattr(Risk, "tenant_id"):
+        risk_query = risk_query.where(Risk.tenant_id == caller_tenant_id)
+    risks_map = {r.id: r for r in (await db.execute(risk_query)).scalars().all()}
+
+    user_query = select(User).where(User.id.in_(user_ids))
+    if caller_tenant_id is not None and hasattr(User, "tenant_id"):
+        user_query = user_query.where(User.tenant_id == caller_tenant_id)
+    users_map = {u.id: u for u in (await db.execute(user_query)).scalars().all()}
+
+    items = []
+    for a in requests:
+        risk = risks_map.get(a.risk_id)
+        user = users_map.get(a.requested_by)
+        items.append({
+            "id": str(a.id),
+            "risk_id": risk.risk_id if risk else None,
+            "severity": risk.severity if risk else None,
+            "title": risk.finding if risk else None,
+            "requested_by": user.full_name if user else None,
+            "requested_date": a.created_at.isoformat() if a.created_at else None,
+        })
+    return {"items": items}
+
+
+@router.get("/recent")
+async def acceptance_recent(
+    limit: int = Query(default=10, ge=1, le=100),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Recently approved acceptance requests for the dashboard table."""
+    query = apply_tenant_filter(
+        select(AcceptanceRequest), AcceptanceRequest,
+    ).where(AcceptanceRequest.status == "approved").order_by(
+        AcceptanceRequest.review_date.desc(),
+    ).limit(limit)
+    requests = (await db.execute(query)).scalars().all()
+    if not requests:
+        return {"items": []}
+
+    risk_ids = [a.risk_id for a in requests]
+    reviewer_ids = [a.reviewed_by for a in requests if a.reviewed_by]
+    caller_tenant_id = TenantContext.get_or_none()
+
+    risk_query = select(Risk).where(Risk.id.in_(risk_ids))
+    if caller_tenant_id is not None and hasattr(Risk, "tenant_id"):
+        risk_query = risk_query.where(Risk.tenant_id == caller_tenant_id)
+    risks_map = {r.id: r for r in (await db.execute(risk_query)).scalars().all()}
+
+    users_map: dict = {}
+    if reviewer_ids:
+        user_query = select(User).where(User.id.in_(reviewer_ids))
+        if caller_tenant_id is not None and hasattr(User, "tenant_id"):
+            user_query = user_query.where(User.tenant_id == caller_tenant_id)
+        users_map = {u.id: u for u in (await db.execute(user_query)).scalars().all()}
+
+    items = []
+    for a in requests:
+        risk = risks_map.get(a.risk_id)
+        reviewer = users_map.get(a.reviewed_by) if a.reviewed_by else None
+        items.append({
+            "risk_id": risk.risk_id if risk else None,
+            "title": risk.finding if risk else None,
+            "asset": risk.asset if risk else None,
+            "accepted_by": reviewer.full_name if reviewer else None,
+            "accepted_date": a.review_date.isoformat() if a.review_date else None,
+            "review_period": a.review_period_days or 90,
+        })
+    return {"items": items}
 
 
 @router.post("", response_model=AcceptanceRead, status_code=201)

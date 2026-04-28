@@ -103,6 +103,20 @@
   <script src="js/shell.js?v=20260439"></script>
   <script>
     if (typeof checkAuth === 'function') checkAuth();
+    // Direct-URL guard: this page requires super-admin to load any data
+    // (the /api/admin/tenants route is super-admin-gated). The side nav
+    // already hides the link for non-super-admins; this guard catches
+    // anyone who lands here via a bookmark or pasted URL.
+    (function () {
+      var u = (typeof window.getCurrentUser === 'function')
+        ? window.getCurrentUser() : null;
+      if (!u) return; // checkAuth() above will redirect to login
+      var isSuper = u.is_super_admin === true
+        || (typeof u.role === 'string' && /super[-_ ]?admin/i.test(u.role));
+      if (!isSuper) {
+        window.location.replace('dashboard.html');
+      }
+    })();
     document.addEventListener('DOMContentLoaded', function () {
       window.URIP.shell.mount({
         page: 'admin-tenants',

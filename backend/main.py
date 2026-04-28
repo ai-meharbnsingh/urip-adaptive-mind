@@ -96,6 +96,7 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
 from backend.routers import acceptance, agent_ingest, asset_taxonomy, assets as assets_router, audit_log, auth, connectors as connectors_router, cspm, dashboard, remediation, reports, risk_index, risk_summary, risks, settings as settings_router, threat_intel, tenants, vapt_admin, vapt_vendor_portal  # noqa: E402
 # Project_33a Roadmap features
 from backend.routers import ticketing_webhook, trust_center_admin, trust_center_public, auto_remediation  # noqa: E402
+from backend.routers import compliance as compliance_proxy  # noqa: E402
 # Project_33a §13 — promoted ROADMAP → LIVE (MVP scaffold) modules
 from backend.routers import (  # noqa: E402
     dspm as dspm_router,
@@ -135,6 +136,8 @@ app.include_router(trust_center_admin.router, prefix="/api/trust-center", tags=[
 app.include_router(trust_center_public.router, prefix="/trust", tags=["Trust Center Public"])
 # Project_33a Roadmap-3: Auto-Remediation Phase 2
 app.include_router(auto_remediation.router, prefix="/api/auto-remediation", tags=["Auto-Remediation"])
+# Compliance posture aggregate (proxy/stub for the standalone compliance service)
+app.include_router(compliance_proxy.router, prefix="/api/compliance", tags=["Compliance"])
 # Project_33a §13 — promoted ROADMAP → LIVE (MVP scaffold) modules
 app.include_router(dspm_router.router, prefix="/api/dspm", tags=["DSPM"])
 app.include_router(ai_security_router.router, prefix="/api/ai-security", tags=["AI Security"])

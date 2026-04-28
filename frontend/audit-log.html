@@ -138,8 +138,7 @@
               return '"' + s.replace(/"/g, '""') + '"';
             }).join(',');
           });
-          exportToBlob('urip-audit-log.csv', [headers].concat(csvRows).join('
-'), 'text/csv');
+          exportToBlob('urip-audit-log.csv', [headers].concat(csvRows).join('\n'), 'text/csv');
         } catch (e) {
           window.URIP.showNotification('Export', 'CSV export failed — please try again.', 'error');
         }
