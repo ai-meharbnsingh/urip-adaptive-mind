@@ -184,6 +184,7 @@ services:
       - backend.services.celery_app
       - beat
       - --loglevel=info
+      - --schedule=/tmp/celerybeat-schedule
     deploy:
       resources:
         limits:
