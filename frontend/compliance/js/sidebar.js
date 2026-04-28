@@ -1,5 +1,5 @@
 /**
- * ADVERB COMPLIANCE — Sidebar + Topbar
+ * URIP COMPLIANCE — Sidebar + Topbar
  *
  * Renders the navy-gradient sidebar with all 11 nav items. No innerHTML —
  * uses createElement only (XSS-safe).

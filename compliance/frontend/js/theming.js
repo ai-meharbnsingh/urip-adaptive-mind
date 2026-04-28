@@ -1,5 +1,5 @@
 /**
- * ADVERB COMPLIANCE — Tenant theming
+ * URIP COMPLIANCE — Tenant theming
  *
  * Pulls tenant branding from URIP (when integrated) so the compliance UI
  * matches the tenant's brand. In standalone mode this is a no-op (defaults

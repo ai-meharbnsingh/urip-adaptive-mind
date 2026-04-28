@@ -1,5 +1,5 @@
 /**
- * ADVERB COMPLIANCE — API Client
+ * URIP COMPLIANCE — API Client
  *
  * Wraps fetch() against the Compliance backend (default port 8001 standalone,
  * or proxied behind URIP shell when integrated).
