@@ -10,6 +10,7 @@ from backend.database import get_db
 from backend.middleware.auth import get_current_user, hash_password
 from backend.middleware.module_gate import require_module
 from backend.middleware.rbac import role_required
+from backend.middleware.scopes import require_scope
 from backend.middleware.tenant import TenantContext
 from backend.models.audit_log import AuditLog
 from backend.models.connector import ConnectorConfig
@@ -84,6 +85,7 @@ class UserUpdateResponse(BaseModel):
 async def list_users(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(role_required("ciso")),
+    _scope: User = Depends(require_scope("settings:read")),
 ):
     # Tenant-scoped — a CISO from tenant A may only see tenant A users.
     query = select(User).order_by(User.created_at.desc())
@@ -109,6 +111,7 @@ async def create_user(
     data: UserCreate,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(role_required("ciso")),
+    _scope: User = Depends(require_scope("settings:write")),
 ):
     # L10 (Codex LOW-005) — scope email-uniqueness check to current tenant.
     # Previously a CISO trying to create a user with an email used in
@@ -170,6 +173,7 @@ async def update_user(
     data: UserUpdate,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(role_required("ciso")),
+    _scope: User = Depends(require_scope("settings:write")),
 ):
     # Tenant-scope the lookup.  Cross-tenant write attempts → 404.
     result = await db.execute(
@@ -242,6 +246,7 @@ class ConnectorTestResponse(BaseModel):
 async def list_connectors(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(role_required("ciso")),
+    _scope: User = Depends(require_scope("settings:read")),
 ):
     # Tenant-scoped — connectors with tenant_id != caller's tenant are hidden.
     query = select(ConnectorConfig).order_by(ConnectorConfig.name)
@@ -268,6 +273,7 @@ async def create_connector(
     data: ConnectorCreate,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(role_required("ciso")),
+    _scope: User = Depends(require_scope("settings:write")),
 ):
     encrypted = encrypt_credentials(data.credentials) if data.credentials else None
 
@@ -370,6 +376,7 @@ async def _load_tenant(db: AsyncSession) -> Tenant:
 async def get_scoring_config(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    _scope: User = Depends(require_scope("scoring:write")),
 ):
     from backend.services.scoring_config import (
         TIER_BONUS,
@@ -403,6 +410,7 @@ async def update_scoring_weights(
     data: ScoringWeightsUpdate,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(role_required("ciso")),
+    _scope: User = Depends(require_scope("scoring:write")),
 ):
     """
     Update the current tenant's scoring weight overrides.
@@ -473,6 +481,7 @@ async def test_connector(
     connector_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(role_required("ciso")),
+    _scope: User = Depends(require_scope("settings:write")),
 ):
     # Tenant-scope — cross-tenant probe → 404 (no info leak).
     result = await db.execute(

@@ -35,6 +35,7 @@ _HEX_COLOR_RE = re.compile(r"^#[0-9A-Fa-f]{6}$")
 
 from backend.database import get_db
 from backend.middleware.auth import create_access_token, get_current_user, hash_password
+from backend.middleware.scopes import require_scope
 from backend.middleware.tenant import TenantContext
 from backend.models.audit_log import AuditLog
 from backend.models.subscription import BILLING_TIERS, MODULE_CODES, TenantSubscription
@@ -286,6 +287,7 @@ async def create_tenant(
     data: TenantCreate,
     db: AsyncSession = Depends(get_db),
     _admin: User = Depends(require_super_admin),
+    _scope: User = Depends(require_scope("tenants:write")),
 ):
     """Create a new tenant. slug must be globally unique."""
     # Check slug uniqueness
@@ -329,6 +331,7 @@ async def create_tenant(
 async def list_tenants(
     db: AsyncSession = Depends(get_db),
     _admin: User = Depends(require_super_admin),
+    _scope: User = Depends(require_scope("tenants:read")),
 ):
     """List all tenants (super-admin only)."""
     result = await db.execute(select(Tenant).order_by(Tenant.created_at.asc()))
@@ -341,6 +344,7 @@ async def get_tenant(
     slug: str,
     db: AsyncSession = Depends(get_db),
     _admin: User = Depends(require_super_admin),
+    _scope: User = Depends(require_scope("tenants:read")),
 ):
     """Get tenant detail by slug (super-admin only)."""
     tenant = await _get_tenant_by_slug(slug, db)
@@ -353,6 +357,7 @@ async def update_tenant(
     data: TenantUpdate,
     db: AsyncSession = Depends(get_db),
     _admin: User = Depends(require_super_admin),
+    _scope: User = Depends(require_scope("tenants:write")),
 ):
     """
     Update tenant white-label settings (logo_url, primary_color, app_name)
@@ -398,6 +403,7 @@ async def provision_tenant_admin_user(
     data: TenantAdminUserCreate,
     db: AsyncSession = Depends(get_db),
     _admin: User = Depends(require_super_admin),
+    _scope: User = Depends(require_scope("tenants:write")),
 ):
     """
     Bootstrap a tenant admin user.
@@ -459,6 +465,7 @@ async def enable_module(
     data: ModuleSubscriptionCreate,
     db: AsyncSession = Depends(get_db),
     _admin: User = Depends(require_super_admin),
+    _scope: User = Depends(require_scope("modules:write")),
 ):
     """Enable a module subscription for a tenant."""
     tenant = await _get_tenant_by_slug(slug, db)
@@ -519,6 +526,7 @@ async def update_module_subscription(
     data: ModuleSubscriptionUpdate,
     db: AsyncSession = Depends(get_db),
     _admin: User = Depends(require_super_admin),
+    _scope: User = Depends(require_scope("modules:write")),
 ):
     """Change billing tier, expiry, or enabled state for a module subscription."""
     module_code = module_code.upper()
@@ -574,6 +582,7 @@ async def disable_module(
     module_code: str,
     db: AsyncSession = Depends(get_db),
     _admin: User = Depends(require_super_admin),
+    _scope: User = Depends(require_scope("modules:write")),
 ):
     """
     Soft-disable a module subscription (sets is_enabled=False).

@@ -42,3 +42,11 @@ async def clear_compliance_notifications(tenant_id: str | None = None) -> None:
 ```
 
 Note: `redis.asyncio` is already available via `celery[redis]` in `requirements.txt`.
+
+## RBAC scope hardening (partial — Gemini round-B+C)
+
+Top-5 admin endpoints now enforce per-resource scopes via
+`backend/middleware/scopes.py`. Full RBAC overhaul (granular permission
+model + admin UI for scope assignment + tenant-level role customisation)
+remains a separate sprint; this layer is an additive upgrade, not a
+replacement of `role_required`.

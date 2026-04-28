@@ -28,6 +28,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.database import get_db
 from backend.middleware.auth import get_current_user
 from backend.middleware.rbac import role_required
+from backend.middleware.scopes import require_scope
 from backend.middleware.tenant import TenantContext
 from backend.models.audit_log import AuditLog
 from backend.models.risk import Risk
@@ -126,6 +127,7 @@ async def invite_vapt_vendor(
     request: Request,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(role_required("ciso")),
+    _scope: User = Depends(require_scope("vapt:write")),
 ) -> VaptVendorOut:
     """
     Invite a new VAPT vendor. Returns the vendor row + one-shot invitation URL.
@@ -172,6 +174,7 @@ async def list_vapt_vendors(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
     only_active: bool = False,
+    _scope: User = Depends(require_scope("vapt:read")),
 ) -> VaptVendorListResponse:
     """List vendors registered for this tenant (CISO + IT can read)."""
     tenant_id = TenantContext.get()
@@ -203,6 +206,7 @@ async def get_vapt_vendor(
     vendor_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    _scope: User = Depends(require_scope("vapt:read")),
 ) -> VaptVendorOut:
     tenant_id = TenantContext.get()
     try:
@@ -233,6 +237,7 @@ async def revoke_vapt_vendor(
     vendor_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(role_required("ciso")),
+    _scope: User = Depends(require_scope("vapt:write")),
 ) -> None:
     """Suspend a vendor; their JWT will fail on next request."""
     tenant_id = TenantContext.get()
@@ -266,6 +271,7 @@ async def list_vapt_submissions_admin(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
     sub_status: Optional[str] = None,
+    _scope: User = Depends(require_scope("vapt:read")),
 ) -> VaptSubmissionListResponse:
     """All submissions across the tenant (CISO + IT view)."""
     tenant_id = TenantContext.get()
@@ -282,6 +288,7 @@ async def get_vapt_submission_admin(
     submission_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    _scope: User = Depends(require_scope("vapt:read")),
 ) -> VaptSubmissionOut:
     tenant_id = TenantContext.get()
     try:
@@ -306,6 +313,7 @@ async def request_vapt_retest(
     body: VaptRetestRequest,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(role_required("it_team")),
+    _scope: User = Depends(require_scope("vapt:write")),
 ) -> VaptSubmissionOut:
     """
     IT team has fixed the underlying risk and asks the vendor to verify.
@@ -352,6 +360,7 @@ async def get_vapt_submission_activity(
     submission_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    _scope: User = Depends(require_scope("vapt:read")),
 ) -> dict:
     """Return audit log rows touching this submission (newest first)."""
     tenant_id = TenantContext.get()
