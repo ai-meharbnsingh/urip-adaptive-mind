@@ -279,7 +279,7 @@ async def create_risk(
             name=f"enrich_risk:{risk.id}",
         )
 
-        def _log_enrich_failure(t: asyncio.Task) -> None:
+        def _log_task_result(t: asyncio.Task) -> None:
             if t.cancelled():
                 return
             exc = t.exception()
@@ -288,7 +288,7 @@ async def create_risk(
                 logging.getLogger(__name__).error(
                     "enrich_risk failed for %s: %s", risk.id, exc, exc_info=exc,
                 )
-        bg.add_done_callback(_log_enrich_failure)
+        bg.add_done_callback(_log_task_result)
 
     return risk_to_read(risk)
 

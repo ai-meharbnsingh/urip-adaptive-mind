@@ -118,8 +118,16 @@ def test_af_crit3_env_file_does_not_carry_default_jwt_secret():
     must be removed from `.env`. The pydantic default in code already
     provides the dev fallback; keeping it in `.env` increases the risk of
     accidental production deployment with the well-known secret.
+
+    Codex round-E: skip cleanly on a clean clone where `.env` has not been
+    created yet — the assertion only needs to fire when an `.env` *exists*
+    and is in danger of leaking the default secret.
     """
-    text = (_project_root() / ".env").read_text()
+    env_path = _project_root() / ".env"
+    if not env_path.exists():
+        import pytest
+        pytest.skip("no .env present in clean clone — nothing to leak")
+    text = env_path.read_text()
     # Tolerate the secret string appearing inside comments, but reject any
     # actual KEY=VALUE assignment that ships the default secret.
     assignment_pattern = re.compile(
@@ -136,7 +144,11 @@ def test_af_crit3_env_file_does_not_carry_default_jwt_secret():
 
 def test_af_crit3_env_file_still_marked_dev_only():
     """Removing the line must not erase the DEV-ONLY warnings."""
-    text = (_project_root() / ".env").read_text().lower()
+    env_path = _project_root() / ".env"
+    if not env_path.exists():
+        import pytest
+        pytest.skip("no .env present in clean clone")
+    text = env_path.read_text().lower()
     assert "dev" in text and ("only" in text or "rotate" in text), (
         ".env still must carry an explicit DEV-ONLY / rotate-required marker"
     )

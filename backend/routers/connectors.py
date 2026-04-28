@@ -387,6 +387,14 @@ async def list_connectors(
         default=None,
         description="Filter by lifecycle status: live | building | simulated | roadmap.",
     ),
+    include_dev: bool = Query(
+        default=False,
+        description=(
+            "Include dev-only lifecycle tiers (simulator, building, roadmap) in "
+            "the response. Default false hides them from the buyer-facing UI; "
+            "set true for QA / metadata audits / connector-health dashboards."
+        ),
+    ),
     limit: int = Query(default=50, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
     db: AsyncSession = Depends(get_db),
@@ -403,12 +411,15 @@ async def list_connectors(
     # Static metadata for every registered connector (sorted by name).
     all_meta = _global_registry.list_connectors_with_metadata()
 
-    # Buyer-facing catalog: hide internal lifecycle tiers entirely.
-    # Only "live" connectors are integrations a paying tenant can actually
-    # configure today. Simulator / building / roadmap tiers are dev-only and
-    # must never reach the customer UI (they remain available to tests via
-    # the registry directly).
-    all_meta = [m for m in all_meta if m["status"] == "live"]
+    # Buyer-facing catalog: hide internal lifecycle tiers entirely UNLESS the
+    # caller explicitly opts in via ?include_dev=true. Simulator / building /
+    # roadmap tiers are dev-only and must never reach the customer UI by
+    # default. Tests + connector-health dashboards pass include_dev=true to
+    # see the full registry. Codex round-E gap: previously the test
+    # ``test_list_returns_metadata_for_every_connector`` failed because there
+    # was no opt-in path to see all registered connectors.
+    if not include_dev:
+        all_meta = [m for m in all_meta if m["status"] == "live"]
 
     # Optional filters (applied BEFORE pagination so total reflects the filter)
     if category is not None:
@@ -475,6 +486,10 @@ async def list_connectors(
 
 @router.get("/categories", response_model=CategoriesResponse)
 async def list_connector_categories(
+    include_dev: bool = Query(
+        default=False,
+        description="Same opt-in as /api/connectors — include dev tiers when true.",
+    ),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(role_required("ciso")),
 ):
@@ -489,7 +504,9 @@ async def list_connector_categories(
     all_meta = _global_registry.list_connectors_with_metadata()
     # Mirror the catalog filter — hide non-live tiers from the buyer UI so
     # dev-only categories (e.g. SIMULATOR) never appear in the filter dropdown.
-    all_meta = [m for m in all_meta if m["status"] == "live"]
+    # Pass include_dev=true to see all tiers (parity with GET /api/connectors).
+    if not include_dev:
+        all_meta = [m for m in all_meta if m["status"] == "live"]
 
     configured_rows = (
         await db.execute(

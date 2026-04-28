@@ -413,7 +413,7 @@ class VaptVendorService:
                     name=f"enrich_risk:vapt:{risk.id}",
                 )
 
-                def _log_enrich_failure(t: asyncio.Task, _rid=risk.id) -> None:
+                def _log_task_result(t: asyncio.Task, _rid=risk.id) -> None:
                     if t.cancelled():
                         return
                     exc = t.exception()
@@ -422,7 +422,7 @@ class VaptVendorService:
                             "vapt enrich_risk failed for %s: %s",
                             _rid, exc, exc_info=exc,
                         )
-                bg.add_done_callback(_log_enrich_failure)
+                bg.add_done_callback(_log_task_result)
             except RuntimeError:
                 # No running event loop (CLI, sync context). Safe to skip;
                 # data will be backfilled by backend/backfill_exploitability.py.

@@ -188,7 +188,13 @@ class TestListConnectorsMetadata:
     async def test_list_returns_metadata_for_every_connector(
         self, client, auth_headers, core_subscription,
     ):
-        resp = await client.get("/api/connectors", headers=auth_headers)
+        # Codex round-E: /api/connectors filters non-"live" tiers by default
+        # (buyer-facing UI must never see simulators / roadmap items).
+        # ?include_dev=true opts into the full registry view used by tests
+        # and connector-health dashboards.
+        resp = await client.get(
+            "/api/connectors?include_dev=true", headers=auth_headers
+        )
         assert resp.status_code == 200, resp.text
         body = resp.json()
 
@@ -260,8 +266,11 @@ class TestListConnectorsMetadata:
     async def test_list_filter_by_status(
         self, client, auth_headers, core_subscription,
     ):
+        # status filter for non-"live" tiers requires include_dev=true so
+        # the dev-only tiers are visible in the response set first.
         resp = await client.get(
-            "/api/connectors?status=simulated", headers=auth_headers,
+            "/api/connectors?status=simulated&include_dev=true",
+            headers=auth_headers,
         )
         assert resp.status_code == 200
         body = resp.json()
