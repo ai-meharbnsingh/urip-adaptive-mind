@@ -54,7 +54,11 @@ class TestListConnectors:
     async def test_list_returns_all_registered_connectors(
         self, client, auth_headers
     ):
-        resp = await client.get("/api/connectors", headers=auth_headers)
+        # include_dev=true so the simulator + extended_simulator (dev-only
+        # connectors) show up alongside production ones.
+        resp = await client.get(
+            "/api/connectors?include_dev=true", headers=auth_headers
+        )
         assert resp.status_code == 200, resp.text
 
         body = resp.json()
@@ -73,7 +77,8 @@ class TestListConnectors:
     @pytest.mark.anyio
     async def test_list_supports_pagination(self, client, auth_headers):
         resp = await client.get(
-            "/api/connectors?limit=3&offset=0", headers=auth_headers
+            "/api/connectors?include_dev=true&limit=3&offset=0",
+            headers=auth_headers,
         )
         assert resp.status_code == 200
         body = resp.json()
@@ -84,7 +89,9 @@ class TestListConnectors:
     async def test_list_marks_unconfigured_by_default(
         self, client, auth_headers
     ):
-        resp = await client.get("/api/connectors", headers=auth_headers)
+        resp = await client.get(
+            "/api/connectors?include_dev=true", headers=auth_headers
+        )
         body = resp.json()
         # Fresh tenant → none configured
         for item in body["items"]:
