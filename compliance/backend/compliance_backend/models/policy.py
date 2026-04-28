@@ -7,7 +7,7 @@ Tables:
   policy_acknowledgments  — user e-sign acknowledgments per version
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List
 
 from sqlalchemy import (

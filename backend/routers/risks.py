@@ -217,7 +217,7 @@ async def create_risk(
     current_user: User = Depends(role_required("it_team")),
 ):
     # Generate unique risk_id using full year + random suffix.
-    # Format: RISK-YYYY-XXXX (tenant-neutral; replaces the old RE- Royal Enfield prefix)
+    # Format: RISK-YYYY-XXXX (tenant-neutral; replaces the old RE- Customer prefix)
     now = datetime.now(timezone.utc)
     suffix = secrets.token_hex(2).upper()  # 4 hex chars
     risk_id = f"RISK-{now.strftime('%Y')}-{suffix}"

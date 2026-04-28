@@ -50,3 +50,21 @@ Top-5 admin endpoints now enforce per-resource scopes via
 model + admin UI for scope assignment + tenant-level role customisation)
 remains a separate sprint; this layer is an additive upgrade, not a
 replacement of `role_required`.
+
+## InProcessEventBus distributed pub/sub (Gemini round-D)
+
+`shared/events/bus.py` mirrors outbound `publish()` to Redis when
+`attach_redis()` is called, and the round-D `redis_subscriber.py` adds the
+inbound side via `PSUBSCRIBE`. With `URIP_DISTRIBUTED_EVENTS=1` set, every pod
+both publishes to and subscribes from Redis — multi-instance deployments now
+get cross-pod event delivery without each handler explicitly using the Redis
+client.
+
+Remaining technical debt:
+
+- The redis subscriber starts at FastAPI startup. Background workers (Celery)
+  do not auto-start it; they would need an explicit hook in
+  `backend/services/celery_app.py` to participate.
+- `bus._subscribers` is process-local. A fully distributed event log (events
+  durable across the entire fleet, replayable) would require Redis Streams or
+  Kafka, not pub/sub. Not in scope for this sprint.

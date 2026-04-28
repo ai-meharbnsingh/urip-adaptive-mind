@@ -1,7 +1,7 @@
 """
 URIP Vulnerability Simulator — LEGACY / DEMO ONLY.
 
-⚠️  L9 (Kimi LOW-003) — This module ships the historical "Royal Enfield"
+⚠️  L9 (Kimi LOW-003) — This module ships the historical "Customer"
     flavoured CVE catalogue (REAL_CVES) used during the URIP MVP to
     demonstrate the platform with realistic-looking findings.  It is
     classified as a DEMO / LEGACY simulator and MUST NOT be used as the
@@ -92,11 +92,11 @@ REAL_CVES = {
         ("CVE-2023-50164", "Apache Struts Path Traversal RCE", 9.8, "critical", "application"),
         ("CVE-2024-4577", "PHP CGI Argument Injection", 9.8, "critical", "application"),
         ("CVE-2023-29357", "SharePoint Privilege Escalation", 9.8, "critical", "application"),
-        ("EASM-EXP-001", "Subdomain Takeover on dealer-staging.royalenfield.com", 7.5, "high", "network"),
+        ("EASM-EXP-001", "Subdomain Takeover on dealer-staging.example.com", 7.5, "high", "network"),
         ("EASM-EXP-002", "Exposed .env File on Staging Server", 8.6, "high", "application"),
         ("EASM-EXP-003", "Open MongoDB 27017 on Public IP", 9.1, "critical", "network"),
         ("EASM-EXP-004", "Expired SSL Certificate on Parts Portal", 5.3, "medium", "network"),
-        ("EASM-EXP-005", "DMARC Policy Not Enforced for royalenfield.com", 4.3, "medium", "network"),
+        ("EASM-EXP-005", "DMARC Policy Not Enforced for example.com", 4.3, "medium", "network"),
         ("EASM-EXP-006", "Exposed Git Repository on Internal Wiki", 7.5, "high", "application"),
         ("EASM-EXP-007", "Open Elasticsearch 9200 on Analytics Server", 9.1, "critical", "network"),
         ("EASM-EXP-008", "WordPress xmlrpc.php Amplification", 5.3, "medium", "application"),
@@ -202,7 +202,7 @@ REAL_CVES = {
     ],
 }
 
-# Royal Enfield assets per domain
+# Customer assets per domain
 ASSETS = {
     "endpoint": [
         "Finance Workstation FIN-WS-01", "CISO Laptop EXEC-LT-01", "HR Desktop HR-WS-042",
@@ -215,8 +215,8 @@ ASSETS = {
     ],
     "cloud": [
         "AWS EKS Cluster — Dealer Portal", "S3 Bucket re-customer-data-prod",
-        "Azure AD Tenant royalenfield.com", "GCP BigQuery Analytics",
-        "AWS Lambda — Order Processing", "CloudFront CDN royalenfield.com",
+        "Azure AD Tenant example.com", "GCP BigQuery Analytics",
+        "AWS Lambda — Order Processing", "CloudFront CDN example.com",
         "AWS RDS PostgreSQL — ERP", "Azure Blob — Warranty Docs",
         "AWS ECR Container Registry", "GCP Cloud Storage — Marketing Assets",
         "AWS Secrets Manager — Prod", "Azure AKS — Internal Tools",
@@ -230,13 +230,13 @@ ASSETS = {
         "SD-WAN Controller SDWAN-01", "Network TAP TAP-CORE-01",
     ],
     "application": [
-        "Dealer Portal api.dealers.royalenfield.com", "SAP ERP Production SAP-PRD-01",
-        "Royal Enfield Mobile App v4.2", "E-Commerce shop.royalenfield.com",
+        "Dealer Portal api.dealers.example.com", "SAP ERP Production SAP-PRD-01",
+        "Customer Mobile App v4.2", "E-Commerce shop.example.com",
         "Warranty Management System WMS-01", "Spare Parts API parts-api.re.internal",
         "HR Portal Workday Integration", "CRM Salesforce RE-CRM-PROD",
         "Internal Wiki Confluence", "CI/CD Jenkins jenkins.re.internal",
-        "Customer Support Portal support.royalenfield.com",
-        "Dealer Onboarding Portal onboard.royalenfield.com",
+        "Customer Support Portal support.example.com",
+        "Dealer Onboarding Portal onboard.example.com",
     ],
     "identity": [
         "Domain Admin Group DA-GROUP-01", "Service Account svc-sap-integration",

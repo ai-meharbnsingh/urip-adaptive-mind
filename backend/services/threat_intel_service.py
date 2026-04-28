@@ -2,7 +2,7 @@
 Threat Intelligence Service — Central TI data provider.
 
 Connects to FREE live APIs (MITRE ATT&CK, AlienVault OTX) and provides
-threat data with Royal Enfield / Indian manufacturing relevance scoring.
+threat data with Customer / Indian manufacturing relevance scoring.
 
 All data is cached in-memory with configurable TTLs.
 """
@@ -263,7 +263,7 @@ def _generate_synthetic_otx_pulses() -> list[dict]:
             "name": "Credential Dump -- Indian Automotive Companies on Dark Web",
             "description": (
                 "Breach database containing 15,000+ employee credentials from Indian automotive "
-                "sector companies posted on dark web marketplace. Includes @royalenfield.com, "
+                "sector companies posted on dark web marketplace. Includes @example.com, "
                 "@tvsmotor.com, @heromotocorp.com domains."
             ),
             "adversary": "Unknown",
@@ -273,13 +273,13 @@ def _generate_synthetic_otx_pulses() -> list[dict]:
             "indicators": [
                 {
                     "type": "domain",
-                    "indicator": "royalenfield.com",
+                    "indicator": "example.com",
                     "description": "Affected domain -- 847 credentials",
                 },
-                {"type": "email", "indicator": "admin@royalenfield.com", "description": "Compromised account"},
+                {"type": "email", "indicator": "admin@example.com", "description": "Compromised account"},
                 {
                     "type": "email",
-                    "indicator": "it.support@royalenfield.com",
+                    "indicator": "it.support@example.com",
                     "description": "Compromised account",
                 },
                 {"type": "IPv4", "indicator": "103.152.220.44", "description": "Breach source IP"},
@@ -336,7 +336,7 @@ def _generate_synthetic_otx_pulses() -> list[dict]:
             "indicators": [
                 {"type": "IPv4", "indicator": "80.94.92.161", "description": "Emotet C2"},
                 {"type": "IPv4", "indicator": "51.75.33.122", "description": "Cobalt Strike C2"},
-                {"type": "domain", "indicator": "invoice-royalenfield.com", "description": "Phishing domain"},
+                {"type": "domain", "indicator": "invoice-example.com", "description": "Phishing domain"},
                 {
                     "type": "FileHash-SHA256",
                     "indicator": "d4e5f6a7b8c9012345678901234567890abcdef1234567890abcdef12345678",
@@ -344,7 +344,7 @@ def _generate_synthetic_otx_pulses() -> list[dict]:
                 },
                 {
                     "type": "email",
-                    "indicator": "accounts@invoice-royalenfield.com",
+                    "indicator": "accounts@invoice-example.com",
                     "description": "Phishing sender",
                 },
             ],
@@ -366,9 +366,9 @@ def _generate_synthetic_otx_pulses() -> list[dict]:
             ],
         },
         {
-            "name": "Phishing Campaign -- Royal Enfield Warranty Scam",
+            "name": "Phishing Campaign -- Customer Warranty Scam",
             "description": (
-                "Phishing campaign impersonating Royal Enfield warranty department. "
+                "Phishing campaign impersonating Customer warranty department. "
                 "Targets customers and dealers with fake warranty extension offers to "
                 "harvest credentials and payment info."
             ),
@@ -377,17 +377,17 @@ def _generate_synthetic_otx_pulses() -> list[dict]:
             "tags": ["phishing", "brand-impersonation", "royal-enfield"],
             "tlp": "red",
             "indicators": [
-                {"type": "domain", "indicator": "royalenfield-warranty.in", "description": "Phishing site"},
+                {"type": "domain", "indicator": "example-warranty.com", "description": "Phishing site"},
                 {"type": "domain", "indicator": "re-warranty-check.com", "description": "Phishing site"},
                 {"type": "IPv4", "indicator": "103.83.194.22", "description": "Hosting IP"},
                 {
                     "type": "email",
-                    "indicator": "warranty@royalenfield-warranty.in",
+                    "indicator": "warranty@example-warranty.com",
                     "description": "Phishing sender",
                 },
                 {
                     "type": "URL",
-                    "indicator": "https://royalenfield-warranty.in/check-status",
+                    "indicator": "https://example-warranty.com/check-status",
                     "description": "Credential harvesting page",
                 },
             ],
@@ -405,7 +405,7 @@ def _generate_synthetic_otx_pulses() -> list[dict]:
 
 
 def _compute_relevance(pulse: dict) -> float:
-    """Score 0-100 relevance to Royal Enfield."""
+    """Score 0-100 relevance to Customer."""
     score = 0.0
     tags = " ".join(pulse.get("tags", [])).lower()
     desc = pulse.get("description", "").lower()
@@ -443,13 +443,13 @@ def get_dark_web_alerts() -> list[dict]:
             "severity": "critical",
             "title": "Employee Credentials Found on BreachForums",
             "description": (
-                "847 email/password pairs matching @royalenfield.com discovered "
+                "847 email/password pairs matching @example.com discovered "
                 "on BreachForums marketplace. Credentials appear to originate from "
                 "a third-party vendor breach (HR SaaS platform)."
             ),
             "source": "BreachForums",
             "affected_accounts": 847,
-            "domains_affected": ["royalenfield.com"],
+            "domains_affected": ["example.com"],
             "first_seen": (now - timedelta(days=3)).isoformat(),
             "last_seen": (now - timedelta(hours=6)).isoformat(),
             "status": "active",
@@ -464,15 +464,15 @@ def get_dark_web_alerts() -> list[dict]:
             "id": "dw-002",
             "type": "brand_mention",
             "severity": "high",
-            "title": "Royal Enfield Mentioned in Ransomware Negotiation Channel",
+            "title": "Customer Mentioned in Ransomware Negotiation Channel",
             "description": (
                 "Telegram channel associated with LockBit affiliates mentioned "
-                "'Royal Enfield supply chain' as potential target. Discussion indicates "
+                "'Customer supply chain' as potential target. Discussion indicates "
                 "reconnaissance of vendor portal vulnerabilities."
             ),
             "source": "Telegram (LockBit Affiliates)",
             "affected_accounts": 0,
-            "domains_affected": ["vendors.royalenfield.com"],
+            "domains_affected": ["vendors.example.com"],
             "first_seen": (now - timedelta(days=7)).isoformat(),
             "last_seen": (now - timedelta(days=1)).isoformat(),
             "status": "monitoring",
@@ -510,17 +510,17 @@ def get_dark_web_alerts() -> list[dict]:
             "id": "dw-004",
             "type": "typosquat_domain",
             "severity": "medium",
-            "title": "Typosquat Domains Registered Targeting Royal Enfield",
+            "title": "Typosquat Domains Registered Targeting Customer",
             "description": (
                 "12 new domains registered in the last 30 days that impersonate "
-                "Royal Enfield: royalenfield-careers.com, royalenfield-warranty.in, "
+                "Customer: example-careers.com, example-warranty.com, "
                 "royaI-enfield.com (capital I), re-warranty-check.com, etc."
             ),
             "source": "Domain monitoring",
             "affected_accounts": 0,
             "domains_affected": [
-                "royalenfield-careers.com",
-                "royalenfield-warranty.in",
+                "example-careers.com",
+                "example-warranty.com",
                 "royaI-enfield.com",
                 "re-warranty-check.com",
             ],
@@ -542,11 +542,11 @@ def get_dark_web_alerts() -> list[dict]:
             "description": (
                 "A zero-day exploit for FortiOS SSL VPN (pre-auth RCE) is being "
                 "sold on a Russian-language dark web marketplace for $250,000. "
-                "Royal Enfield uses FortiGate at multiple plant locations."
+                "Customer uses FortiGate at multiple plant locations."
             ),
             "source": "XSS Forum",
             "affected_accounts": 0,
-            "domains_affected": ["vpn.royalenfield.com"],
+            "domains_affected": ["vpn.example.com"],
             "first_seen": (now - timedelta(days=5)).isoformat(),
             "last_seen": (now - timedelta(hours=18)).isoformat(),
             "status": "active",

@@ -133,7 +133,7 @@ async def match_iocs(
             "last_seen": "2026-04-06T16:30:00Z",
             "action_taken": "Quarantined",
         },
-        "royalenfield-warranty.in": {
+        "example-warranty.com": {
             "matched_in": "DNS Logs",
             "match_count": 47,
             "first_seen": "2026-04-02T10:00:00Z",
@@ -147,7 +147,7 @@ async def match_iocs(
             "last_seen": "2026-04-08T18:00:00Z",
             "action_taken": "Blocked",
         },
-        "invoice-royalenfield.com": {
+        "invoice-example.com": {
             "matched_in": "Email Gateway",
             "match_count": 8,
             "first_seen": "2026-04-04T06:00:00Z",

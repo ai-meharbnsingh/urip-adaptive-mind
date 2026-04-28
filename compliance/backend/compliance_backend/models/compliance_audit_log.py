@@ -20,7 +20,7 @@ actions are not modelled here yet (compliance has no super-admin concept).
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import String, DateTime, Index, Text
 from sqlalchemy.orm import Mapped, mapped_column

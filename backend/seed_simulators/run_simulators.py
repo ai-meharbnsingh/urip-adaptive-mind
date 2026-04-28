@@ -48,8 +48,8 @@ SIMULATOR_TABLES = [
 
 async def _archive_then_clear(session: AsyncSession, tenant_id: uuid.UUID) -> dict:
     """Archive simulator-written rows for the tenant, then DELETE. INV-0 safe."""
-    from datetime import datetime
-    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    from datetime import datetime, timezone
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     archived = {}
     for table in SIMULATOR_TABLES:
         try:
